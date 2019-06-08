@@ -55,7 +55,6 @@
                 buttonup_class: "btn btn-link",
                 postfix_extraclass: "btn btn-link"
             });
-
             $("input[name='organiser_fee_fixed']").TouchSpin({
                 min: 0,
                 max: 100,
