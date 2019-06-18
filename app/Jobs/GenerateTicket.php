@@ -40,7 +40,7 @@ class GenerateTicket extends Job implements ShouldQueue
      *
      * @param string $reference
      */
-    public function __construct(string $reference)
+    public function __construct($reference)
     {
         Log::info("Generating ticket: #" . $reference);
 
