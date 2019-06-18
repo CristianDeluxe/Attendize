@@ -11,6 +11,7 @@
     "type": "project",
     "homepage": "https://www.attendize.com",
     "require": {
+        "barryvdh/laravel-dompdf": "^0.8.3",
         "barryvdh/laravel-ide-helper": "~2.4",
         "doctrine/dbal": "~2.8",
         "dompdf/dompdf": "~0.8",
@@ -29,7 +30,6 @@
         "mcamara/laravel-localization": "~1.2",
         "mews/purifier": "^2.1",
         "milon/barcode": "~5.3",
-        "nitmedia/wkhtml2pdf": "dev-master",
         "omnipay/common": "~3",
         "omnipay/dummy": "~3",
         "omnipay/paypal": "~3",

@@ -28,8 +28,8 @@
 @stop
 
 @section('head')
-    {!! HTML::script('https://maps.googleapis.com/maps/api/js?libraries=places&key='.config("attendize.google_maps_geocoding_key")) !!}
-    {!! HTML::script('vendor/geocomplete/jquery.geocomplete.min.js') !!}
+    {!! Html::script('https://maps.googleapis.com/maps/api/js?libraries=places&key='.config("attendize.google_maps_geocoding_key")) !!}
+    {!! Html::script('vendor/geocomplete/jquery.geocomplete.min.js') !!}
     <script>
         $(function () {
 
@@ -99,28 +99,31 @@
             $('.colorpicker').minicolors();
 
             $('#ticket_design .colorpicker').on('change', function (e) {
-                var borderColor = $('input[name="ticket_border_color"]').val();
-                var bgColor = $('input[name="ticket_bg_color"]').val();
-                var textColor = $('input[name="ticket_text_color"]').val();
-                var subTextColor = $('input[name="ticket_sub_text_color"]').val();
+                let borderColor = $('input[name="ticket_border_color"]').val();
+                let bgColor = $('input[name="ticket_bg_color"]').val();
+                let textColor = $('input[name="ticket_text_color"]').val();
+                let subTextColor = $('input[name="ticket_sub_text_color"]').val();
 
                 $('.ticket').css({
-                    'border': '1px solid ' + borderColor,
-                    'background-color': bgColor,
+                    'border-color': borderColor,
+                    'background': bgColor,
+                    'color': textColor,
+                });
+
+                $('.ticket-checkin').css({
+                    'border-color': borderColor,
+                });
+
+                $('.ticket-content .ticket-box-1 .ticket-box-1-col ul li:first-child').css({
+                    'border-color': borderColor,
+                });
+
+                $('.ticket-content .ticket-box-1 .ticket-box-1-col ul li').css({
+                    'border-color': borderColor,
+                });
+
+                $('.ticket-content .ticket-box-1 .ticket-box-1-col ul li strong').css({
                     'color': subTextColor,
-                    'border-left-color': borderColor
-                });
-                $('.ticket h4').css({
-                    'color': textColor
-                });
-                $('.ticket .logo').css({
-                    'border-left': '1px solid ' + borderColor,
-                    'border-bottom': '1px solid ' + borderColor
-                });
-                $('.ticket .barcode').css({
-                    'border-right': '1px solid ' + borderColor,
-                    'border-bottom': '1px solid ' + borderColor,
-                    'border-top': '1px solid ' + borderColor
                 });
 
             });
@@ -582,7 +585,7 @@
                         {!! Form::submit(trans("basic.save_changes"), ['class'=>"btn btn-success"]) !!}
                     </div>
                     {!! Form::close() !!}
-                </div>
+            </div>
             <!--/ tab content -->
         </div>
     </div>
