@@ -68,7 +68,7 @@ class TicketGenerator
     {
         foreach ($this->order->attendees as $attendee) {
             // Only generate if not cancelled
-            if(!$attendee->is_cancelled){
+            if (!$attendee->is_cancelled) {
                 $this->all_tickets[] = $this->createTicket($attendee);
             }
         }
@@ -298,7 +298,7 @@ class TicketGenerator
         $text_container = Image::canvas(1319, 80, $this->order->event->ticket_bg_color)->opacity(80);
 
         // Insert each line
-        foreach ($lines as $line){
+        foreach ($lines as $line) {
             $text_container->text(join(' · ', $line['text']), 20, $line['y'], function ($font) {
                 /** @var Font $font */
                 $font->file(public_path('assets/fonts/OpenSans-SemiBold.ttf'));
@@ -370,7 +370,8 @@ class TicketGenerator
      * @param int $event_id Event ID
      * @return Order
      */
-    public static function demoData(int $event_id){
+    public static function demoData(int $event_id)
+    {
         $order = new Order();
         $order->order_reference = trans('Ticket.demo_order_ref');
 
@@ -403,11 +404,13 @@ class TicketGenerator
      * @param $reference
      * @return mixed
      */
-    public static function generateFileName($reference){
+    public static function generateFileName($reference)
+    {
         $file['name'] = $reference;
+        $file['base_name'] = $file['name'] . '.pdf';
         $file['base_path'] = public_path(config('attendize.event_pdf_tickets_path')) . '/';
         $file['file_path'] = $file['base_path'] . $file['name'];
-        $file['fullpath'] = $file['file_path'] . '.pdf';
+        $file['fullpath'] = $file['file_path'] . $file['base_name'];
 
         return $file;
     }

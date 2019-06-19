@@ -811,9 +811,9 @@ class EventCheckoutController extends Controller
         $pdf_file = TicketGenerator::generateFileName($order->order_reference);
 
         if ($request->get('download') == '1') {
-            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->download($pdf_file['fullpath']);
+            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->download($pdf_file['base_name']);
         } elseif ($request->get('view') == '1') {
-            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->stream($pdf_file['fullpath']);
+            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->stream($pdf_file['base_name']);
         } elseif ($order_reference === 'example') {
             return view('Public.ViewEvent.Partials.ExampleTicket', $data);
         }
