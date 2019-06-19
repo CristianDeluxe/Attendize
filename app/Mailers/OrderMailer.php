@@ -2,10 +2,11 @@
 
 namespace App\Mailers;
 
+use App\Generators\TicketGenerator;
 use App\Models\Order;
 use App\Services\Order as OrderService;
-use Log;
-use Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OrderMailer
 {
@@ -15,13 +16,14 @@ class OrderMailer
         $orderService->calculateFinalCosts();
 
         $data = [
-            'order' => $order,
+            'order'        => $order,
             'orderService' => $orderService
         ];
 
         Mail::send('Emails.OrderNotification', $data, function ($message) use ($order) {
             $message->to($order->account->email);
-            $message->subject(trans("Controllers.new_order_received", ["event"=> $order->event->title, "order" => $order->order_reference]));
+            $message->subject(trans("Controllers.new_order_received",
+                ["event" => $order->event->title, "order" => $order->order_reference]));
         });
 
     }
@@ -33,21 +35,22 @@ class OrderMailer
 
         Log::info("Sending ticket to: " . $order->email);
         $data = [
-            'order' => $order,
+            'order'        => $order,
             'orderService' => $orderService
         ];
 
-        $file_name = $order->order_reference;
-        $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name . '.pdf';
-        if (!file_exists($file_path)) {
+        // Generate PDF filename and path
+        $pdf_file = TicketGenerator::generateFileName($order->order_reference);
+
+        if (!file_exists($pdf_file['fullpath'])) {
             Log::error("Cannot send actual ticket to : " . $order->email . " as ticket file does not exist on disk");
             return;
         }
 
-        Mail::send('Mailers.TicketMailer.SendOrderTickets', $data, function ($message) use ($order, $file_path) {
+        Mail::send('Mailers.TicketMailer.SendOrderTickets', $data, function ($message) use ($order, $pdf_file) {
             $message->to($order->email);
             $message->subject(trans("Controllers.tickets_for_event", ["event" => $order->event->title]));
-            $message->attach($file_path);
+            $message->attach($pdf_file['fullpath']);
         });
 
     }

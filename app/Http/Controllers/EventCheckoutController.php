@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderCompletedEvent;
+use App\Generators\TicketGenerator;
 use App\Models\Account;
 use App\Models\AccountPaymentGateway;
 use App\Models\Affiliate;
@@ -23,7 +24,7 @@ use DB;
 use Illuminate\Http\Request;
 use Log;
 use Omnipay;
-use PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 use PhpSpec\Exception\Exception;
 use Validator;
 
@@ -782,32 +783,39 @@ class EventCheckoutController extends Controller
      */
     public function showOrderTickets(Request $request, $order_reference)
     {
+        // If is a demo ticket
+        if ($order_reference === 'example' && $request->get('event')) {
+            // Generate demo data
+            $order = TicketGenerator::demoData($request->get('event'));
+        } else {
+            // It's a real ticket, try to find the order in database
         $order = Order::where('order_reference', '=', $order_reference)->first();
+        }
 
+        // If no order, exit
         if (!$order) {
             abort(404);
         }
-        $images = [];
-        $imgs = $order->event->images;
-        foreach ($imgs as $img) {
-            $images[] = base64_encode(file_get_contents(public_path($img->image_path)));
-        }
 
+        // Generate the tickets
+        $ticket_generator = new TicketGenerator($order);
+        $tickets = $ticket_generator->createTickets();
+
+        // Data for view
         $data = [
-            'order'     => $order,
+            'tickets' => $tickets,
             'event'     => $order->event,
-            'tickets'   => $order->event->tickets,
-            'attendees' => $order->attendees,
-            'css'       => file_get_contents(public_path('css/ticket.css')),
-            'image'     => base64_encode(file_get_contents(public_path($order->event->organiser->full_logo_path))),
-            'images'    => $images,
         ];
 
+        // Generate file name
+        $pdf_file = TicketGenerator::generateFileName($order->order_reference);
+
         if ($request->get('download') == '1') {
-            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->download('Tickets.pdf');
-        }
-        if ($request->get('view') == '1') {
-            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->stream('Tickets.pdf');
+            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->download($pdf_file['fullpath']);
+        } elseif ($request->get('view') == '1') {
+            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->stream($pdf_file['fullpath']);
+        } elseif ($order_reference === 'example') {
+            return view('Public.ViewEvent.Partials.ExampleTicket', $data);
         }
         return view('Public.ViewEvent.Partials.PDFTicket', $data);
     }

@@ -2,31 +2,54 @@
 
 namespace App\Jobs;
 
+use App\Generators\TicketGenerator;
 use App\Models\Order;
+use Barryvdh\DomPDF\Facade as PDF;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Log;
-use PDF;
+use Illuminate\Support\Facades\Log;
 
+/**
+ * Generate Ticket as a Job
+ *
+ * @package App\Jobs
+ */
 class GenerateTicket extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
 
+    /**
+     * @var string $reference Full reference id
+     */
     protected $reference;
+
+    /**
+     * @var string $order_reference Reference ID
+     */
     protected $order_reference;
+
+    /**
+     * @var int|null $attendee_reference_index Attendee Index
+     */
     protected $attendee_reference_index;
 
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param string $reference
      */
-    public function __construct($reference)
+    public function __construct(string $reference)
     {
         Log::info("Generating ticket: #" . $reference);
+
         $this->reference = $reference;
+
+        // Assign order reference
         $this->order_reference = explode("-", $reference)[0];
+
+        // If reference index isset assign it
         if (strpos($reference, "-")) {
             $this->attendee_reference_index = explode("-", $reference)[1];
         }
@@ -39,45 +62,44 @@ class GenerateTicket extends Job implements ShouldQueue
      */
     public function handle()
     {
+        // Generate file name
+        $pdf_file = TicketGenerator::generateFileName($this->reference);
 
-        $file_name = $this->reference;
-        $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name;
-        $file_with_ext = $file_path . ".pdf";
-
-        if (file_exists($file_with_ext)) {
-            Log::info("Use ticket from cache: " . $file_with_ext);
+        // Check if file exist before create it again
+        if (file_exists($pdf_file['fullpath'])) {
+            Log::info('Use ticket from cache: ' . $pdf_file['fullpath']);
             return;
         }
 
+        // Find the order
+        /** @var Order $order */
         $order = Order::where('order_reference', $this->order_reference)->first();
+
         Log::info($order);
-        $event = $order->event;
 
         $query = $order->attendees();
+
+        // If only need a single attendee find it
         if ($this->isAttendeeTicket()) {
             $query = $query->where('reference_index', '=', $this->attendee_reference_index);
         }
-        $attendees = $query->get();
 
-        $image_path = $event->organiser->full_logo_path;
-        $images = [];
-        $imgs = $order->event->images;
-        foreach ($imgs as $img) {
-            $images[] = base64_encode(file_get_contents(public_path($img->image_path)));
-        }
+        $order->attendees = $query->get();
 
+        // Generate the tickets
+        $ticket_generator = new TicketGenerator($order);
+        $tickets = $ticket_generator->createTickets();
+
+        // Data for view
         $data = [
-            'order'     => $order,
-            'event'     => $event,
-            'attendees' => $attendees,
-            'css'       => file_get_contents(public_path('css/ticket.css')),
-            'image'     => base64_encode(file_get_contents(public_path($image_path))),
-            'images'    => $images,
+            'tickets' => $tickets,
+            'event'   => $order->event,
         ];
+
         try {
-            PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->save($file_path);
+            PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->save($pdf_file['fullpath']);
             Log::info("Ticket generated!");
-        } catch(\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Error generating ticket.");
             Log::error("Error message. " . $e->getMessage());
             Log::error("Error stack trace" . $e->getTraceAsString());
@@ -86,8 +108,13 @@ class GenerateTicket extends Job implements ShouldQueue
 
     }
 
+    /**
+     * Check if ticket is assigned to an attendee
+     *
+     * @return bool
+     */
     private function isAttendeeTicket()
     {
-        return ($this->attendee_reference_index != null);
+        return ($this->attendee_reference_index !== null);
     }
 }

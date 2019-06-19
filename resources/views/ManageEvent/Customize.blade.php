@@ -24,6 +24,17 @@
         .page-header {
             display: none;
         }
+
+        div#ticket-preview {
+            text-align: center;
+        }
+
+        div#ticket-preview img {
+            width: 95%;
+            border: 2px dashed #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
     </style>
 @stop
 
@@ -32,7 +43,6 @@
     {!! Html::script('vendor/geocomplete/jquery.geocomplete.min.js') !!}
     <script>
         $(function () {
-
             $("input[name='organiser_fee_percentage']").TouchSpin({
                 min: 0,
                 max: 100,
@@ -45,6 +55,7 @@
                 buttonup_class: "btn btn-link",
                 postfix_extraclass: "btn btn-link"
             });
+
             $("input[name='organiser_fee_fixed']").TouchSpin({
                 min: 0,
                 max: 100,
@@ -60,7 +71,7 @@
             /* Affiliate generator */
             $('#affiliateGenerator').on('keyup', function () {
                 var text = $(this).val().replace(/\W/g, ''),
-                        referralUrl = '{{$event->event_url}}?ref=' + text;
+                    referralUrl = '{{$event->event_url}}?ref=' + text;
 
                 $('#referralUrl').toggle(text !== '');
                 $('#referralUrl input').val(referralUrl);
@@ -100,37 +111,25 @@
 
             $('#ticket_design .colorpicker').on('change', function (e) {
                 let borderColor = $('input[name="ticket_border_color"]').val();
-                let bgColor = $('input[name="ticket_bg_color"]').val();
-                let textColor = $('input[name="ticket_text_color"]').val();
-                let subTextColor = $('input[name="ticket_sub_text_color"]').val();
 
-                $('.ticket').css({
-                    'border-color': borderColor,
-                    'background': bgColor,
-                    'color': textColor,
-                });
-
-                $('.ticket-checkin').css({
+                $('div#ticket-preview img').css({
                     'border-color': borderColor,
                 });
-
-                $('.ticket-content .ticket-box-1 .ticket-box-1-col ul li:first-child').css({
-                    'border-color': borderColor,
-                });
-
-                $('.ticket-content .ticket-box-1 .ticket-box-1-col ul li').css({
-                    'border-color': borderColor,
-                });
-
-                $('.ticket-content .ticket-box-1 .ticket-box-1-col ul li strong').css({
-                    'color': subTextColor,
-                });
-
             });
+
 
             $('#enable_offline_payments').change(function () {
                 $('.offline_payment_details').toggle(this.checked);
             }).change();
+
+            /* Load example ticket image */
+            $('#ticket-preview').load('{{ route('showOrderTickets', ['order_reference' => 'example'] ).'?event='.$event->id }}');
+
+            /* Update ticket if form updated */
+            $(document).on('exampleTicketUpdated', {}, function (event) {
+                $('#ticket-preview').html('Loading...').delay(3000);
+                $('#ticket-preview').load('{{ route('showOrderTickets', ['order_reference' => 'example'] ).'?event='.$event->id }}');
+            });
         });
 
 
@@ -188,22 +187,32 @@
             <!-- tab -->
             <ul class="nav nav-tabs">
                 <li data-route="{{route('showEventCustomizeTab', ['event_id' => $event->id, 'tab' => 'general'])}}"
-                    class="{{($tab == 'general' || !$tab) ? 'active' : ''}}"><a href="#general" data-toggle="tab">@lang("basic.general")</a>
+                    class="{{($tab == 'general' || !$tab) ? 'active' : ''}}"><a href="#general"
+                                                                                data-toggle="tab">@lang("basic.general")</a>
                 </li>
                 <li data-route="{{route('showEventCustomizeTab', ['event_id' => $event->id, 'tab' => 'design'])}}"
-                    class="{{$tab == 'design' ? 'active' : ''}}"><a href="#design" data-toggle="tab">@lang("basic.event_page_design")</a></li>
+                    class="{{$tab == 'design' ? 'active' : ''}}"><a href="#design"
+                                                                    data-toggle="tab">@lang("basic.event_page_design")</a>
+                </li>
                 <li data-route="{{route('showEventCustomizeTab', ['event_id' => $event->id, 'tab' => 'order_page'])}}"
-                    class="{{$tab == 'order_page' ? 'active' : ''}}"><a href="#order_page" data-toggle="tab">@lang("basic.order_form")</a></li>
+                    class="{{$tab == 'order_page' ? 'active' : ''}}"><a href="#order_page"
+                                                                        data-toggle="tab">@lang("basic.order_form")</a>
+                </li>
 
                 <li data-route="{{route('showEventCustomizeTab', ['event_id' => $event->id, 'tab' => 'social'])}}"
-                    class="{{$tab == 'social' ? 'active' : ''}}"><a href="#social" data-toggle="tab">@lang("basic.social")</a></li>
+                    class="{{$tab == 'social' ? 'active' : ''}}"><a href="#social"
+                                                                    data-toggle="tab">@lang("basic.social")</a></li>
                 <li data-route="{{route('showEventCustomizeTab', ['event_id' => $event->id, 'tab' => 'affiliates'])}}"
                     class="{{$tab == 'affiliates' ? 'active' : ''}}"><a href="#affiliates"
-                                                                        data-toggle="tab">@lang("basic.affiliates")</a></li>
+                                                                        data-toggle="tab">@lang("basic.affiliates")</a>
+                </li>
                 <li data-route="{{route('showEventCustomizeTab', ['event_id' => $event->id, 'tab' => 'fees'])}}"
-                    class="{{$tab == 'fees' ? 'active' : ''}}"><a href="#fees" data-toggle="tab">@lang("basic.service_fees")</a></li>
+                    class="{{$tab == 'fees' ? 'active' : ''}}"><a href="#fees"
+                                                                  data-toggle="tab">@lang("basic.service_fees")</a></li>
                 <li data-route="{{route('showEventCustomizeTab', ['event_id' => $event->id, 'tab' => 'ticket_design'])}}"
-                    class="{{$tab == 'ticket_design' ? 'active' : ''}}"><a href="#ticket_design" data-toggle="tab">@lang("basic.ticket_design")</a></li>
+                    class="{{$tab == 'ticket_design' ? 'active' : ''}}"><a href="#ticket_design"
+                                                                           data-toggle="tab">@lang("basic.ticket_design")</a>
+                </li>
             </ul>
             <!--/ tab -->
             <!-- tab content -->
@@ -386,9 +395,10 @@
 
                                             {!! Form::hidden('bg_image_path_custom', ($event->bg_type == 'image') ? $event->bg_image_path : '') !!}
                                         </div>
-                                            <a class="btn btn-link" href="https://pixabay.com?ref=attendize" title="PixaBay Free Images">
-                                                @lang("Design.images_provided_by_pixabay")
-                                            </a>
+                                        <a class="btn btn-link" href="https://pixabay.com?ref=attendize"
+                                           title="PixaBay Free Images">
+                                            @lang("Design.images_provided_by_pixabay")
+                                        </a>
                                     </div>
                                 </div>
 
@@ -453,7 +463,8 @@
                     </div>
                     {!! Form::close() !!}
                 </div>
-                <div class="tab-pane" id="social"> <?php /* Seems like another unused section (duplicate id 'social') */ ?>
+                <div class="tab-pane"
+                     id="social"> <?php /* Seems like another unused section (duplicate id 'social') */ ?>
                     <h4>Social Settings</h4>
 
                     <div class="form-group">
@@ -499,19 +510,21 @@
                     </div>
 
 
-                        <h4>@lang("Order.offline_payment_settings")</h4>
-                        <div class="form-group">
-                            <div class="custom-checkbox">
-                                <input {{ $event->enable_offline_payments ? 'checked="checked"' : '' }} data-toggle="toggle" id="enable_offline_payments" name="enable_offline_payments" type="checkbox" value="1">
-                                <label for="enable_offline_payments">@lang("Order.enable_offline_payments")</label>
-                            </div>
+                    <h4>@lang("Order.offline_payment_settings")</h4>
+                    <div class="form-group">
+                        <div class="custom-checkbox">
+                            <input {{ $event->enable_offline_payments ? 'checked="checked"' : '' }} data-toggle="toggle"
+                                   id="enable_offline_payments" name="enable_offline_payments" type="checkbox"
+                                   value="1">
+                            <label for="enable_offline_payments">@lang("Order.enable_offline_payments")</label>
                         </div>
-                        <div class="offline_payment_details" style="display: none;">
-                            {!! Form::textarea('offline_payment_instructions', $event->offline_payment_instructions, ['class' => 'form-control editable']) !!}
-                            <div class="help-block">
-                                @lang("Order.offline_payment_instructions")
-                            </div>
+                    </div>
+                    <div class="offline_payment_details" style="display: none;">
+                        {!! Form::textarea('offline_payment_instructions', $event->offline_payment_instructions, ['class' => 'form-control editable']) !!}
+                        <div class="help-block">
+                            @lang("Order.offline_payment_instructions")
                         </div>
+                    </div>
 
 
                     <div class="panel-footer mt15 text-right">
@@ -524,7 +537,7 @@
 
 
                 <div class="tab-pane {{$tab == 'ticket_design' ? 'active' : ''}}" id="ticket_design">
-                    {!! Form::model($event, array('url' => route('postEditEventTicketDesign', ['event_id' => $event->id]), 'class' => 'ajax ')) !!}
+                    {!! Form::model($event, array('url' => route('postEditEventTicketDesign', ['event_id' => $event->id]), 'class' => 'ajax ', 'id' => 'ticket-customize-form')) !!}
                     <h4>@lang("Ticket.ticket_design")</h4>
                     <div class="row">
                         <div class="col-md-6">
@@ -578,15 +591,17 @@
 
                         <div class="col-md-12">
                             <h4>@lang("Ticket.ticket_preview")</h4>
-                            @include('ManageEvent.Partials.TicketDesignPreview')
+                            <div id="ticket-preview">
+                                Loading...
+                            </div>
                         </div>
                     </div>
                     <div class="panel-footer mt15 text-right">
                         {!! Form::submit(trans("basic.save_changes"), ['class'=>"btn btn-success"]) !!}
                     </div>
                     {!! Form::close() !!}
+                </div>
+                <!--/ tab content -->
             </div>
-            <!--/ tab content -->
         </div>
-    </div>
 @stop
