@@ -1,20 +1,18 @@
 <?php
 
 return array(
-    //============================== New strings to translate ==============================//
-    // Defined in file C:\\wamp\\www\\attendize\\resources\\views\\ManageEvent\\Tickets.blade.php
-    'on_sale'                    => 'On Sale',
-    //==================================== Translations ====================================//
+    'access_codes'               => 'アクセスコード',
     'attendee_ref'               => '出席者照合番号',
     'coupon_codes'               => 'クーポンコード',
     'create_ticket'              => 'チケットの作成',
     'demo_attendee_ref'          => '#YLY9U73-1',
     'demo_end_date_time'         => 'Mar 18th 5:08PM',
     'demo_event'                 => 'デモイベント',
-    'demo_name'                  => 'Bill Blogs',
+    'demo_first_name'            => 'Bill',
+    'demo_last_name'             => 'Blogs',
     'demo_order_ref'             => '#YLY9U73',
     'demo_organiser'             => 'デモ主催者',
-    'demo_price'                 => '¥XXX',
+    'demo_price'                 => '123.45',
     'demo_start_date_time'       => '3月18日4:08 PM',
     'demo_ticket_type'           => '一般入場',
     'demo_venue'                 => 'デモ会場',
@@ -27,6 +25,7 @@ return array(
     'name'                       => '名前',
     'no_tickets_yet'             => 'チケットはまだありません',
     'no_tickets_yet_text'        => '下のボタンをクリックして最初のチケットを作成してください。',
+    'on_sale'                    => 'On Sale',
     'order_ref'                  => '注文番号',
     'organiser'                  => '主催者',
     'pause'                      => '一時停止',
@@ -43,7 +42,6 @@ return array(
     'ticket_background_color'    => 'チケットの背景色',
     'ticket_border_color'        => 'チケットボーダーカラー',
     'ticket_design'              => 'チケットデザイン',
-    'access_codes'               => 'アクセスコード',
     'ticket_preview'             => 'チケットプレビュー',
     'ticket_sales_paused'        => '一時停止',
     'ticket_sub_text_color'      => 'チケットサブテキストの色',
