@@ -170,7 +170,7 @@ class TicketGenerator
         // Create QR container
         $qrcontainer = Image::canvas(280, 280, '#ffffff');
 
-        // Create the QR (Recommended Size 304x81)
+        // Create the QR (Recommended Size 240x240)
         $qrcode = Image::make(
             DNS2D::getBarcodePNG($attendee->private_reference_number, "QRCODE", 240, 240)
         )->resize(240, 240);
@@ -189,10 +189,10 @@ class TicketGenerator
      */
     private function create1DBarcode(Attendee $attendee)
     {
-        // Create the barcode container (Recommended Size 304x60)
+        // Create the barcode container (Recommended Size 304x80)
         $barcodeContainer = Image::canvas(304, 80, '#ffffff');
 
-        // Create the barcode (Recommended Size 304x60)
+        // Create the barcode (Recommended Size 280x60)
         $barcode = Image::make(
             DNS1D::getBarcodePNG($attendee->private_reference_number, "C39+", 100, 200)
         )->resize(280, 60);
