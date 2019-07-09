@@ -873,7 +873,6 @@ class EventAttendeesController extends MyBaseController
             'event'     => $attendee->event,
             'tickets'   => $attendee->ticket,
             'attendees' => [$attendee],
-            'css'       => file_get_contents(public_path('assets/stylesheet/ticket.css')),
             'image'     => base64_encode(file_get_contents(public_path($attendee->event->organiser->full_logo_path))),
 
         ];
