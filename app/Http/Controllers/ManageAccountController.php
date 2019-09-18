@@ -45,27 +45,27 @@ class ManageAccountController extends MyBaseController
     }
 
 
-    public function showStripeReturn()
+    public function showStripeReturn(Request $request)
     {
         $error_message = trans("Controllers.stripe_error");
 
-        if (Input::get('error') || !Input::get('code')) {
+        if ($request->input('error') || !$request->input('code')) {
             \Session::flash('message', $error_message);
 
             return redirect()->route('showEventsDashboard');
         }
 
-        $request = [
+        $request_data = [
             'url'    => 'https://connect.stripe.com/oauth/token',
             'params' => [
 
                 'client_secret' => STRIPE_SECRET_KEY,
-                'code'          => Input::get('code'),
+                'code'          => $request->input('code'),
                 'grant_type'    => 'authorization_code',
             ],
         ];
 
-        $response = HttpClient::post($request);
+        $response = HttpClient::post($request_data);
 
         $content = $response->json();
 
@@ -95,7 +95,7 @@ class ManageAccountController extends MyBaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postEditAccount()
+    public function postEditAccount(Request $request)
     {
         $account = Account::find(Auth::user()->account_id);
 
@@ -106,11 +106,11 @@ class ManageAccountController extends MyBaseController
             ]);
         }
 
-        $account->first_name = Input::get('first_name');
-        $account->last_name = Input::get('last_name');
-        $account->email = Input::get('email');
-        $account->timezone_id = Input::get('timezone_id');
-        $account->currency_id = Input::get('currency_id');
+        $account->first_name = $request->input('first_name');
+        $account->last_name = $request->input('last_name');
+        $account->email = $request->input('email');
+        $account->timezone_id = $request->input('timezone_id');
+        $account->currency_id = $request->input('currency_id');
         $account->save();
 
         return response()->json([
@@ -178,7 +178,7 @@ class ManageAccountController extends MyBaseController
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function postInviteUser()
+    public function postInviteUser(Request $request)
     {
         $rules = [
             'email' => ['required', 'email', 'unique:users,email,NULL,id,account_id,' . Auth::user()->account_id],
@@ -203,7 +203,7 @@ class ManageAccountController extends MyBaseController
 
         $user = new User();
 
-        $user->email = Input::get('email');
+        $user->email =   $request->input('email');
         $user->password = Hash::make($temp_password);
         $user->account_id = Auth::user()->account_id;
 
