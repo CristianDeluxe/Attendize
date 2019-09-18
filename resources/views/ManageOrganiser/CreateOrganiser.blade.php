@@ -76,21 +76,21 @@
                     <div id="tax_fields" class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                {!! Form::label('tax_id', trans("Organiser.organiser_tax_id"), array('class'=>'control-label required')) !!}
+                                {!! Form::label('tax_id', trans("Organiser.organiser_tax_id"), array('class'=>'control-label')) !!}
                                 {!! Form::text('tax_id', old('tax_id'), array('class'=>'form-control', 'placeholder'=>'Tax ID'))  !!}
                             </div>
                         </div>
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                {!! Form::label('tax_name', trans("Organiser.organiser_tax_name"), array('class'=>'control-label required')) !!}
+                                {!! Form::label('tax_name', trans("Organiser.organiser_tax_name"), array('class'=>'control-label')) !!}
                                 {!! Form::text('tax_name', old('tax_name'), array('class'=>'form-control', 'placeholder'=>'Tax name'))  !!}
                             </div>
                         </div>
 
                         <div class="col-md-3">
                             <div class="form-group">
-                                {!! Form::label('tax_value', trans("Organiser.organiser_tax_value"), array('class'=>'control-label required')) !!}
+                                {!! Form::label('tax_value', trans("Organiser.organiser_tax_value"), array('class'=>'control-label')) !!}
                                 {!! Form::text('tax_value', old('tax_value'), array('class'=>'form-control', 'placeholder'=>'Tax Value'))  !!}
                             </div>
                         </div>
