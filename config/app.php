@@ -175,6 +175,13 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+         * Attendize Service Providers
+         */
+        App\Providers\BladeServiceProvider::class,
+        App\Providers\HtmlMacroServiceProvider::class,
+        App\Providers\HelpersServiceProvider::class
+
     ],
 
     /*
