@@ -14,7 +14,7 @@
                 </div>
                 <h2>@lang("User.sign_up")</h2>
 
-                @if(Input::get('first_run'))
+                @if(Request::input('first_run'))
                     <div class="alert alert-info">
                         @lang("User.sign_up_first_run")
                     </div>
