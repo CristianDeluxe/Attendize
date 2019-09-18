@@ -2,12 +2,8 @@
 
 namespace App\Providers;
 
-use App\Models\Organiser;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use JavaScript;
 
 class BladeServiceProvider extends ServiceProvider
 {
@@ -31,26 +27,5 @@ class BladeServiceProvider extends ServiceProvider
         Blade::directive('money', function ($expression) {
             return "<?php echo number_format($expression, 2); ?>";
         });
-
-        if (Auth::check()) {
-            /*
-             * Share the organizers across all views
-             */
-            View::share('organisers', Organiser::scope()->get());
-
-            /*
-             * Set up JS across all views
-             */
-            JavaScript::put([
-                'User'                => [
-                    'full_name'    => Auth::user()->full_name,
-                    'email'        => Auth::user()->email,
-                    'is_confirmed' => Auth::user()->is_confirmed,
-                ],
-                'DateTimeFormat'      => config('attendize.default_date_picker_format'),
-                'DateSeparator'       => config('attendize.default_date_picker_seperator'),
-                'GenericErrorMessage' => trans("Controllers.whoops"),
-            ]);
-        }
     }
 }
