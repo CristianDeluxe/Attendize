@@ -180,7 +180,7 @@
                             {!! Form::label('current_logo', trans("Organiser.current_logo"), array('class'=>'control-label ')) !!}
 
                             <div class="thumbnail">
-                                {!!HTML::image($organiser->logo_path)!!}
+                                {!!Html::image($organiser->logo_path)!!}
                                 {!! Form::label('remove_current_image', trans("Organiser.delete_logo?"), array('class'=>'control-label ')) !!}
                                 {!! Form::checkbox('remove_current_image') !!}
                             </div>

@@ -25,7 +25,7 @@
             <div class="panel">
                 <div class="panel-body">
                     <div class="logo">
-                        {!!HTML::image('assets/images/logo-dark.png')!!}
+                        {!!Html::image('assets/images/logo-dark.png')!!}
                     </div>
 
                     <h1>@lang("Installer.setup")</h1>

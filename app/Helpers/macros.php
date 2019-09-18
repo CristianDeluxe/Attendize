@@ -57,7 +57,7 @@ Form::macro('styledFile', function ($name, $multiple = false) {
     return $out;
 });
 
-HTML::macro('sortable_link',
+Html::macro('sortable_link',
     function ($title, $active_sort, $sort_by, $sort_order, $url_params = [], $class = '', $extra = '') {
 
         $sort_order = $sort_order == 'asc' ? 'desc' : 'asc';
