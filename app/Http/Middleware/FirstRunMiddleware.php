@@ -10,8 +10,8 @@ class FirstRunMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \Closure $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Closure  $next
      *
      * @return mixed
      */
@@ -31,8 +31,6 @@ class FirstRunMiddleware
             ]));
         }
 
-        $response = $next($request);
-
-        return $response;
+        return $next($request);
     }
 }
