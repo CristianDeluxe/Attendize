@@ -12,6 +12,7 @@ use Auth;
 use Hash;
 use HttpClient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Input;
 use Mail;
 use Services\PaymentGateway\Dummy;
@@ -198,7 +199,7 @@ class ManageAccountController extends MyBaseController
             ]);
         }
 
-        $temp_password = str_random(8);
+        $temp_password = Str::random(8);
 
         $user = new User();
 
