@@ -184,7 +184,7 @@
                 <div class="float-l">
                     @if($event->images->count())
                     <div class="thumbnail">
-                       {!!HTML::image('/'.$event->images->first()['image_path'])!!}
+                       {!!Html::image('/'.$event->images->first()['image_path'])!!}
                     </div>
                     @endif
                 </div>
