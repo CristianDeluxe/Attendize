@@ -12,6 +12,7 @@
     "homepage": "https://www.attendize.com",
     "require": {
         "php": "^7.2",
+        "doctrine/dbal": "^2.9",
         "dompdf/dompdf": "^0.8.3",
         "fideloper/proxy": "^4.0",
         "guzzlehttp/guzzle": "^6.3",
