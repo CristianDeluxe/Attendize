@@ -60,7 +60,7 @@ class MyBaseModel extends \Illuminate\Database\Eloquent\Model
 
         if (Auth::check()) {
             if (!$ignore_user_id) {
-                $entity->user_id = Auth::user()->id;
+                $entity->user_id = Auth::id();
             }
 
             $entity->account_id = Auth::user()->account_id;
