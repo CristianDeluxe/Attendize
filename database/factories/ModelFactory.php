@@ -98,10 +98,10 @@ $factory->define(App\Models\Account::class, function (Faker\Generator $faker) {
         'is_active'              => false,
         'is_banned'              => false,
         'is_beta'                => false,
-        'stripe_access_token'    => str_random(10),
-        'stripe_refresh_token'   => str_random(10),
-        'stripe_secret_key'      => str_random(10),
-        'stripe_publishable_key' => str_random(10),
+        'stripe_access_token'    => Str::random(10),
+        'stripe_refresh_token'   => Str::random(10),
+        'stripe_secret_key'      => Str::random(10),
+        'stripe_publishable_key' => Str::random(10),
 
     ];
 });
@@ -133,7 +133,7 @@ $factory->define(App\Models\Organiser::class, function (Faker\Generator $faker) 
         'twitter'                   => 'https://twitter.com/organizer-profile',
         'logo_path'                 => 'path/to/logo',
         'is_email_confirmed'        => 0,
-        'confirmation_key'          => str_random(15),
+        'confirmation_key'          => Str::random(15),
         'show_twitter_widget'       => $faker->boolean,
         'show_facebook_widget'      => $faker->boolean,
         'page_header_bg_color'      => $faker->hexcolor,
