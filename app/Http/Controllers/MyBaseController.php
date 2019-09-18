@@ -13,28 +13,10 @@ class MyBaseController extends Controller
 {
     public function __construct()
     {
-
-        if (empty(Auth::user())) {
+        // Check if user is logged in
+        if (!Auth::check()) {
             return redirect()->to('/login');
         }
-
-        /*
-         * Set up JS across all views
-         */
-        JavaScript::put([
-            'User'                => [
-                'full_name'    => Auth::user()->full_name,
-                'email'        => Auth::user()->email,
-                'is_confirmed' => Auth::user()->is_confirmed,
-            ],
-            'DateTimeFormat'      => config('attendize.default_date_picker_format'),
-            'DateSeparator'       => config('attendize.default_date_picker_seperator'),
-            'GenericErrorMessage' => trans("Controllers.whoops"),
-        ]);
-        /*
-         * Share the organizers across all views
-         */
-        View::share('organisers', Organiser::scope()->get());
     }
 
     /**
@@ -43,7 +25,7 @@ class MyBaseController extends Controller
      * @param int $event_id
      * @param array $additional_data
      *
-     * @return arrau
+     * @return array
      */
     public function getEventViewData($event_id, $additional_data = [])
     {
@@ -68,7 +50,7 @@ class MyBaseController extends Controller
      */
     protected function setupLayout()
     {
-        if (!is_null($this->layout)) {
+        if ($this->layout !== null) {
             $this->layout = View::make($this->layout);
         }
     }
