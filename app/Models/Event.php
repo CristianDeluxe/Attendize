@@ -184,7 +184,7 @@ class Event extends MyBaseModel
      */
     public function getEmbedUrlAttribute()
     {
-        return str_replace(['http:', 'https:'], '', route('showEmbeddedEventPage', ['event' => $this->id]));
+        return str_replace(['http:', 'https:'], '', route('showEmbeddedEventPage', ['event_id' => $this->id]));
     }
 
     /**
