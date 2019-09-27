@@ -5,7 +5,6 @@ namespace App\Jobs;
 use App\Generators\TicketGenerator;
 use App\Models\Order;
 use Barryvdh\DomPDF\Facade as PDF;
-use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -39,6 +38,7 @@ class GenerateTicket extends Job implements ShouldQueue
      * Create a new job instance.
      *
      * @param string $reference
+     * @return void
      */
     public function __construct($reference)
     {
@@ -77,13 +77,11 @@ class GenerateTicket extends Job implements ShouldQueue
 
         Log::info($order);
 
-        $query = $order->attendees();
-
         // If only need a single attendee find it
+        $query = $order->attendees();
         if ($this->isAttendeeTicket()) {
             $query = $query->where('reference_index', '=', $this->attendee_reference_index);
         }
-
         $order->attendees = $query->get();
 
         // Generate the tickets
@@ -95,11 +93,10 @@ class GenerateTicket extends Job implements ShouldQueue
             'tickets' => $tickets,
             'event'   => $order->event,
         ];
-
         try {
             PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->save($pdf_file['fullpath']);
             Log::info("Ticket generated!");
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Log::error("Error generating ticket.");
             Log::error("Error message. " . $e->getMessage());
             Log::error("Error stack trace" . $e->getTraceAsString());
@@ -108,13 +105,8 @@ class GenerateTicket extends Job implements ShouldQueue
 
     }
 
-    /**
-     * Check if ticket is assigned to an attendee
-     *
-     * @return bool
-     */
     private function isAttendeeTicket()
     {
-        return ($this->attendee_reference_index !== null);
+        return ($this->attendee_reference_index != null);
     }
 }

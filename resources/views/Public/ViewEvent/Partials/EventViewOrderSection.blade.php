@@ -187,11 +187,11 @@
                                     </td>
                                     <td>
                                         @if ((int)ceil($order_item->unit_booking_fee) > 0)
-                                        @if((int)ceil($order_item->unit_price) == 0)
-                                        -
-                                        @else
-                                        {{money($order_item->unit_booking_fee, $order->event->currency)}}
-                                        @endif
+                                            @if((int)ceil($order_item->unit_price) == 0)
+                                            -
+                                            @else
+                                            {{money($order_item->unit_booking_fee, $order->event->currency)}}
+                                            @endif
                                         @else
                                             -
                                         @endif

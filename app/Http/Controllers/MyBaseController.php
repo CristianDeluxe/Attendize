@@ -50,8 +50,8 @@ class MyBaseController extends Controller
         $event = Event::scope()->findOrFail($event_id);
 
         return array_merge([
-            'event'     => $event,
-            'questions' => $event->questions()->get(),
+            'event'      => $event,
+            'questions'  => $event->questions()->get()
         ], $additional_data);
     }
 

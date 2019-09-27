@@ -10,12 +10,13 @@ use App\Models\EventStats;
 use App\Models\Order;
 use App\Models\PaymentGateway;
 use App\Services\Order as OrderService;
-use Services\PaymentGateway\Factory as PaymentGatewayFactory;
+use App\Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use DB;
 use Excel;
 use Illuminate\Http\Request;
 use Log;
 use Mail;
+use Omnipay;
 use Validator;
 
 class EventOrdersController extends MyBaseController
@@ -86,7 +87,7 @@ class EventOrdersController extends MyBaseController
         $orderService->calculateFinalCosts();
 
         $data = [
-            'order'        => $order,
+            'order' => $order,
             'orderService' => $orderService
         ];
 
@@ -165,8 +166,8 @@ class EventOrdersController extends MyBaseController
     {
         $rules = [
             'first_name' => ['required'],
-            'last_name'  => ['required'],
-            'email'      => ['required', 'email'],
+            'last_name' => ['required'],
+            'email' => ['required', 'email'],
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -240,10 +241,8 @@ class EventOrdersController extends MyBaseController
             } elseif ($refund_type !== 'full' && $refund_amount > round(($order->organiser_amount - $order->amount_refunded),
                     2)
             ) {
-                $error_message = trans("Controllers.maximum_refund_amount", [
-                    "money" => (money($order->organiser_amount - $order->amount_refunded,
-                        $order->event->currency))
-                ]);
+                $error_message = trans("Controllers.maximum_refund_amount", ["money"=>(money($order->organiser_amount - $order->amount_refunded,
+                        $order->event->currency))]);
             }
             if (!$error_message) {
 
@@ -307,28 +306,22 @@ class EventOrdersController extends MyBaseController
                 $attendee->is_cancelled = 1;
                 $attendee->save();
 
-                $eventStats = EventStats::where('event_id', $attendee->event_id)->where('date',
-                    $attendee->created_at->format('Y-m-d'))->first();
-                if ($eventStats) {
-                    $eventStats->decrement('tickets_sold', 1);
-                    $eventStats->decrement('sales_volume', $attendee->ticket->price);
+                $eventStats = EventStats::where('event_id', $attendee->event_id)->where('date', $attendee->created_at->format('Y-m-d'))->first();
+                if($eventStats){
+                    $eventStats->decrement('tickets_sold',  1);
+                    $eventStats->decrement('sales_volume',  $attendee->ticket->price);
                 }
             }
         }
-        if (!$refund_amount && !$attendees) {
+        if(!$refund_amount && !$attendees)
             $msg = trans("Controllers.nothing_to_do");
-        } else {
-            if ($attendees && $refund_order) {
+        else {
+            if($attendees && $refund_order)
                 $msg = trans("Controllers.successfully_refunded_and_cancelled");
-            } else {
-                if ($refund_order) {
-                    $msg = trans("Controllers.successfully_refunded_order");
-                } else {
-                    if ($attendees) {
-                        $msg = trans("Controllers.successfully_cancelled_attendees");
-                    }
-                }
-            }
+            else if($refund_order)
+                $msg = trans("Controllers.successfully_refunded_order");
+            else if($attendees)
+                $msg = trans("Controllers.successfully_cancelled_attendees");
         }
         \Session::flash('message', $msg);
 
@@ -377,7 +370,7 @@ class EventOrdersController extends MyBaseController
 
                 $exportedOrders = $orderRows->toArray();
 
-                array_walk($exportedOrders, function (&$value) {
+                array_walk($exportedOrders, function(&$value) {
                     $value = (array)$value;
                 });
 

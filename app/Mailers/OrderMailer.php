@@ -16,14 +16,13 @@ class OrderMailer
         $orderService->calculateFinalCosts();
 
         $data = [
-            'order'        => $order,
+            'order' => $order,
             'orderService' => $orderService
         ];
 
         Mail::send('Emails.OrderNotification', $data, function ($message) use ($order) {
             $message->to($order->account->email);
-            $message->subject(trans("Controllers.new_order_received",
-                ["event" => $order->event->title, "order" => $order->order_reference]));
+            $message->subject(trans("Controllers.new_order_received", ["event"=> $order->event->title, "order" => $order->order_reference]));
         });
 
     }
@@ -35,7 +34,7 @@ class OrderMailer
 
         Log::info("Sending ticket to: " . $order->email);
         $data = [
-            'order'        => $order,
+            'order' => $order,
             'orderService' => $orderService
         ];
 

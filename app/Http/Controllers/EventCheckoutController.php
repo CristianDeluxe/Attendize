@@ -17,14 +17,14 @@ use App\Models\QuestionAnswer;
 use App\Models\ReservedTickets;
 use App\Models\Ticket;
 use App\Services\Order as OrderService;
-use Services\PaymentGateway\Factory as PaymentGatewayFactory;
+use App\Services\PaymentGateway\Factory as PaymentGatewayFactory;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Cookie;
 use DB;
 use Illuminate\Http\Request;
 use Log;
 use Omnipay;
-use Barryvdh\DomPDF\Facade as PDF;
 use PhpSpec\Exception\Exception;
 use Validator;
 
@@ -432,7 +432,7 @@ class EventCheckoutController extends Controller
                 $additionalData = ($gateway->storeAdditionalData()) ? $gateway->getAdditionalData($response) : array();
 
                 session()->push('ticket_order_' . $event_id . '.transaction_data',
-                                $gateway->getTransactionData() + $additionalData);
+                    $gateway->getTransactionData() + $additionalData);
 
                 $gateway->completeTransaction($additionalData);
 
@@ -444,6 +444,7 @@ class EventCheckoutController extends Controller
 
                 session()->push('ticket_order_' . $event_id . '.transaction_data',
                                 $gateway->getTransactionData() + $additionalData);
+
 
                 Log::info("Redirect url: " . $response->getRedirectUrl());
 
@@ -789,7 +790,7 @@ class EventCheckoutController extends Controller
             $order = TicketGenerator::demoData($request->get('event'));
         } else {
             // It's a real ticket, try to find the order in database
-        $order = Order::where('order_reference', '=', $order_reference)->first();
+            $order = Order::where('order_reference', '=', $order_reference)->first();
         }
 
         // If no order, exit
@@ -803,18 +804,18 @@ class EventCheckoutController extends Controller
 
         // Data for view
         $data = [
-            'tickets' => $tickets,
-            'event'     => $order->event,
+            'tickets'   => $tickets,
+            'event'     => $order->event
         ];
 
         // Generate file name
         $pdf_file = TicketGenerator::generateFileName($order->order_reference);
 
-        if ($request->get('download') == '1') {
+        if ($request->get('download') == '1') { // Force download PDF
             return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->download($pdf_file['base_name']);
-        } elseif ($request->get('view') == '1') {
+        } elseif ($request->get('view') == '1') { // View PDF inline
             return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->stream($pdf_file['base_name']);
-        } elseif ($order_reference === 'example') {
+        } elseif ($order_reference === 'example') { // Show example ticket
             return view('Public.ViewEvent.Partials.ExampleTicket', $data);
         }
         return view('Public.ViewEvent.Partials.PDFTicket', $data);

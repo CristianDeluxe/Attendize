@@ -1,7 +1,10 @@
 <?php
 
 return array(
-    'access_codes'               => 'アクセスコード',
+    //============================== New strings to translate ==============================//
+    // Defined in file C:\\wamp\\www\\attendize\\resources\\views\\ManageEvent\\Tickets.blade.php
+    'on_sale'                    => 'On Sale',
+    //==================================== Translations ====================================//
     'attendee_ref'               => '出席者照合番号',
     'coupon_codes'               => 'クーポンコード',
     'create_ticket'              => 'チケットの作成',
@@ -25,7 +28,6 @@ return array(
     'name'                       => '名前',
     'no_tickets_yet'             => 'チケットはまだありません',
     'no_tickets_yet_text'        => '下のボタンをクリックして最初のチケットを作成してください。',
-    'on_sale'                    => 'On Sale',
     'order_ref'                  => '注文番号',
     'organiser'                  => '主催者',
     'pause'                      => '一時停止',
@@ -42,6 +44,7 @@ return array(
     'ticket_background_color'    => 'チケットの背景色',
     'ticket_border_color'        => 'チケットボーダーカラー',
     'ticket_design'              => 'チケットデザイン',
+    'access_codes'               => 'アクセスコード',
     'ticket_preview'             => 'チケットプレビュー',
     'ticket_sales_paused'        => '一時停止',
     'ticket_sub_text_color'      => 'チケットサブテキストの色',

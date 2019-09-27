@@ -11,7 +11,7 @@
     "type": "project",
     "homepage": "https://www.attendize.com",
     "require": {
-        "barryvdh/laravel-dompdf": "^0.8.3",
+        "barryvdh/laravel-dompdf": "^0.8.5",
         "barryvdh/laravel-ide-helper": "~2.4",
         "doctrine/dbal": "~2.8",
         "dompdf/dompdf": "~0.8",
@@ -46,8 +46,7 @@
         "phpspec/phpspec": "5.0.*",
         "fzaninotto/faker": "1.8.*",
         "symfony/dom-crawler": "~3.0",
-        "symfony/css-selector": "~3.0",
-        "barryvdh/laravel-debugbar": "^3.2"
+        "symfony/css-selector": "~3.0"
     },
     "autoload": {
         "classmap": [
