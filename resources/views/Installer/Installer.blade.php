@@ -257,8 +257,6 @@
                                     ))  !!}
                     </div>
                     {!! csrf_field() !!}
-                    @include("Installer.Partials.Footer")
-
                     {!! Form::submit(trans("Installer.install"), ['class'=>" btn-block btn btn-success"]) !!}
                     {!! Form::close() !!}
 
