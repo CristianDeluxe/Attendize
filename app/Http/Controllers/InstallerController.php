@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Timezone;
-use Dotenv\Dotenv;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
