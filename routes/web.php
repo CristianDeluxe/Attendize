@@ -39,10 +39,6 @@ use App\Http\Controllers\UserLoginController;
 use App\Http\Controllers\UserLogoutController;
 use App\Http\Controllers\UserSignupController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::group(
     [
         'prefix'     => LaravelLocalization::setLocale(),
