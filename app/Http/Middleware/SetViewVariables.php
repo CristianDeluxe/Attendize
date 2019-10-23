@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Attendize\Utils;
 use App\Models\Organiser;
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -19,24 +20,26 @@ class SetViewVariables
      */
     public function handle($request, Closure $next)
     {
-        /*
-         * Share the organizers across all views
-         */
-        View::share('organisers', Organiser::scope()->get());
+        if (Utils::installed()) {
+            /*
+             * Share the organizers across all views
+             */
+            View::share('organisers', Organiser::scope()->get());
 
-        /*
-         * Set up JS across all views
-         */
-        JavaScript::put([
-            'User'                => [
-                'full_name'    => Auth::user()->full_name,
-                'email'        => Auth::user()->email,
-                'is_confirmed' => Auth::user()->is_confirmed,
-            ],
-            'DateTimeFormat'      => config('attendize.default_date_picker_format'),
-            'DateSeparator'       => config('attendize.default_date_picker_seperator'),
-            'GenericErrorMessage' => trans('Controllers.whoops'),
-        ]);
+            /*
+             * Set up JS across all views
+             */
+            JavaScript::put([
+                'User'                => [
+                    'full_name'    => Auth::check() ? Auth::user()->full_name : '',
+                    'email'        => Auth::check() ? Auth::user()->email : '',
+                    'is_confirmed' => Auth::check() ? Auth::user()->is_confirmed : false,
+                ],
+                'DateTimeFormat'      => config('attendize.default_date_picker_format'),
+                'DateSeparator'       => config('attendize.default_date_picker_seperator'),
+                'GenericErrorMessage' => trans('Controllers.whoops'),
+            ]);
+        }
 
         return $next($request);
     }
