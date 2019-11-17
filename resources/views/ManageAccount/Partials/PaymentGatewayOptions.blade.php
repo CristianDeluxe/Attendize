@@ -18,7 +18,7 @@
     {!! Form::label('payment_gateway_id', trans("ManageAccount.default_payment_gateway"), array('class'=>'control-label
     ')) !!}<br/>
 
-    @foreach ($payment_gateways as $id => $payment_gateway)
+    @foreach (collect($payment_gateways)->sortBy('provider_name') as $id => $payment_gateway)
     {!! Form::radio('payment_gateway', $payment_gateway['id'], $payment_gateway['default'],
     array('id'=>'payment_gateway_' . $payment_gateway['id'])) !!}
     {!! Form::label($payment_gateway['provider_name'],$payment_gateway['provider_name'] , array('class'=>'control-label
