@@ -141,19 +141,20 @@ class Account extends MyBaseModel
     /**
      * Get a config value for a gateway
      *
-     * @param $gateway_id
-     * @param $key
+     * @param int $gateway_id
+     * @param string $key
+     * @param  mixed  $default
      * @return mixed
      */
-    public function getGatewayConfigVal($gateway_id, $key)
+    public function getGatewayConfigVal($gateway_id, $key, $default = false)
     {
         $gateway = $this->getGateway($gateway_id);
 
         if($gateway && is_array($gateway->config)) {
-            return isset($gateway->config[$key]) ? $gateway->config[$key] : false;
+            return isset($gateway->config[$key]) ? $gateway->config[$key] : $default;
         }
 
-        return false;
+        return $default;
     }
 
 

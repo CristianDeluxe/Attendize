@@ -19,7 +19,7 @@ class StripeSCA
         $this->options = [];
     }
 
-    private function createTransactionData($order_total, $order_email, $event)
+    private function createTransactionData($order_total, $order_email, $event, $ticket_order = null)
     {
 
         $returnUrl = route('showEventCheckoutPaymentReturn', [
@@ -40,9 +40,9 @@ class StripeSCA
         return $this->transaction_data;
     }
 
-    public function startTransaction($order_total, $order_email, $event)
+    public function startTransaction($order_total, $order_email, $event, $ticket_order = null)
     {
-        $this->createTransactionData($order_total, $order_email, $event);
+        $this->createTransactionData($order_total, $order_email, $event, $ticket_order);
         $response = $this->gateway->authorize($this->transaction_data)->send();
 
         return $response;

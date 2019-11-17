@@ -19,7 +19,7 @@ class Stripe
         $this->options = [];
     }
 
-    private function createTransactionData($order_total, $order_email, $event)
+    private function createTransactionData($order_total, $order_email, $event, $ticket_order = null)
     {
         $this->transaction_data = [
             'amount' => $order_total,
@@ -32,10 +32,10 @@ class Stripe
         return $this->transaction_data;
     }
 
-    public function startTransaction($order_total, $order_email, $event)
+    public function startTransaction($order_total, $order_email, $event, $ticket_order = null)
     {
 
-        $this->createTransactionData($order_total, $order_email, $event);
+        $this->createTransactionData($order_total, $order_email, $event, $ticket_order);
         $transaction = $this->gateway->purchase($this->transaction_data);
         $response = $transaction->send();
 
