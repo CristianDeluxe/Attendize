@@ -2,7 +2,7 @@
       method="post" id="redsys-payment-form">
     @csrf
 
-    <div class="form-row">
+    <div class="form-row" style="padding-bottom: 10px">
         {{ trans('PaymentGateway_Redsys.credit_card') }}
     </div>
 

@@ -16,7 +16,7 @@ class AddRedsysGateway extends Migration
                 'provider_name'           => 'Redsys',
                 'provider_url'            => 'http://www.redsys.es/',
                 'is_on_site'              => 0,
-                'can_refund'              => 1,
+                'can_refund'              => 0,
                 'name'                    => 'Redsys',
                 'default'                 => 0,
                 'admin_blade_template'    => 'ManageAccount.Partials.Redsys',

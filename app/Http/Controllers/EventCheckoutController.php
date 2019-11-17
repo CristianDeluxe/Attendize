@@ -428,7 +428,7 @@ class EventCheckoutController extends Controller
                 session()->push('ticket_order_' . $event_id . '.transaction_id',
                     $response->getTransactionReference());
 
-                $additionalData = ($gateway->storeAdditionalData()) ? $gateway->getAdditionalData($response) : array();
+                $additionalData = ($gateway->storeAdditionalData()) ? $gateway->getAdditionalData($response) : [];
 
                 session()->push('ticket_order_' . $event_id . '.transaction_data',
                                 $gateway->getTransactionData() + $additionalData);
@@ -441,12 +441,12 @@ class EventCheckoutController extends Controller
 
             if ($response->isRedirect()) {
 
-                $additionalData = ($gateway->storeAdditionalData()) ? $gateway->getAdditionalData($response) : array();
+                $additionalData = ($gateway->storeAdditionalData()) ? $gateway->getAdditionalData($response) : [];
 
                 session()->push('ticket_order_' . $event_id . '.transaction_data',
                                 $gateway->getTransactionData() + $additionalData);
 
-                Log::info('Redirect url: '. $response->getRedirectUrl());
+                Log::info('Payment: Redirect to url: '. $response->getRedirectUrl());
 
                 $return = [
                     'status'       => 'success',
@@ -488,6 +488,8 @@ class EventCheckoutController extends Controller
      */
     public function showEventCheckoutPaymentReturn(Request $request, $event_id)
     {
+        Log::info('Payment Completed for event: ' . $event_id);
+
         $ticket_order = session()->get('ticket_order_' . $event_id);
 
         /** @var $gateway Dummy|Redsys|Stripe|StripeSCA */
@@ -499,11 +501,15 @@ class EventCheckoutController extends Controller
         $response = $gateway->completeTransaction($ticket_order['transaction_data'][0]);
 
         if ($response->isSuccessful()) {
+            Log::error('Payment received: event: ' . $event_id . ' transaction id: ' .
+                $response->getTransactionReference() .' message: '. $response->getMessage());
+
             session()->push('ticket_order_' . $event_id . '.transaction_id', $response->getTransactionReference());
             return $this->completeOrder($event_id, false);
         }
 
         session()->flash('message', $response->getMessage());
+        Log::error('Payment failed: '. $response->getMessage());
         return response()->redirectToRoute('showEventPayment', [
             'event_id'          => $event_id,
             'is_payment_failed' => 1,
@@ -514,8 +520,9 @@ class EventCheckoutController extends Controller
      * Complete an order
      *
      * @param $event_id
-     * @param bool|true $return_json
+     * @param  bool|true  $return_json
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
     public function completeOrder($event_id, $return_json = true)
     {

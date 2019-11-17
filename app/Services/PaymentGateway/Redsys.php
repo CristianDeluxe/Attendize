@@ -2,6 +2,9 @@
 
 namespace Services\PaymentGateway;
 
+use Illuminate\Http\Request;
+use Omnipay\Sermepa\Gateway;
+
 class Redsys
 {
 
@@ -9,6 +12,9 @@ class Redsys
 
     private $transaction_data;
 
+    /**
+     * @var Gateway $gateway
+     */
     private $gateway;
 
     private $extra_params = ['paymentMethod', 'payment_intent'];
@@ -46,8 +52,7 @@ class Redsys
             'productDescription' => 'ASD',
             'merchantURL'        => $this->url(
                 route('showEventCheckoutPaymentReturn', [
-                    'event_id'                => $event->id,
-                    'is_payment_notification' => 1
+                    'event_id' => $event->id
                 ])
             ),
             'cancelUrl'          => $this->url(
@@ -108,20 +113,9 @@ class Redsys
         }
     }
 
-    public function completeTransaction($transactionId = '')
+    public function completeTransaction($data)
     {
-
-        $intentData = [
-            'paymentIntentReference' => $this->options['payment_intent'],
-        ];
-
-        $paymentIntent = $this->gateway->fetchPaymentIntent($intentData);
-        $response = $paymentIntent->send();
-        if ($response->requiresConfirmation()) {
-            $response = $this->gateway->confirm($intentData)->send();
-        }
-
-        return $response;
+        return $this->gateway->completePurchase();
     }
 
     public function getAdditionalData($response)
@@ -136,24 +130,6 @@ class Redsys
 
     public function refundTransaction($order, $refund_amount, $refund_application_fee)
     {
-
-        $request = $this->gateway->cancel([
-            'transactionReference'   => $order->transaction_id,
-            'amount'                 => $refund_amount,
-            'refundApplicationFee'   => $refund_application_fee,
-            'paymentIntentReference' => $order->payment_intent
-        ]);
-
-        $response = $request->send();
-
-        if ($response->isCancelled()) {
-            $refundResponse['successful'] = true;
-        } else {
-            $refundResponse['successful'] = false;
-            $refundResponse['error_message'] = $response->getMessage();
-        }
-
-        return $refundResponse;
     }
 
 }
