@@ -2,6 +2,8 @@
 
 return [
     'buy_item'         => 'Compra de Entradas',
+    'complete_payment' => 'Pagar ahora',
+    'credit_card'      => 'Pago con tarjeta de crédito o débito',
     'https'            => 'Usar HTTPs',
     'merchant_code'    => 'Número de comercio (FUC)',
     'merchant_key'     => 'Clave secreta de encriptación (SHA-256)',
