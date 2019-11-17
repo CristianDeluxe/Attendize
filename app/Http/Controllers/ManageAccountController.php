@@ -147,7 +147,6 @@ class ManageAccountController extends MyBaseController
                 break;
             case Dummy::GATEWAY_NAME :
                 break;
-
         }
 
         $payment_gateway->asDefault();

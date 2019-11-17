@@ -62,7 +62,7 @@ class Redsys
                 ])
             ),
             'returnUrl'          => $this->url(
-                route('showEventCheckoutPaymentReturn', [
+                route('showEventPayment', [
                     'event_id'              => $event->id,
                     'is_payment_successful' => 1
                 ])

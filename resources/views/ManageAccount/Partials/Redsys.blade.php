@@ -22,11 +22,11 @@
         <div class="col-md-6">
             <div class="form-group">
                 {!! Form::label('redsys[test]', trans('PaymentGateway_Redsys.test'), array('class'=>'control-label ')) !!}
-                {!! Form::checkbox('redsys[test]', $account->getGatewayConfigVal($payment_gateway['id'], 'test', null),[ 'class'=>'form-control'])  !!}
+                {!! Form::checkbox('redsys[test]', null, $account->getGatewayConfigVal($payment_gateway['id'], 'test'),[ 'class'=>'form-control'])  !!}
             </div>
             <div class="form-group">
                 {!! Form::label('redsys[https]', trans('PaymentGateway_Redsys.https'), array('class'=>'control-label ')) !!}
-                {!! Form::checkbox('redsys[https]', $account->getGatewayConfigVal($payment_gateway['id'], 'test', null),[ 'class'=>'form-control'])  !!}
+                {!! Form::checkbox('redsys[https]', null, $account->getGatewayConfigVal($payment_gateway['id'], 'https'),[ 'class'=>'form-control'])  !!}
             </div>
         </div>
         <div class="col-md-6">
