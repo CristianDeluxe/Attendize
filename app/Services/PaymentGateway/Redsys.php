@@ -90,7 +90,7 @@ class Redsys
      */
     protected function url($url)
     {
-        isset($this->options['https']) ?: str_replace('https://', 'http://', $url);
+        !isset($this->options['https']) ?: str_replace('https://', 'http://', $url);
         return $url;
     }
 

@@ -2,6 +2,8 @@
 
 return [
     'buy_item'         => 'Ticket Purchase',
+    'complete_payment' => 'Pay now',
+    'credit_card'      => 'Payment by credit or debit card',
     'https'            => 'Use HTTPs',
     'merchant_code'    => 'Merchant Number (FUC)',
     'merchant_key'     => 'Secret encryption key (SHA-256)',
