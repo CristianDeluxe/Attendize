@@ -115,7 +115,7 @@ class Redsys
 
     public function completeTransaction($data)
     {
-        return $this->gateway->completePurchase($data);
+        return $this->gateway->completePurchase($data)->send();
     }
 
     public function getAdditionalData($response)
