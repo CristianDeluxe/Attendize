@@ -4,6 +4,7 @@ namespace App\Models;
 
 /**
  * Class PaymentGateway
+ * @property boolean default
  * @package App\Models
  */
 class PaymentGateway extends MyBaseModel
@@ -42,5 +43,18 @@ class PaymentGateway extends MyBaseModel
         }
 
         return $payment_gateway['id'];
+    }
+
+    /**
+     * Set current payment gateway as default
+     */
+    public function asDefault()
+    {
+        // Marks all other gateways as not default
+        self::query()->update(['default' => 0]);
+
+        // Set this as default
+        $this->default = 1;
+        $this->save();
     }
 }

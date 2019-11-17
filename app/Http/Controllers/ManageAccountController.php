@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Input;
 use Mail;
 use Services\PaymentGateway\Dummy;
+use Services\PaymentGateway\Redsys;
 use Services\PaymentGateway\Stripe;
 use Services\PaymentGateway\StripeSCA;
 use Validator;
@@ -141,15 +142,15 @@ class ManageAccountController extends MyBaseController
             case StripeSCA::GATEWAY_NAME :
                 $config = $request->get('stripe_sca');
                 break;
+            case Redsys::GATEWAY_NAME :
+                $config = $request->get('redsys');
+                break;
             case Dummy::GATEWAY_NAME :
                 break;
 
         }
 
-        PaymentGateway::query()->update(['default' => 0]);
-
-        $payment_gateway->default = 1;
-        $payment_gateway->save();
+        $payment_gateway->asDefault();
 
         $account_payment_gateway = AccountPaymentGateway::firstOrNew(
             [

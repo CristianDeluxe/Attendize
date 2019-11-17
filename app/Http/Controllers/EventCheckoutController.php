@@ -3,28 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderCompletedEvent;
-use App\Models\Account;
-use App\Models\AccountPaymentGateway;
 use App\Models\Affiliate;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\PaymentGateway;
 use App\Models\QuestionAnswer;
 use App\Models\ReservedTickets;
 use App\Models\Ticket;
 use App\Services\Order as OrderService;
-use Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use Carbon\Carbon;
 use Cookie;
 use DB;
 use Illuminate\Http\Request;
 use Log;
-use Omnipay;
 use PDF;
 use PhpSpec\Exception\Exception;
+use Services\PaymentGateway\Dummy;
+use Services\PaymentGateway\Factory as PaymentGatewayFactory;
+use Services\PaymentGateway\Redsys;
+use Services\PaymentGateway\Stripe;
+use Services\PaymentGateway\StripeSCA;
 use Validator;
 
 class EventCheckoutController extends Controller
@@ -408,20 +408,20 @@ class EventCheckoutController extends Controller
             $order_service = new OrderService($ticket_order['order_total'], $ticket_order['total_booking_fee'], $event);
             $order_service->calculateFinalCosts();
 
-            $payment_gateway_config = $ticket_order['account_payment_gateway']->config + [
-                                                    'testMode' => config('attendize.enable_test_payments')];
-
-            $payment_gateway_factory = new PaymentGatewayFactory();
-            $gateway = $payment_gateway_factory->create($ticket_order['payment_gateway']->name, $payment_gateway_config);
-            //certain payment gateways require an extra parameter here and there so this method takes care of that
-            //and sets certain options for the gateway that can be used when the transaction is started
-            $gateway->extractRequestParameters($request);
+            /** @var $gateway Dummy|Redsys|Stripe|StripeSCA */
+            $gateway = tap(PaymentGatewayFactory::create(
+                $ticket_order['payment_gateway']->name,
+                PaymentGatewayFactory::config($ticket_order['account_payment_gateway']->config)
+            ))
+                //certain payment gateways require an extra parameter here and there so this method takes care of that
+                //and sets certain options for the gateway that can be used when the transaction is started
+                ->extractRequestParameters($request);
 
             //generic data that is needed for most orders
             $order_total = $order_service->getGrandTotal();
             $order_email = $ticket_order['request_data'][0]['order_email'];
 
-            $response = $gateway->startTransaction($order_total, $order_email, $event);
+            $response = $gateway->startTransaction($order_total, $order_email, $event, $ticket_order);
 
             if ($response->isSuccessful()) {
 
@@ -437,14 +437,16 @@ class EventCheckoutController extends Controller
 
                 return $this->completeOrder($event_id);
 
-            } elseif ($response->isRedirect()) {
+            }
+
+            if ($response->isRedirect()) {
 
                 $additionalData = ($gateway->storeAdditionalData()) ? $gateway->getAdditionalData($response) : array();
 
                 session()->push('ticket_order_' . $event_id . '.transaction_data',
                                 $gateway->getTransactionData() + $additionalData);
 
-                Log::info("Redirect url: " . $response->getRedirectUrl());
+                Log::info('Redirect url: '. $response->getRedirectUrl());
 
                 $return = [
                     'status'       => 'success',
@@ -459,25 +461,21 @@ class EventCheckoutController extends Controller
 
                 return response()->json($return);
 
-            } else {
-                // display error to customer
-                return response()->json([
-                    'status'  => 'error',
-                    'message' => $response->getMessage(),
-                ]);
             }
-        } catch (\Exeption $e) {
-            Log::error($e);
-            $error = 'Sorry, there was an error processing your payment. Please try again.';
-        }
 
-        if ($error) {
+            // display error to customer
             return response()->json([
                 'status'  => 'error',
-                'message' => $error,
+                'message' => $response->getMessage(),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error($e);
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Sorry, there was an error processing your payment. Please try again.',
             ]);
         }
-
     }
 
     /**
@@ -490,29 +488,26 @@ class EventCheckoutController extends Controller
      */
     public function showEventCheckoutPaymentReturn(Request $request, $event_id)
     {
-
         $ticket_order = session()->get('ticket_order_' . $event_id);
 
-        $payment_gateway_config = $ticket_order['account_payment_gateway']->config + [
-                'testMode' => config('attendize.enable_test_payments')];
+        /** @var $gateway Dummy|Redsys|Stripe|StripeSCA */
+        $gateway = tap(PaymentGatewayFactory::create(
+            $ticket_order['payment_gateway']->name,
+            PaymentGatewayFactory::config($ticket_order['account_payment_gateway']->config)
+        ))->extractRequestParameters($request);
 
-        $payment_gateway_factory = new PaymentGatewayFactory();
-        $gateway = $payment_gateway_factory->create($ticket_order['payment_gateway']->name, $payment_gateway_config);
-        $gateway->extractRequestParameters($request);
         $response = $gateway->completeTransaction($ticket_order['transaction_data'][0]);
-
 
         if ($response->isSuccessful()) {
             session()->push('ticket_order_' . $event_id . '.transaction_id', $response->getTransactionReference());
             return $this->completeOrder($event_id, false);
-        } else {
-            session()->flash('message', $response->getMessage());
-            return response()->redirectToRoute('showEventPayment', [
-                'event_id'          => $event_id,
-                'is_payment_failed' => 1,
-            ]);
         }
 
+        session()->flash('message', $response->getMessage());
+        return response()->redirectToRoute('showEventPayment', [
+            'event_id'          => $event_id,
+            'is_payment_failed' => 1,
+        ]);
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PaymentGatewaySeeder extends Seeder
 {
@@ -58,6 +59,22 @@ class PaymentGatewaySeeder extends Seeder
                     'default' => 0,
                     'admin_blade_template' => 'ManageAccount.Partials.StripeSCA',
                     'checkout_blade_template' => 'Public.ViewEvent.Partials.PaymentStripeSCA'
+                ]
+            );
+        }
+
+        $stripePaymentIntents = DB::table('payment_gateways')->where('name', '=', 'Redsys')->first();
+        if ($stripePaymentIntents === null) {
+            DB::table('payment_gateways')->insert(
+                [
+                    'provider_name' => 'Redsys',
+                    'provider_url' => 'http://www.redsys.es/',
+                    'is_on_site' => 0,
+                    'can_refund' => 1,
+                    'name' => 'Redsys',
+                    'default' => 0,
+                    'admin_blade_template' => 'ManageAccount.Partials.Redsys',
+                    'checkout_blade_template' => 'Public.ViewEvent.Partials.PaymentRedsys'
                 ]
             );
         }

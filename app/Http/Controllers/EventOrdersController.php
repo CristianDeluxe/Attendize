@@ -8,15 +8,13 @@ use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
-use App\Models\PaymentGateway;
 use App\Services\Order as OrderService;
-use Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use DB;
 use Excel;
 use Illuminate\Http\Request;
 use Log;
 use Mail;
-use Omnipay;
+use Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use Validator;
 
 class EventOrdersController extends MyBaseController
@@ -248,11 +246,10 @@ class EventOrdersController extends MyBaseController
 
                 try {
 
-                    $payment_gateway_config = $order->account->getGateway($order->payment_gateway->id)->config + [
-                            'testMode' => config('attendize.enable_test_payments')];
-
-                    $payment_gateway_factory = new PaymentGatewayFactory();
-                    $gateway = $payment_gateway_factory->create($order->payment_gateway->name, $payment_gateway_config);
+                    $gateway = PaymentGatewayFactory::create(
+                        $order->payment_gateway->name,
+                        PaymentGatewayFactory::config($order->account->getGateway($order->payment_gateway->id)->config)
+                    );
 
                     if ($refund_type === 'full') { /* Full refund */
                         $refund_amount = $order->organiser_amount - $order->amount_refunded;
