@@ -115,7 +115,7 @@ class Redsys
 
     public function completeTransaction($data)
     {
-        return $this->gateway->checkCallbackResponse(request(), true);
+        return $this->gateway->completePurchase($data);
     }
 
     public function getAdditionalData($response)
