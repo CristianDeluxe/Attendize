@@ -51,7 +51,7 @@ class Redsys
             'transactionType'    => !empty($this->options['transactionType']) ? $this->options['transactionType'] : 0,
             'productDescription' => 'ASD',
             'merchantURL'        => $this->url(
-                route('showEventCheckoutPaymentReturn', [
+                route('showEventPayment', [
                     'event_id' => $event->id
                 ])
             ),
