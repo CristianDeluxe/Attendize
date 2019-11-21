@@ -10,32 +10,14 @@ use Str;
 use Superbalist\Money\Money;
 use URL;
 
+/**
+ * @property int start_date
+ */
 class Event extends MyBaseModel
 {
     use SoftDeletes;
 
     protected $dates = ['start_date', 'end_date', 'on_sale_date'];
-
-    /**
-     * The validation rules.
-     *
-     * @return array $rules
-     */
-    public function rules()
-    {
-        $format = config('attendize.default_datetime_format');
-        return [
-                'title'               => 'required',
-                'description'         => 'required',
-                'location_venue_name' => 'required_without:venue_name_full',
-                'venue_name_full'     => 'required_without:location_venue_name',
-                'start_date'          => 'required|date_format:"'.$format.'"',
-                'end_date'            => 'required|date_format:"'.$format.'"',
-                'organiser_name'      => 'required_without:organiser_id',
-                'event_image'         => 'nullable|mimes:jpeg,jpg,png|max:3000',
-            ];
-    }
-
     /**
      * The validation error messages.
      *
@@ -49,6 +31,26 @@ class Event extends MyBaseModel
         'location_venue_name.required_without' => 'Please enter a venue for your event',
         'venue_name_full.required_without'     => 'Please enter a venue for your event',
     ];
+
+    /**
+     * The validation rules.
+     *
+     * @return array $rules
+     */
+    public function rules()
+    {
+        $format = config('attendize.default_datetime_format');
+        return [
+            'title'               => 'required',
+            'description'         => 'required',
+            'location_venue_name' => 'required_without:venue_name_full',
+            'venue_name_full'     => 'required_without:location_venue_name',
+            'start_date'          => 'required|date_format:"'.$format.'"',
+            'end_date'            => 'required|date_format:"'.$format.'"',
+            'organiser_name'      => 'required_without:organiser_id',
+            'event_image'         => 'nullable|mimes:jpeg,jpg,png|max:3000',
+        ];
+    }
 
     /**
      * The questions associated with the event.
@@ -68,16 +70,6 @@ class Event extends MyBaseModel
     public function questions_with_trashed()
     {
         return $this->belongsToMany(Question::class, 'event_question')->withTrashed();
-    }
-
-    /**
-     * The attendees associated with the event.
-     *
-     * @return HasMany
-     */
-    public function attendees()
-    {
-        return $this->hasMany(Attendee::class);
     }
 
     /**
@@ -111,16 +103,6 @@ class Event extends MyBaseModel
     }
 
     /**
-     * The stats associated with the event.
-     *
-     * @return HasMany
-     */
-    public function stats()
-    {
-        return $this->hasMany(EventStats::class);
-    }
-
-    /**
      * The affiliates associated with the event.
      *
      * @return HasMany
@@ -141,16 +123,6 @@ class Event extends MyBaseModel
     }
 
     /**
-     * The access codes associated with the event.
-     *
-     * @return HasMany
-     */
-    public function access_codes()
-    {
-        return $this->hasMany(EventAccessCodes::class, 'event_id', 'id');
-    }
-
-    /**
      * The account associated with the event.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -158,16 +130,6 @@ class Event extends MyBaseModel
     public function account()
     {
         return $this->belongsTo(Account::class);
-    }
-
-    /**
-     * The currency associated with the event.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function currency()
-    {
-        return $this->belongsTo(Currency::class);
     }
 
     /**
@@ -213,12 +175,17 @@ class Event extends MyBaseModel
     /**
      * Parse start_date to a Carbon instance
      *
-     * @param string $date DateTime
+     * @param  string  $date  DateTime
      */
     public function setStartDateAttribute($date)
     {
         $format = config('attendize.default_datetime_format');
-        $this->attributes['start_date'] = Carbon::createFromFormat($format, $date);
+
+        if ($date instanceof Carbon) {
+            $this->attributes['start_date'] = $date->format($format);
+        } else {
+            $this->attributes['start_date'] = Carbon::createFromFormat($format, $date);
+        }
     }
 
     /**
@@ -233,12 +200,17 @@ class Event extends MyBaseModel
     /**
      * Parse end_date to a Carbon instance
      *
-     * @param string $date DateTime
+     * @param  string  $date  DateTime
      */
     public function setEndDateAttribute($date)
     {
         $format = config('attendize.default_datetime_format');
-        $this->attributes['end_date'] = Carbon::createFromFormat($format, $date);
+
+        if ($date instanceof Carbon) {
+            $this->attributes['end_date'] = $date->format($format);
+        } else {
+            $this->attributes['end_date'] = Carbon::createFromFormat($format, $date);
+        }
     }
 
     /**
@@ -319,6 +291,16 @@ class Event extends MyBaseModel
     }
 
     /**
+     * The attendees associated with the event.
+     *
+     * @return HasMany
+     */
+    public function attendees()
+    {
+        return $this->hasMany(Attendee::class);
+    }
+
+    /**
      * Get the embed html code.
      *
      * @return string
@@ -326,7 +308,7 @@ class Event extends MyBaseModel
     public function getEmbedHtmlCodeAttribute()
     {
         return "<!--Attendize.com Ticketing Embed Code-->
-                <iframe style='overflow:hidden; min-height: 350px;' frameBorder='0' seamless='seamless' width='100%' height='100%' src='" . $this->embed_url . "' vspace='0' hspace='0' scrolling='auto' allowtransparency='true'></iframe>
+                <iframe style='overflow:hidden; min-height: 350px;' frameBorder='0' seamless='seamless' width='100%' height='100%' src='".$this->embed_url."' vspace='0' hspace='0' scrolling='auto' allowtransparency='true'></iframe>
                 <!--/Attendize.com Ticketing Embed Code-->";
     }
 
@@ -336,13 +318,13 @@ class Event extends MyBaseModel
      */
     public function getMapAddressAttribute()
     {
-        $string = $this->venue . ','
-            . $this->location_street_number . ','
-            . $this->location_address_line_1 . ','
-            . $this->location_address_line_2 . ','
-            . $this->location_state . ','
-            . $this->location_post_code . ','
-            . $this->location_country;
+        $string = $this->venue.','
+            .$this->location_street_number.','
+            .$this->location_address_line_1.','
+            .$this->location_address_line_2.','
+            .$this->location_state.','
+            .$this->location_post_code.','
+            .$this->location_country;
 
         return urlencode($string);
     }
@@ -354,18 +336,7 @@ class Event extends MyBaseModel
      */
     public function getBgImageUrlAttribute()
     {
-        return URL::to('/') . '/' . $this->bg_image_path;
-    }
-
-    /**
-     * Get the url of the event.
-     *
-     * @return string
-     */
-    public function getEventUrlAttribute()
-    {
-        return route("showEventPage", ["event_id"=>$this->id, "event_slug"=>Str::slug($this->title)]);
-        //return URL::to('/') . '/e/' . $this->id . '/' . Str::slug($this->title);
+        return URL::to('/').'/'.$this->bg_image_path;
     }
 
     /**
@@ -417,12 +388,33 @@ ICSTemplate;
     }
 
     /**
-     * @param integer $accessCodeId
+     * Get the url of the event.
+     *
+     * @return string
+     */
+    public function getEventUrlAttribute()
+    {
+        return route("showEventPage", ["event_id" => $this->id, "event_slug" => Str::slug($this->title)]);
+        //return URL::to('/') . '/e/' . $this->id . '/' . Str::slug($this->title);
+    }
+
+    /**
+     * @param  integer  $accessCodeId
      * @return bool
      */
     public function hasAccessCode($accessCodeId)
     {
         return (is_null($this->access_codes()->where('id', $accessCodeId)->first()) === false);
+    }
+
+    /**
+     * The access codes associated with the event.
+     *
+     * @return HasMany
+     */
+    public function access_codes()
+    {
+        return $this->hasMany(EventAccessCodes::class, 'event_id', 'id');
     }
 
     /**
@@ -432,7 +424,7 @@ ICSTemplate;
     {
         $currency = $this->getEventCurrency();
 
-        $eventRevenue = $this->stats()->get()->reduce(function($eventRevenue, $statsEntry) use ($currency) {
+        $eventRevenue = $this->stats()->get()->reduce(function ($eventRevenue, $statsEntry) use ($currency) {
             $salesVolume = (new Money($statsEntry->sales_volume, $currency));
             $organiserFeesVolume = (new Money($statsEntry->organiser_fees_volume, $currency));
 
@@ -458,6 +450,26 @@ ICSTemplate;
             !empty($eventCurrency->symbol_left)
         );
         return $currency;
+    }
+
+    /**
+     * The currency associated with the event.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function currency()
+    {
+        return $this->belongsTo(Currency::class);
+    }
+
+    /**
+     * The stats associated with the event.
+     *
+     * @return HasMany
+     */
+    public function stats()
+    {
+        return $this->hasMany(EventStats::class);
     }
 
     /**
