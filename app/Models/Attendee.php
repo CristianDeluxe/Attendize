@@ -42,7 +42,7 @@ class Attendee extends MyBaseModel
         static::creating(function ($order) {
 
             do {
-                //generate a random string using Laravel's str_random helper
+                //generate a random string using Laravel's Str::Random helper
                 $token = Str::Random(15);
             } //check if the token already exists and if it does, try again
 
