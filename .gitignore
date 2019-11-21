@@ -1,8 +1,10 @@
 *.swp
+.DS_Store
 .env
 .env.backup
 .idea
 .phpunit.result.cache
+.vscode/
 /.buildpath
 /.env.testing
 /.phpstorm.meta.php
@@ -15,6 +17,7 @@
 /storage/*.key
 /vendor
 _ide_helper.php
+build
 Homestead.json
 Homestead.yaml
 installed

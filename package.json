@@ -4,25 +4,25 @@
   "description": "Attendize Ticketing Platform",
   "main": "public/index.php",
   "dependencies": {
-    "less": "^3.9.0"
+    "less": "^3.10.3"
   },
   "private": true,
   "devDependencies": {
     "axios": "^0.19",
     "bower": "^1.8.8",
-    "cross-env": "^5.1",
-    "grunt": "^1.0.3",
+    "cross-env": "^6.0",
+    "grunt": "^1.0.4",
     "grunt-cli": "^1.3.2",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-less": "^2.0.0",
-    "grunt-contrib-uglify": "^4.0.0",
+    "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
     "laravel-elixir": "6.0.0-18",
-    "laravel-mix": "^4.0.7",
-    "lodash": "^4.17.13",
-    "resolve-url-loader": "^2.3.1",
-    "sass": "^1.15.2",
-    "sass-loader": "^7.1.0"
+    "laravel-mix": "^5.0.0",
+    "lodash": "^4.17.15",
+    "resolve-url-loader": "^3.1.1",
+    "sass": "^1.23.7",
+    "sass-loader": "^8.0.0"
   },
   "scripts": {
     "build-frontend": "grunt",
