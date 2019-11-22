@@ -32,6 +32,6 @@
         "type": "git",
         "url": "https://github.com/attendize/attendize.git"
     },
-    "author": "Dave Earley",
+    "author": "Attendize",
     "license": "ISC"
 }
