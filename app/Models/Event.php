@@ -45,8 +45,8 @@ class Event extends MyBaseModel
             'description'         => 'required',
             'location_venue_name' => 'required_without:venue_name_full',
             'venue_name_full'     => 'required_without:location_venue_name',
-            'start_date'          => 'required|date_format:"'.$format.'"',
-            'end_date'            => 'required|date_format:"'.$format.'"',
+            'start_date'          => 'required|date_format:"' . $format . '"',
+            'end_date'            => 'required|date_format:"' . $format . '"',
             'organiser_name'      => 'required_without:organiser_id',
             'event_image'         => 'nullable|mimes:jpeg,jpg,png|max:3000',
         ];
@@ -308,7 +308,7 @@ class Event extends MyBaseModel
     public function getEmbedHtmlCodeAttribute()
     {
         return "<!--Attendize.com Ticketing Embed Code-->
-                <iframe style='overflow:hidden; min-height: 350px;' frameBorder='0' seamless='seamless' width='100%' height='100%' src='".$this->embed_url."' vspace='0' hspace='0' scrolling='auto' allowtransparency='true'></iframe>
+                <iframe style='overflow:hidden; min-height: 350px;' frameBorder='0' seamless='seamless' width='100%' height='100%' src='" . $this->embed_url . "' vspace='0' hspace='0' scrolling='auto' allowtransparency='true'></iframe>
                 <!--/Attendize.com Ticketing Embed Code-->";
     }
 
@@ -318,13 +318,13 @@ class Event extends MyBaseModel
      */
     public function getMapAddressAttribute()
     {
-        $string = $this->venue.','
-            .$this->location_street_number.','
-            .$this->location_address_line_1.','
-            .$this->location_address_line_2.','
-            .$this->location_state.','
-            .$this->location_post_code.','
-            .$this->location_country;
+        $string = $this->venue . ','
+            . $this->location_street_number . ','
+            . $this->location_address_line_1 . ','
+            . $this->location_address_line_2 . ','
+            . $this->location_state . ','
+            . $this->location_post_code . ','
+            . $this->location_country;
 
         return urlencode($string);
     }
@@ -336,7 +336,7 @@ class Event extends MyBaseModel
      */
     public function getBgImageUrlAttribute()
     {
-        return URL::to('/').'/'.$this->bg_image_path;
+        return URL::to('/') . '/' . $this->bg_image_path;
     }
 
     /**
