@@ -15,7 +15,7 @@ class UpgradeFailedJobsTable extends Migration
     {
         Schema::table('failed_jobs', function (Blueprint $table) {
             $table->bigIncrements('id')->change();
-            $table->longText('payload')->change();
+            $table->longText('payload')->default('')->change();
             $table->longText('exception')->default('');
         });
     }
