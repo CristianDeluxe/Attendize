@@ -24,17 +24,12 @@ class OrganisationWithoutTaxTest extends TestCase
     public function cancels_and_refunds_order_with_single_ticket()
     {
         // Setup single attendee order
-        list($order, $attendees) = $this->makeTicketOrder(1, 100.00);
+        [$order, $attendees] = $this->makeTicketOrder(1, 100.00);
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -69,19 +64,12 @@ class OrganisationWithoutTaxTest extends TestCase
     public function cancels_and_refunds_order_with_multiple_tickets()
     {
         // Setup multiple attendee order but refund only 3 out of 5
-        list($order, $attendees) = $this->makeTicketOrder(5, 100.00);
+        [$order, $attendees] = $this->makeTicketOrder(5, 100.00);
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                    $attendeeIds[1],
-                    $attendeeIds[2],
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -119,17 +107,12 @@ class OrganisationWithoutTaxTest extends TestCase
     public function cancels_and_refunds_order_with_single_ticket_with_percentage_booking_fees()
     {
         // Setup single attendee order with % fees
-        list($order, $attendees) = $this->makeTicketOrder(1, 100.00, true);
+        [$order, $attendees] = $this->makeTicketOrder(1, 100.00, true);
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0]
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -164,19 +147,12 @@ class OrganisationWithoutTaxTest extends TestCase
     public function cancels_and_refunds_order_with_multiple_tickets_with_percentage_booking_fees()
     {
         // Setup single attendee order with % fees
-        list($order, $attendees) = $this->makeTicketOrder(5, 100.00, true);
+        [$order, $attendees] = $this->makeTicketOrder(5, 100.00, true);
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                    $attendeeIds[1],
-                    $attendeeIds[2]
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -214,17 +190,12 @@ class OrganisationWithoutTaxTest extends TestCase
     public function cancels_and_refunds_order_with_single_ticket_with_fixed_booking_fees()
     {
         // Setup single attendee order with % fees
-        list($order, $attendees) = $this->makeTicketOrder(1, 100.00, false, true);
+        [$order, $attendees] = $this->makeTicketOrder(1, 100.00, false, true);
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0]
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -259,19 +230,12 @@ class OrganisationWithoutTaxTest extends TestCase
     public function cancels_and_refunds_order_with_multiple_tickets_with_fixed_booking_fees()
     {
         // Setup single attendee order with % fees
-        list($order, $attendees) = $this->makeTicketOrder(5, 100.00, false, true);
+        [$order, $attendees] = $this->makeTicketOrder(5, 100.00, false, true);
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                    $attendeeIds[1],
-                    $attendeeIds[2]
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
