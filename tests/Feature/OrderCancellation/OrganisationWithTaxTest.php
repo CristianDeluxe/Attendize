@@ -30,11 +30,8 @@ class OrganisationWithTaxTest extends TestCase
 
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
-            ]);
-                'id'        => $order->id,
                 'attendees' => [$attendeeIds[0]],
-            ]));
+            ]);
 
         // Check refund call works
         $response->assertStatus(200);
@@ -75,15 +72,8 @@ class OrganisationWithTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                    $attendeeIds[1],
-                    $attendeeIds[2],
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -126,11 +116,8 @@ class OrganisationWithTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
-            ]);
-                'id'        => $order->id,
                 'attendees' => [$attendeeIds[0]],
-            ]));
+            ]);
 
         // Check refund call works
         $response->assertStatus(200);
@@ -170,15 +157,8 @@ class OrganisationWithTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                    $attendeeIds[1],
-                    $attendeeIds[2],
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -228,13 +208,8 @@ class OrganisationWithTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
@@ -274,14 +249,8 @@ class OrganisationWithTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [ $attendeeIds[0] ],
+                'attendees' => [$attendeeIds[0]],
             ]);
-                'id'        => $order->id,
-                'attendees' => [
-                    $attendeeIds[0],
-                    $attendeeIds[1],
-                ],
-            ]));
 
         // Check refund call works
         $response->assertStatus(200);
