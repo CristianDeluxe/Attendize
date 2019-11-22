@@ -108,5 +108,6 @@
                 "potsky/laravel-localization-helpers"
             ]
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
