@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class UpdateEventsTableSetNullableFields extends Migration
 {
@@ -13,7 +13,7 @@ class UpdateEventsTableSetNullableFields extends Migration
      */
     public function up()
     {
-        Schema::table('events', function (Blueprint $table) {
+        Schema::table('events', static function (Blueprint $table) {
             $table->string('location_address_line_1', 355)->nullable()->change();
             $table->string('location_address_line_2', 355)->nullable()->change();
             $table->string('location_state', 355)->nullable()->change();
@@ -28,11 +28,11 @@ class UpdateEventsTableSetNullableFields extends Migration
      */
     public function down()
     {
-        Schema::table('events', function (Blueprint $table) {
-            $table->string('location_address_line_1', 355)->nullable(false)->change();
-            $table->string('location_address_line_2', 355)->nullable(false)->change();
-            $table->string('location_state', 355)->nullable(false)->change();
-            $table->string('location_post_code', 355)->nullable(false)->change();
+        Schema::table('events', static function (Blueprint $table) {
+            $table->string('location_address_line_1', 355)->nullable(false)->default('')->change();
+            $table->string('location_address_line_2', 355)->nullable(false)->default('')->change();
+            $table->string('location_state', 355)->nullable(false)->default('')->change();
+            $table->string('location_post_code', 355)->nullable(false)->default('')->change();
         });
     }
 }
