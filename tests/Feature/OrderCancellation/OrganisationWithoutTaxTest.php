@@ -122,7 +122,9 @@ class OrganisationWithoutTaxTest extends TestCase
         list($order, $attendees) = $this->makeTicketOrder(1, 100.00, true);
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
-            ->post(route('showCancelOrder', [
+            ->post("event/order/$order->id/cancel", [
+                'attendees' => [ $attendeeIds[0] ],
+            ]);
                 'id'        => $order->id,
                 'attendees' => [
                     $attendeeIds[0]
