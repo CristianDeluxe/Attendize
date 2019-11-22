@@ -1,13 +1,12 @@
 <?php namespace Tests\Features;
 
 use App\Models\Attendee;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Concerns\OrganisationWithTax;
 use Tests\TestCase;
 
 class OrganisationWithTaxTest extends TestCase
 {
-    use OrganisationWithTax, RefreshDatabase;
+    use OrganisationWithTax;
 
     public function setUp(): void
     {
