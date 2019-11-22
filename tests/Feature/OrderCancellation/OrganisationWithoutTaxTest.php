@@ -68,7 +68,11 @@ class OrganisationWithoutTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [$attendeeIds[0]],
+                'attendees' => [
+                    $attendeeIds[0],
+                    $attendeeIds[1],
+                    $attendeeIds[2],
+                ],
             ]);
 
         // Check refund call works
@@ -151,7 +155,11 @@ class OrganisationWithoutTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [$attendeeIds[0]],
+                'attendees' => [
+                    $attendeeIds[0],
+                    $attendeeIds[1],
+                    $attendeeIds[2],
+                ],
             ]);
 
         // Check refund call works
@@ -234,7 +242,11 @@ class OrganisationWithoutTaxTest extends TestCase
         $attendeeIds = $attendees->pluck('id')->toArray();
         $response = $this->actingAs($this->getAccountUser())
             ->post("event/order/$order->id/cancel", [
-                'attendees' => [$attendeeIds[0]],
+                'attendees' => [
+                    $attendeeIds[0],
+                    $attendeeIds[1],
+                    $attendeeIds[2],
+                ],
             ]);
 
         // Check refund call works
