@@ -59,13 +59,6 @@ Route::group(
     )->name('postInstaller');
 
     /*
-     * Stripe connect return
-     */
-    Route::any('payment/return/stripe',
-        [ManageAccountController::class, 'showStripeReturn']
-    )->name('showStripeReturn');
-
-    /*
      * Logout
      */
     Route::any('/logout',
