@@ -11,19 +11,17 @@ use App\Models\Timezone;
 use App\Models\User;
 use Exception;
 use GuzzleHttp\Client;
-use Http\Client\HttpClient;
 use Illuminate\Contracts\Mail\Mailable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Services\PaymentGateway\Dummy;
 use Services\PaymentGateway\Stripe;
 use Services\PaymentGateway\StripeSCA;
-use Session;
 
 class ManageAccountController extends MyBaseController
 {
