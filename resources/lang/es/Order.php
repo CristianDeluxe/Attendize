@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'after_order'                  => 'Mensaje para mostrar a los participantes después de que hayan completado su pedido.',
     'after_order_help'             => 'Este mensaje se mostrará a los asistentes una vez que hayan completado con éxito el proceso de pago.',
     'amount'                       => 'Importe',
@@ -45,4 +45,8 @@ return array(
     'transaction_id'               => 'ID de transacción',
     'view_order'                   => 'Ver Pedido',
     'view_order_num'               => 'Ver Pedido Nº:num',
-);
+    'order_items'                  => 'Artículos del pedido',
+    'payment_failed'               => 'El pago ha fallado, por favor, intente introducir sus datos de pago de nuevo.',
+    'payment_intent'               => 'Intento de pago',
+    'search_placeholder'           => 'Buscar Pedidos..',
+];

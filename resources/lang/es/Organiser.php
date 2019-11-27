@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'additional_organiser_options'            => 'Opciones de organizador adicionales',
     'background_color'                        => 'Color de fondo',
     'continue_to'                             => 'Continuar a',
@@ -18,6 +18,8 @@ return array(
     'events'                                  => 'Eventos',
     'google_analytics_code'                   => 'Código de Google Analytics',
     'google_analytics_code_placeholder'       => 'UA-XXXXX-X',
+    'google_tag_manager_code'                 => 'Código del administrador de etiquetas de Google',
+    'google_tag_manager_code_placeholder'     => 'GTM-XXXXX',
     'header_background_color'                 => 'Color de fondo de la cabecera',
     'hide_additional_organiser_options'       => 'Ocultar opciones de organizador adicionales',
     'make_organiser_hidden'                   => 'Ocultar la página del organizador al público.',
@@ -58,9 +60,10 @@ return array(
     'organiser_username_twitter_placeholder'  => 'MiPáginaDeTwitter',
     'sales_volume'                            => 'Volumen de ventas',
     'save_organiser'                          => 'Guardar Organizador',
+    'search_placeholder'                      => 'Buscar eventos..',
     'select_an_organiser'                     => 'Selecciona un organizador',
     'select_organiser'                        => 'Selecciona organizador',
     'text_color'                              => 'Color del texto',
     'tickets_sold'                            => 'Entradas Vendidas',
     'yes'                                     => 'Si',
-);
+];

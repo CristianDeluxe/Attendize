@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Validation Language Lines
@@ -9,10 +8,9 @@ return [
     |
     | The following language lines contain the default error messages used by
     | the validator class. Some of these rules have multiple versions such
-    | as the size rules. Feel free to tweak each of these messages here.
+    | as the size rules. Feel free to tweak each of these messages.
     |
     */
-
     'accepted'             => ':attribute debe ser aceptado.',
     'active_url'           => ':attribute no es una URL válida.',
     'after'                => ':attribute debe ser una fecha posterior a :date.',
@@ -32,6 +30,7 @@ return [
     'boolean'              => 'El campo :attribute debe tener un valor verdadero o falso.',
     'confirmed'            => 'La confirmación de :attribute no coincide.',
     'date'                 => ':attribute no es una fecha válida.',
+    'date_equals'          => ':attribute debe ser una fecha igual a :date.',
     'date_format'          => ':attribute no corresponde al formato :format.',
     'different'            => ':attribute y :other deben ser diferentes.',
     'digits'               => ':attribute debe tener :digits dígitos.',
@@ -39,6 +38,7 @@ return [
     'dimensions'           => 'Las dimensiones de la imagen :attribute no son válidas.',
     'distinct'             => 'El campo :attribute contiene un valor duplicado.',
     'email'                => ':attribute no es un correo válido',
+    'ends_with'            => 'El campo :attribute debe finalizar con uno de los siguientes valores: :values',
     'exists'               => ':attribute es inválido.',
     'file'                 => 'El campo :attribute debe ser un archivo.',
     'filled'               => 'El campo :attribute es obligatorio.',
@@ -91,6 +91,7 @@ return [
     'not_in'               => ':attribute es inválido.',
     'not_regex'            => 'El formato del campo :attribute no es válido.',
     'numeric'              => ':attribute debe ser numérico.',
+    'password'             => 'La contraseña es incorrecta.',
     'present'              => 'El campo :attribute debe estar presente.',
     'regex'                => 'El formato de :attribute es inválido.',
     'required'             => 'El campo :attribute es obligatorio.',
@@ -107,13 +108,13 @@ return [
         'string'  => ':attribute debe contener :size caracteres.',
         'array'   => ':attribute debe contener :size elementos.',
     ],
+    'starts_with'          => 'El campo :attribute debe comenzar con uno de los siguientes valores: :values',
     'string'               => 'El campo :attribute debe ser una cadena de caracteres.',
     'timezone'             => 'El :attribute debe ser una zona válida.',
-    'unique'               => ':attribute ya ha sido registrado.',
+    'unique'               => 'El campo :attribute ya ha sido registrado.',
     'uploaded'             => 'Subir :attribute ha fallado.',
     'url'                  => 'El formato :attribute es inválido.',
     'uuid'                 => 'El campo :attribute debe ser un UUID válido.',
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -124,13 +125,14 @@ return [
     | specify a specific custom language line for a given attribute rule.
     |
     */
-
-    'custom' => [
-        'terms_agreed' => [
-            'required' => 'Por favor, acepte nuestros Términos de Servicio.'
-        ]
+    'custom'               => [
+        'password' => [
+            'min' => 'La :attribute debe contener más de :min caracteres',
+        ],
+        'email'    => [
+            'unique' => 'El :attribute ya ha sido registrado.',
+        ],
     ],
-
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Attributes
@@ -141,7 +143,38 @@ return [
     | of "email". This simply helps us make messages a little cleaner.
     |
     */
-
-    'attributes' => [],
-
+    'attributes'           => [
+        'address'               => 'dirección',
+        'age'                   => 'edad',
+        'body'                  => 'contenido',
+        'city'                  => 'ciudad',
+        'content'               => 'contenido',
+        'country'               => 'país',
+        'date'                  => 'fecha',
+        'day'                   => 'día',
+        'description'           => 'descripción',
+        'email'                 => 'correo electrónico',
+        'excerpt'               => 'extracto',
+        'first_name'            => 'nombre',
+        'gender'                => 'género',
+        'hour'                  => 'hora',
+        'last_name'             => 'apellido',
+        'message'               => 'mensaje',
+        'minute'                => 'minuto',
+        'mobile'                => 'móvil',
+        'month'                 => 'mes',
+        'name'                  => 'nombre',
+        'password'              => 'contraseña',
+        'password_confirmation' => 'confirmación de la contraseña',
+        'phone'                 => 'teléfono',
+        'price'                 => 'precio',
+        'second'                => 'segundo',
+        'sex'                   => 'sexo',
+        'subject'               => 'asunto',
+        'terms'                 => 'términos',
+        'time'                  => 'hora',
+        'title'                 => 'título',
+        'username'              => 'usuario',
+        'year'                  => 'año',
+    ],
 ];

@@ -1,11 +1,14 @@
 <?php
 
-return array(
+return [
+    'access_codes'      => 'Códigos de acceso',
     'action'            => 'Acción',
     'affiliates'        => 'Afiliados',
+    'apply'             => 'Aplicar',
     'attendees'         => 'Asistentes',
     'back_to_login'     => 'Volver a inicio de sesión',
     'back_to_page'      => 'Volver a :page',
+    'browse'            => 'Examinar',
     'cancel'            => 'Cancelar',
     'customize'         => 'Personalizar',
     'dashboard'         => 'Panel de control',
@@ -18,6 +21,7 @@ return array(
     'enabled'           => 'Habilitado',
     'error_404'         => 'Parece que la página que estás buscando ya no existe o se ha movido.',
     'event_dashboard'   => 'Panel de control de eventos',
+    'event_menu'        => 'Menú de eventos',
     'event_page_design' => 'Diseño de la página del evento',
     'export'            => 'Exportar',
     'general'           => 'General',
@@ -41,17 +45,7 @@ return array(
     'tickets'           => 'entradas',
     'TOP'               => 'TOP',
     'total'             => 'total',
+    'upload'            => 'Subir',
     'whoops'            => 'Ups!',
     'yes'               => 'Si',
-    /*
-     * Lines below will turn obsolete in localization helper, it is declared in app/Helpers/macros.
-     * If you run it, it will break file input fields.
-    */
-    'upload' => 'Subir',
-    'browse' => 'Examinar',
-    //================================== Obsolete strings ==================================//
-    'LLH:obsolete' =>
-        array(
-            'months_long' => 'Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre',
-        ),
-);
+];

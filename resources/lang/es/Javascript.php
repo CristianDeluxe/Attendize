@@ -10,8 +10,7 @@ return [
     'just_2_minutes'        => '¡Sólo te quedan 2 minutos para completar este pedido!',
     'processing'            => 'Sólo un segundo...',
     'time_run_out'          => '¡Se te acabó el tiempo! Tendrás que reiniciar el proceso de compra.',
-    'whoops'                => '¡Ups!, parece que el servidor ha devuelto un error. 
-    Por favor, inténtelo de nuevo, o pónte en contacto con el webmaster si el problema persiste.',
+    'whoops'                => '¡Ups!, parece que el servidor ha devuelto un error. ' . PHP_EOL . 'Por favor, inténtelo de nuevo, o pónte en contacto con el webmaster si el problema persiste.',
     'whoops2'               => '¡Algo salió mal! Actualiza la página e inténtalo de nuevo',
     'whoops_and_error'      => 'Ups!, algo ha salido mal.<br><br>:code :error',
 ];
