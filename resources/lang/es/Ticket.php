@@ -1,6 +1,7 @@
 <?php
 
-return array(
+return [
+    'access_codes'               => 'Códigos de acceso',
     'attendee_ref'               => 'Ref. de asistente',
     'coupon_codes'               => 'Códigos de cupón',
     'create_ticket'              => 'Crear entrada',
@@ -46,4 +47,4 @@ return array(
     'ticket_text_color'          => 'Color del texto de la entrada',
     'ticket_type'                => 'Tipo de entrada',
     'venue'                      => 'Lugar',
-);
+];

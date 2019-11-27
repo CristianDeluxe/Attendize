@@ -1,8 +1,6 @@
 <?php
 
-return array(
-    'scan_another_ticket'                  => 'Escanear otra entrada',
-    'scanning'                             => 'Escaneo',
+return [
     'attendees'                            => 'Asistentes',
     'check_in'                             => 'Registro de ingreso: :event',
     'email'                                => 'Correo electrónico',
@@ -11,8 +9,10 @@ return array(
     'first_name'                           => 'Nombre',
     'last_name'                            => 'Apellidos',
     'name'                                 => 'Nombre',
-    'ticket'                               => 'Entrada',
     'reference'                            => 'Referencia',
+    'scan_another_ticket'                  => 'Escanear otra entrada',
+    'scanning'                             => 'Escaneo',
     'search_attendees'                     => 'Buscar asistentes....',
     'send_invitation_n_ticket_to_attendee' => 'Envía la invitación y la entrada al asistente.',
-);
+    'ticket'                               => 'Entrada',
+];

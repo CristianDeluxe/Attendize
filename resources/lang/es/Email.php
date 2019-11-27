@@ -8,5 +8,4 @@ return array(
     'refund_from_name'        => 'Has recibido un reembolso de :name',
     'your_ticket_cancelled'   => 'Tu entrada ha sido cancelada',
     'your_ticket_for_event'   => 'Tu entrada para el evento :event',
-    'LLH:obsolete'            => array(),
 );

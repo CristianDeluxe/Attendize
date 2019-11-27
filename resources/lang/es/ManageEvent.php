@@ -1,6 +1,6 @@
 <?php
 
-return array(
+return [
     'all_attendees'                           => 'Todos los asistentes',
     'all_attendees_cancelled'                 => 'Todos los asistentes de este pedido han sido cancelados.',
     'all_order_refunded'                      => 'Toda la cantidad (:money) de este pedido ha sido reembolsada.',
@@ -23,6 +23,7 @@ return array(
     'confirm_order_cancel'                    => 'Confirmar la cancelación del pedido',
     'create_attendees'                        => 'Crear Asistentes',
     'create_ticket'                           => 'Crear entrada',
+    'default_currency'                        => 'Divisa por defecto',
     'download_pdf_ticket'                     => 'Descargar entrada en PDF',
     'edit_attendee'                           => 'Editar asistente',
     'edit_attendee_title'                     => 'Editar :attendee',
@@ -92,8 +93,4 @@ return array(
     'ticket_title_placeholder'                => 'P. ej: Admisión General',
     'update_order'                            => 'Actualizar pedido',
     'widgets'                                 => 'Widgets',
-    'LLH:obsolete'                            =>
-        array(
-            'create_question' => 'Crear pregunta',
-        ),
-);
+];

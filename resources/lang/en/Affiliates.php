@@ -1,10 +1,6 @@
 <?php
-/*************************************************************************
- Generated via "php artisan localization:missing" at 2018/04/19 17:14:11 
-*************************************************************************/
 
 return array (
-  //============================== New strings to translate ==============================//
   'affiliate_name' => 'Affiliate Name',
   'affiliate_tracking' => 'Affiliate Tracking',
   'affiliate_tracking_text' => 'Keeping track of who is generating sales for your event is extremely easy. Simply create a referral link using the box below and share the link with your affiliates / event promoters.',
