@@ -19,6 +19,7 @@ use Services\PaymentGateway\Stripe;
 use Services\PaymentGateway\StripeSCA;
 use Validator;
 use GuzzleHttp\Client;
+use Utils;
 
 class ManageAccountController extends MyBaseController
 {
@@ -234,9 +235,11 @@ class ManageAccountController extends MyBaseController
             $http_client = new Client();
 
             $response = $http_client->get('https://attendize.com/version.php');
-            $latestVersion = (string)$response->getBody();
+            $latestVersion = Utils::parse_version((string)$response->getBody());
             $installedVersion = file_get_contents(base_path('VERSION'));
         } catch (\Exception $exception) {
+            \Log::warn("Error retrieving the latest Attendize version. ManageAccountController.getVersionInf() try/catch");
+            \Log::warn($exception);
             return false;
         }
 
@@ -247,6 +250,7 @@ class ManageAccountController extends MyBaseController
                 'is_outdated' => (version_compare($installedVersion, $latestVersion) === -1) ? true : false,
             ];
         }
+        \Log::warn("Error retrieving the latest Attendize version. ManageAccountController.getVersionInf()");
 
         return false;
     }
