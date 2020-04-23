@@ -55,7 +55,7 @@ class ManageAccountController extends MyBaseController
 
         try {
             $http_client = new Client();
-            $response = $http_client->get('https://attendize.com/version.php');
+            $response = $http_client->get('https://raw.githubusercontent.com/Attendize/Attendize/master/VERSION');
             $latestVersion = Utils::parse_version((string)$response->getBody());
             $installedVersion = file_get_contents(base_path('VERSION'));
         } catch (\Exception $exception) {
