@@ -159,14 +159,13 @@ class Utils
     /**
      * Safely parse a version number from a string
      *
-     * @return bool
+     * @return string
      */
-    public static function parse_version($string)
+    public static function parse_version($string): string
     {
-        $matches = '';
-        if (preg_match('/^(\d+\.)?(\d+\.)?(\d+)$/', $string, $matches)) {
+        if (preg_match('/(\d+\.?\d+\.?\d+)/', $string, $matches) === 1) {
             return $matches[0];
         }
-        return $matches;
+        return '';
     }
 }
