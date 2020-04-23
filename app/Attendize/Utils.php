@@ -146,6 +146,21 @@ class Utils
         }
     }
 
+    /**
+     * Check if Attendize is installed
+     *
+     * @return bool
+     */
+    public static function installed(): bool
+    {
+        return file_exists(base_path('installed'));
+    }
+
+    /**
+     * Safely parse a version number from a string
+     *
+     * @return bool
+     */
     public static function parse_version($string)
     {
         $matches = '';
