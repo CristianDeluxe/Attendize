@@ -174,6 +174,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
         /*
          * Attendize Service Providers
@@ -182,7 +183,6 @@ return [
         App\Providers\HtmlMacroServiceProvider::class,
         App\Providers\HelpersServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
-        MaxHoffmann\Parsedown\ParsedownServiceProvider::class
 
     ],
 
@@ -235,12 +235,11 @@ return [
         'Validator'    => Illuminate\Support\Facades\Validator::class,
         'View'         => Illuminate\Support\Facades\View::class,
 
-        // Attendize Classes Alias
-        'Markdown'     => MaxHoffmann\Parsedown\ParsedownFacade::class,
-        'PDF'          => Barryvdh\DomPDF\Facade::class,
+        // Attendize Class Alias
+        'Markdown'     => GrahamCampbell\Markdown\Facades\Markdown::class,
+        'PDF'          => Nitmedia\Wkhtml2pdf\Facades\Wkhtml2pdf::class,
         'Utils'        => App\Attendize\Utils::class,
-
-
+        'Excel'        => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

@@ -21,7 +21,7 @@ class EventCheckoutTicketTest extends TestCase
 
         $this->get(route('showOrderTickets', ['order_reference' => 'example', 'event' => $event->id]))
             ->assertStatus(200)
-            ->assertHeader('content-type', 'image/jpeg'); // Example ticket is returned in JPEG
+            ->assertHeader('content-type', 'application/pdf'); // Example ticket is returned in PDF
 
     }
 

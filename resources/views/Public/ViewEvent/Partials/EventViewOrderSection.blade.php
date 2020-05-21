@@ -68,7 +68,7 @@
 
                 @if($event->post_order_display_message)
                 <div class="alert alert-dismissable alert-info">
-                    {{ nl2br(e($event->post_order_display_message)) }}
+                    {{ nl2br($event->post_order_display_message) }}
                 </div>
                 @endif
 
@@ -138,7 +138,7 @@
                         @lang("Public_ViewEvent.order_awaiting_payment")
                     </div>
                     <div class="offline_payment_instructions well">
-                        {!! Markdown::parse($event->offline_payment_instructions) !!}
+                        {!! Markdown::convertToHtml($event->offline_payment_instructions) !!}
                     </div>
 
                     @endif

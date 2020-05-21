@@ -12,6 +12,7 @@ use App\Services\PDFGenerator\PDFFile;
 use Barryvdh\DomPDF\Facade as PDF;
 use Dompdf\Exception;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Facades\Image;
 
 /**
  * Create a ticket using Intervention Image
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Log;
  */
 class TicketGenerator
 {
+
     /**
      * Generate a fake ticket data for demo purposes
      *
@@ -61,9 +63,10 @@ class TicketGenerator
      *
      * @param  Order  $order
      * @param  Attendee|null  $attendee
+     * @param  Bool|false  $ignoreDiskCache
      * @return PDFFile
      */
-    public static function createPDFTicket(Order $order, Attendee $attendee = null)
+    public static function createPDFTicket(Order $order, Attendee $attendee = null, $ignoreDiskCache = false)
     {
         Log::info('Generating ticket for order: #' . $order->id . '. Reference ' . $order->order_reference);
 
@@ -71,21 +74,17 @@ class TicketGenerator
         $pdf_file = self::generateFileName($order, $attendee);
 
         // Check if file exist before create it again
-        if (file_exists($pdf_file->path)) {
+        if (file_exists($pdf_file->path) && $ignoreDiskCache == false) {
             Log::debug('Use ticket from cache: ' . $pdf_file->path);
 
             $pdf_file->cached = true;
             return $pdf_file;
         }
 
-        // Generate the tickets
-        $ticket_image_generator = new TicketImageGenerator($order);
-        $tickets = $ticket_image_generator->createImageTickets($attendee);
-
         // Data for view
         $data = [
-            'tickets' => $tickets,
-            'event'   => $order->event,
+            'banner' => self::createBanner($order),
+            'order' => $order,
         ];
 
         try {
@@ -128,5 +127,27 @@ class TicketGenerator
     public static function isAttendeeTicket($attendee): bool
     {
         return ($attendee !== null && $attendee instanceof Attendee);
+    }
+
+    /**
+     * Create the banner/flyer image for the ticket if it hasn't already been created.
+     *
+     * @return \Intervention\Image\Image
+     */
+    private static function createBanner($order)
+    {
+        // Get the event flyer
+        $flyer = optional($order->event->images->first())->image_path;
+
+        // If no flyer use default flyer
+        if ($flyer === null || !file_exists(public_path($flyer))) {
+            $flyer = config('attendize.ticket.image.default');
+        }
+
+        $image_path = public_path($flyer.'-1360.jpg');
+        if (!file_exists($image_path)) {
+            Image::make(public_path($flyer))->fit(1360, 635)->save($image_path);
+        }
+        return $image_path;
     }
 }

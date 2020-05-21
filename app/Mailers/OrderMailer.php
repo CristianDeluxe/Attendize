@@ -53,5 +53,4 @@ class OrderMailer
     {
         Mail::to($order->email)->send(new SendOrderTickets($order));
     }
-
 }

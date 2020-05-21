@@ -222,9 +222,9 @@ class EventCheckoutController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
+                'isEmbedded' => $this->is_embedded,
                 'redirectUrl' => route('showEventCheckout', [
                         'event_id'    => $event_id,
-                        'is_embedded' => $this->is_embedded,
                     ]) . '#order_form',
             ]);
         }
@@ -383,7 +383,7 @@ class EventCheckoutController extends Controller
      */
     public function postCreateOrder(Request $request, $event_id)
     {
-        $request_data = $ticket_order = session()->get('ticket_order_' . $event_id . ".request_data");
+        $request_data = $ticket_order = session()->get('ticket_order_' . $event_id . ".request_data",[0 => []]);
         $request_data = array_merge($request_data[0], $request->except(['cardnumber', 'cvc']));
 
         session()->remove('ticket_order_' . $event_id . '.request_data');
@@ -779,22 +779,20 @@ class EventCheckoutController extends Controller
      */
     public function showOrderTickets(Request $request, $order_reference)
     {
+        $ignoreDiskCache = false;
+
         // Is a demo ticket?
         if ($order_reference === 'example' && $request->get('event')) {
             // Generate demo data
             $order = TicketGenerator::demoData($request->get('event'));
-
-            // Return Image ticket
-            return (new TicketImageGenerator($order))
-                ->createImageTicket(Arr::first($order->attendees))
-                ->response('jpg', config('attendize.ticket.image.quality'));
+            $ignoreDiskCache = true;
+        } else {
+            // It's a real ticket, try to find the order in database
+            $order = Order::where('order_reference', '=', $order_reference)->firstOrFail();
         }
 
-        // It's a real ticket, try to find the order in database
-        $order = Order::where('order_reference', '=', $order_reference)->firstOrFail();
-
         // Generate PDF
-        $pdf_file = TicketGenerator::createPDFTicket($order);
+        $pdf_file = TicketGenerator::createPDFTicket($order, null, $ignoreDiskCache);
 
         if ($request->get('download') === '1') { // Force download PDF
             return response()->download($pdf_file->path);

@@ -121,7 +121,7 @@
             }).change();
 
             function getTicketImage(){
-                return '<img alt="Ticket" ' +
+                return '<iframe width="800" height="500" alt="Ticket" ' +
                     'src="{{ route('showOrderTickets', ['order_reference' => 'example'] ).'?event='.$event->id }}'
                     + '&' + Date.now() + '" />'
             }
