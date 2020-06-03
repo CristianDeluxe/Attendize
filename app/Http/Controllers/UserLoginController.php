@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Redirect;
 use View;
+use App\Services\HCaptureService;
 
 class UserLoginController extends Controller
 {
@@ -53,6 +54,13 @@ class UserLoginController extends Controller
         if (empty($email) || empty($password)) {
             return Redirect::back()
                 ->with(['message' => trans('Controllers.fill_email_and_password'), 'failed' => true])
+                ->withInput();
+        }
+
+        $hcapture = new HCaptureService($request);
+        if (!$hcapture->isHuman()) {
+            return Redirect::back()
+                ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
                 ->withInput();
         }
 

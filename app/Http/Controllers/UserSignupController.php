@@ -9,6 +9,7 @@ use Hash;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Mail;
+use App\Services\HCaptureService;
 
 class UserSignupController extends Controller
 {
@@ -41,11 +42,19 @@ class UserSignupController extends Controller
     {
         $is_attendize = Utils::isAttendize();
         $this->validate($request, [
-            'email'        => 'required|email|unique:users',
-            'password'     => 'required|min:8|confirmed',
-            'first_name'   => 'required',
-            'terms_agreed' => $is_attendize ? 'required' : '',
+            'email'              => 'required|email|unique:users',
+            'password'           => 'required|min:8|confirmed',
+            'first_name'         => 'required',
+            'terms_agreed'       => $is_attendize ? 'required' : '',
+            'h-captcha-response' => 'nullable',
         ]);
+
+        $hcapture = new HCaptureService($request);
+        if (!$hcapture->isHuman()) {
+            return Redirect::back()
+                ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
+                ->withInput();
+        }
 
         $account_data = $request->only(['email', 'first_name', 'last_name']);
         $account_data['currency_id'] = config('attendize.default_currency');
