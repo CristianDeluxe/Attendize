@@ -50,11 +50,38 @@ class UserLoginController extends Controller
     {
         $email = $request->get('email');
         $password = $request->get('password');
+        $captcha = $request->get('grecaptcha');
 
         if (empty($email) || empty($password)) {
             return Redirect::back()
                 ->with(['message' => trans('Controllers.fill_email_and_password'), 'failed' => true])
                 ->withInput();
+        }
+
+        if (config('attendize.recaptcha_secret')) {
+            $client = new \GuzzleHttp\Client();
+            $res = $client->request('POST', 'https://www.recaptcha.net/recaptcha/api/siteverify', [
+                'form_params' => [
+                    'secret' => config('attendize.recaptcha_secret'),
+                    'response' => $captcha,
+                    // 'remoteip' => ''
+                ]
+            ]);
+            if (!$res->getStatusCode() == 200) {
+                return Redirect::back()
+                    ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
+                    ->withInput();
+            }
+            $data = json_decode($res->getBody());
+            if (!$data->success || $data->action != 'login' || $data->score <= 0.6) {
+                if (isset($data->score)) {
+                    \Log::info($data->score);
+                }
+                return Redirect::back()
+                    ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
+                    ->withInput();
+            }
+            \Log::info($data->score);
         }
 
         $hcapture = new HCaptureService($request);
@@ -69,7 +96,6 @@ class UserLoginController extends Controller
                 ->with(['message' => trans('Controllers.login_password_incorrect'), 'failed' => true])
                 ->withInput();
         }
-
         return redirect()->intended(route('showSelectOrganiser'));
     }
 }
