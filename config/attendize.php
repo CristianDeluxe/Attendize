@@ -80,5 +80,10 @@ return [
     'recaptcha_secret' => env('GOOGLE_RECAPTCHA_SECRET_KEY'),
 
     'google_analytics_id'       => env('GOOGLE_ANALYTICS_ID'),
-    'google_maps_geocoding_key' => env('GOOGLE_MAPS_GEOCODING_KEY')
+    'google_maps_geocoding_key' => env('GOOGLE_MAPS_GEOCODING_KEY'),
+
+    'captcha' => [
+        'recaptcha_is_on' => env('RECAPTCHA_IS_ON', false),
+        'hcaptcha_is_on' => env('HCAPTCHA_IS_ON', false)
+    ]
 ];

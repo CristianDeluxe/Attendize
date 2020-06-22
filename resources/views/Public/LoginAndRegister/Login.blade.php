@@ -28,7 +28,7 @@
                         (<a class="forgotPassword" href="{{route('forgotPassword')}}" tabindex="-1">@lang("User.forgot_password?")</a>)
                         {!! Form::password('password',  ['class' => 'form-control']) !!}
                     </div>
-                    @if(config('attendize.recaptcha_site'))
+                    @if(config('attendize.captcha.recaptcha_is_on') && config('attendize.recaptcha_site'))
                         <input id="captcha" type="hidden" name="grecaptcha">
                         <script src="https://www.recaptcha.net/recaptcha/api.js?render={{config('attendize.recaptcha_site')}}"></script>
                         <script>
@@ -40,7 +40,7 @@
                         </script>
                     @endif
                     <div class="form-group">
-                        @if(config('attendize.hcaptcha_site_key'))
+                        @if(config('attendize.captcha.hcaptcha_is_on') && config('attendize.hcaptcha_site_key') && ! config('attendize.captcha.recaptcha_is_on'))
                             <script src="https://hcaptcha.com/1/api.js" async defer></script>
                             <button type="submit" class="btn btn-block btn-success h-captcha" data-sitekey="{{config('attendize.hcaptcha_site_key')}}" data-callback="onSubmit">@lang("User.login")</button>
                             <script type="text/javascript">
