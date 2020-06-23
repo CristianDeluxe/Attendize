@@ -45,8 +45,8 @@ class UserSignupController extends Controller
             'email'        => 'required|email|unique:users',
             'password'     => 'required|min:8|confirmed',
             'first_name'   => 'required',
-            'terms_agreed' => $is_attendize ? 'required' : '',
-            'grecaptcha'   => 'nullable',
+            'last_name'   => 'required',
+            'terms_agreed' => $is_attendize ? 'required' : ''
         ]);
 
         $recaptchaIsOn = config('attendize.captcha.recaptcha_is_on');
