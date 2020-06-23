@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Redirect;
 use App\Attendize\Utils;
 use App\Models\Account;
 use App\Models\User;
@@ -18,7 +19,7 @@ class UserSignupController extends Controller
     public function __construct(Guard $auth)
     {
         if (Account::count() > 0 && !Utils::isAttendize()) {
-            return redirect()->route('login');
+            return redirect()->route('login')->send();
         }
 
         $this->auth = $auth;
