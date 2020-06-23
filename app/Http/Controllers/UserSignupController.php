@@ -10,11 +10,12 @@ use Hash;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Mail;
-use App\Services\HCaptureService;
+use Services\Captcha\Factory;
 
 class UserSignupController extends Controller
 {
     protected $auth;
+    protected $captchaService;
 
     public function __construct(Guard $auth)
     {
@@ -23,6 +24,12 @@ class UserSignupController extends Controller
         }
 
         $this->auth = $auth;
+
+        $captchaConfig = config('attendize.captcha');
+        if ($captchaConfig["captcha_is_on"]) {
+            $this->captchaService = Factory::create($captchaConfig);
+        }
+
         $this->middleware('guest');
     }
 
@@ -50,42 +57,11 @@ class UserSignupController extends Controller
             'terms_agreed' => $is_attendize ? 'required' : ''
         ]);
 
-        $recaptchaIsOn = config('attendize.captcha.recaptcha_is_on');
-        $hcaptchaIsOn = config('attendize.captcha.hcaptcha_is_on');
-        if ($recaptchaIsOn || $hcaptchaIsOn) {
-            if ($recaptchaIsOn && config('attendize.recaptcha_secret')) {
-                $captcha = $request->get('grecaptcha');
-                $client = new \GuzzleHttp\Client();
-                $res = $client->request('POST', 'https://www.recaptcha.net/recaptcha/api/siteverify', [
-                    'form_params' => [
-                        'secret' => config('attendize.recaptcha_secret'),
-                        'response' => $captcha,
-                       // 'remoteip' => ''
-                    ]
-                ]);
-                if (!$res->getStatusCode() == 200) {
-                    return Redirect::back()
-                        ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
-                        ->withInput();
-                }
-                $data = json_decode($res->getBody());
-                if (!$data->success || !$data->action == 'login' || $data->score <= 0.6) {
-                    if (isset($data->score)) {
-                        \Log::info($data->score);
-                    }
-                    return Redirect::back()
-                        ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
-                        ->withInput();
-                }
-                \Log::info($data->score);
-
-            } else if ($hcaptchaIsOn) {
-                $hcapture = new HCaptureService($request);
-                if (!$hcapture->isHuman()) {
-                    return Redirect::back()
-                        ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
-                        ->withInput();
-                }
+        if (is_object($this->captchaService)) {
+            if (!$this->captchaService->isHuman($request)) {
+                return Redirect::back()
+                    ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
+                    ->withInput();
             }
         }
 

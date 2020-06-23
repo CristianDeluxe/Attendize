@@ -74,31 +74,11 @@
                     </div>
                 </div>
                 @endif
-                @if(config('attendize.captcha.recaptcha_is_on')  && config('attendize.recaptcha_site'))
-                    <input id="captcha" type="hidden" name="grecaptcha">
-                    <script src="https://www.recaptcha.net/recaptcha/api.js?render={{config('attendize.recaptcha_site')}}"></script>
-                    <script>
-                    grecaptcha.ready(function() {
-                        grecaptcha.execute('{{config('attendize.recaptcha_site')}}', {action: 'login'}).then(function(token) {
-                            document.getElementById('captcha').value = token
-                        });
-                    });
-                    </script>
-                @endif
-                <div class="form-group ">
-                @if(config('attendize.captcha.hcaptcha_is_on') && config('attendize.hcaptcha_site_key') && ! config('attendize.captcha.recaptcha_is_on'))
-                    <script src="https://hcaptcha.com/1/api.js" async defer></script>
-                    <input class="btn btn-block btn-success h-captcha" type="submit" value="{{trans('User.sign_up')}}" data-sitekey="{{config('attendize.hcaptcha_site_key')}}" data-callback="onSubmit">
-                    <script type="text/javascript">
-                       function onSubmit(token) {
-                          document.getElementById("signup-form").submit();
-                       };
-                    </script>
-                    <br>
-                    This site is protected by hCaptcha and its <a href="https://hcaptcha.com/privacy">Privacy Policy</a> and <a href="https://hcaptcha.com/terms">Terms of Service</a> apply.
-                @else
-                    <input class="btn btn-block btn-success" type="submit" value="@lang('User.sign_up')">
-                @endif
+
+                @include('Public.LoginAndRegister.Partials.CaptchaSection')
+
+                <div class="form-group">
+                    <p><input class="btn btn-block btn-success" type="submit" value="@lang('User.sign_up')"></p>
                 </div>
                     <div class="signup">
                         <span>{!! @trans("User.already_have_account", ["url"=>route("login")]) !!}</span>

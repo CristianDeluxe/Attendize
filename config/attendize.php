@@ -70,20 +70,16 @@ return [
     'default_locale'                => 'en',
     'default_payment_gateway'       => 1, #Stripe=1 Paypal=2
 
-    'hcaptcha_site_key' => env('HCAPTCHA_SITE_KEY'),
-    'hcaptcha_secret_key' => env('HCAPTCHA_SECRET_KEY'),
-
     'cdn_url_user_assets'   => '',
     'cdn_url_static_assets' => '',
-
-    'recaptcha_site' => env('GOOGLE_RECAPTCHA_SITE_KEY'),
-    'recaptcha_secret' => env('GOOGLE_RECAPTCHA_SECRET_KEY'),
 
     'google_analytics_id'       => env('GOOGLE_ANALYTICS_ID'),
     'google_maps_geocoding_key' => env('GOOGLE_MAPS_GEOCODING_KEY'),
 
     'captcha' => [
-        'recaptcha_is_on' => env('RECAPTCHA_IS_ON', false),
-        'hcaptcha_is_on' => env('HCAPTCHA_IS_ON', false)
+        'captcha_is_on' => env('CAPTCHA_IS_ON', false),
+        'captcha_type' => strtolower(env('CAPTCHA_TYPE')),
+        'captcha_key' => env('CAPTCHA_KEY'),
+        'captcha_secret' => env('CAPTCHA_SECRET')
     ]
 ];
