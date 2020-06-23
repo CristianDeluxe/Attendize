@@ -59,20 +59,10 @@
                                   'placeholder'=>trans("Public_ViewEvent.your_message"))) !!}
                     </div>
 
+                    @include('Public.LoginAndRegister.Partials.CaptchaSection')
+
                     <div class="form-group">
-                        @if(config('attendize.hcaptcha_site_key'))
-                            <script src="https://hcaptcha.com/1/api.js" async defer></script>
-                            <input class="btn btn-primary  h-captcha" type="submit" value="@lang("Public_ViewEvent.send_message_submit")"data-sitekey="{{config('attendize.hcaptcha_site_key')}}" data-callback="onSubmit">
-                            <script type="text/javascript">
-                               function onSubmit(token) {
-                                  document.getElementById("contact-form").submit();
-                               };
-                            </script>
-                            <br><br>
-                            This site is protected by hCaptcha and its <a href="https://hcaptcha.com/privacy">Privacy Policy</a> and <a href="https://hcaptcha.com/terms">Terms of Service</a> apply.
-                        @else
-                            <input class="btn btn-primary" type="submit" value="@lang("Public_ViewEvent.send_message_submit")">
-                        @endif
+                        <p><input class="btn btn-primary" type="submit" value="@lang('Public_ViewEvent.send_message_submit')"></p>
                     </div>
                 </div>
                 {!! Form::close() !!}
