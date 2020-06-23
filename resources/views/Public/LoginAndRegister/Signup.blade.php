@@ -63,7 +63,7 @@
                     @endif
                 </div>
 
-                @if(Utils::isAttendize())
+                @if(Utils::isAttendizeCloud())
                 <div class="form-group {{ ($errors->has('terms_agreed')) ? 'has-error' : '' }}">
                     <div class="checkbox custom-checkbox">
                         {!! Form::checkbox('terms_agreed', old('terms_agreed'), false, ['id' => 'terms_agreed']) !!}

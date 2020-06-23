@@ -41,7 +41,7 @@ class UserSignupController extends Controller
      */
     public function postSignup(Request $request)
     {
-        $is_attendize = Utils::isAttendize();
+        $is_attendize = Utils::isAttendizeCloud();
         $this->validate($request, [
             'email'        => 'required|email|unique:users',
             'password'     => 'required|min:8|confirmed',
