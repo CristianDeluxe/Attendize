@@ -2,13 +2,13 @@
 
 @section('message_content')
 
-<p>Hi there,</p>
+<p>Hey,</p>
 <p>
-    Your ticket for the event <b>{{{$attendee->event->title}}}</b> has been cancelled.
+    Dein Ticket für die Veranstaltung <b>{{{$attendee->event->title}}}</b> wurde storniert.
 </p>
 
 <p>
-    You can contact <b>{{{$attendee->event->organiser->name}}}</b> directly at <a href='mailto:{{{$attendee->event->organiser->email}}}'>{{{$attendee->event->organiser->email}}}</a> or by replying to this email should you require any more information.
+    Solltest Du mehr Informationen brauchen kannst Du <b>{{{$attendee->event->organiser->name}}}</b> gleich hier <a href='mailto:{{{$attendee->event->organiser->email}}}'>{{{$attendee->event->organiser->email}}}</a> kontaktieren oder dieser E-Mail antworten.
 </p>
 @stop
 

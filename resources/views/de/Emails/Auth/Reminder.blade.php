@@ -2,10 +2,10 @@
 
 @section('message_content')
     <div>
-        Hello,<br><br>
-        To reset your password, complete this form: {{ route('password.reset', ['token' => $token]) }}.
+        Hallo,<br><br>
+        Um Dein Passwort zurückzusetzen kannst Du dieses Formular ausfüllen: {{ route('password.reset', ['token' => $token]) }}.
         <br><br><br>
-        Thank you,<br>
-        Team Attendize
+        Danke,<br>
+       	Attendize Team
     </div>
 @stop

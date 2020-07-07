@@ -1,8 +1,13 @@
 <?php
+/*************************************************************************
+ Generated via "php artisan localization:missing" at 2018/04/19 17:07:35
+*************************************************************************/
 
 return array (
+  //============================== New strings to translate ==============================//
   'scan_another_ticket' => 'Weiteres Ticket scannen',
-  'scanning' => 'Scanning',
+  'scanning' => 'Scannen',
+  //==================================== Translations ====================================//
   'attendees' => 'Teilnehmer',
   'check_in' => 'Check in: :event',
   'email' => 'Email',
@@ -14,5 +19,5 @@ return array (
   'ticket' => 'Ticket',
   'reference' => 'Referenz',
   'search_attendees' => 'Teilnehmer suchen...',
-  'send_invitation_n_ticket_to_attendee' => 'Einladungen & Ticket an Teilnehmer senden.',
+  'send_invitation_n_ticket_to_attendee' => 'Einladungen und Ticket an Teilnehmer senden.',
 );

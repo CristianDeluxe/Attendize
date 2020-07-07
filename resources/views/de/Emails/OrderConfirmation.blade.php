@@ -1,20 +1,20 @@
 @extends('en.Emails.Layouts.Master')
 
 @section('message_content')
-Hello,<br><br>
+Hallo,<br><br>
 
-Your order for the event <b>{{$order->event->title}}</b> was successful.<br><br>
+Deine Bestellung für die Veranstaltung <b>{{$order->event->title}}</b> war erfolgreich.<br><br>
 
-Your tickets are attached to this email. You can also view you order details and download your tickets at: {{route('showOrderDetails', ['order_reference' => $order->order_reference])}}
+Deine Tickets sind dieser E-Mail beigefügt. Hier kannst Deine Bestellung ansehen und Deine Tickets herunterladen: {{route('showOrderDetails', ['order_reference' => $order->order_reference])}}
 
 
-<h3>Order Details</h3>
-Order Reference: <b>{{$order->order_reference}}</b><br>
-Order Name: <b>{{$order->full_name}}</b><br>
-Order Date: <b>{{$order->created_at->format(config('attendize.default_datetime_format'))}}</b><br>
-Order Email: <b>{{$order->email}}</b><br>
+<h3>Bestellungsdetails</h3>
+Bestellnummer: <b>{{$order->order_reference}}</b><br>
+Name: <b>{{$order->full_name}}</b><br>
+Datum: <b>{{$order->created_at->toDayDateTimeString()}}</b><br>
+E-Mail Adresse: <b>{{$order->email}}</b><br>
 
-<h3>Order Items</h3>
+<h3>Bestellübersicht</h3>
 <div style="padding:10px; background: #F9F9F9; border: 1px solid #f1f1f1;">
     <table style="width:100%; margin:10px;">
         <tr>
@@ -22,16 +22,16 @@ Order Email: <b>{{$order->email}}</b><br>
                 <b>Ticket</b>
             </td>
             <td>
-                <b>Qty.</b>
+                <b>Anzahl</b>
             </td>
             <td>
-                <b>Price</b>
+                <b>Preis</b>
             </td>
             <td>
-                <b>Fee</b>
+                <b>Gebühr</b>
             </td>
             <td>
-                <b>Total</b>
+                <b>Gesamt</b>
             </td>
         </tr>
         @foreach($order->orderItems as $order_item)
@@ -44,7 +44,7 @@ Order Email: <b>{{$order->email}}</b><br>
                                     </td>
                                     <td>
                                         @if((int)ceil($order_item->unit_price) == 0)
-                                        FREE
+                                        Kostenlos
                                         @else
                                        {{money($order_item->unit_price, $order->event->currency)}}
                                         @endif
@@ -60,7 +60,7 @@ Order Email: <b>{{$order->email}}</b><br>
                                     </td>
                                     <td>
                                         @if((int)ceil($order_item->unit_price) == 0)
-                                        FREE
+                                        Kostenlos
                                         @else
                                         {{money(($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity), $order->event->currency)}}
                                         @endif
@@ -76,7 +76,7 @@ Order Email: <b>{{$order->email}}</b><br>
             <td>
             </td>
             <td>
-                <b>Sub Total</b>
+                <b>Zwischensumme</b>
             </td>
             <td colspan="2">
                 {{$orderService->getOrderTotalWithBookingFee(true)}}
@@ -106,7 +106,7 @@ Order Email: <b>{{$order->email}}</b><br>
             <td>
             </td>
             <td>
-                <b>Total</b>
+                <b>Gesamt</b>
             </td>
             <td colspan="2">
                 {{$orderService->getGrandTotal(true)}}
@@ -117,5 +117,5 @@ Order Email: <b>{{$order->email}}</b><br>
     <br><br>
 </div>
 <br><br>
-Thank you
+Danke
 @stop

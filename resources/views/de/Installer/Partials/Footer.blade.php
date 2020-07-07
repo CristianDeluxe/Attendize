@@ -1,18 +1,18 @@
 <div class="well">
     <p>
-        Installation may make take several minutes to complete. Once you click '<b>Install Attendize</b>' the config settings will be written to this file: <b>{{base_path('.env')}}</b>. You can manually change these settings in the future by editing this file.
+        Die Installation kann einige Minuten in anspruch nehmen, sobald Sie  '<b>Attendize Installieren</b>' drücken. Die Konfiguration wird in folgende Datei geschrieben: <b>{{base_path('.env')}}</b>. In Zukunft können Sie änderungen in dieser Datei vornehmen.
     </p>
     <p>
-        If the install fails be sure to check the log file in <b>{{storage_path('logs')}}</b>. If there are no errors in the log files also <b>check other log files on your server</b>.
+        Sollte die Installation fehlschlagen finden Sie Logdateien unter <b>{{storage_path('logs')}}</b>. Sollten die Fehler nicht in der Datei auftauchen <b>prüfen Sie bitte die anderen Logfiles auf Ihrem Server.</b>.
     </p>
     <p>
-        If you are using shared hosting please ask your host if they support the Attendize requirements before requesting support.
+        Sollten Sie bei einem "Shared Hoster" sein, fragen sie diesen ob er alle Anforderungen für Attendize erfüllt, bevor sie Support in Anspruch nehmen.
     </p>
     <p>
-        If you still need help you can <a href="https://github.com/Attendize/Attendize/issues">raise an issue</a>. Please include as much detail as possible, including any errors in the log file.
-        Also take a look at the <a href="https://www.attendize.com/troubleshooting.html">troubleshooting guide</a>
+        Sollten Sie immernoch Hilfe benötigen <a href="https://github.com/Attendize/Attendize/issues">eröffnen Sie ein Ticket</a>. Bitte schreiben Sie so viele Details wie möglich in Ihr Ticket, und vergessen Sie nicht die Fehlerlogs mitzusenden.
+        Schauen Sie sich auch mal die <a href="http://www.attendize.com/troubleshooting.html">Fehlerbehebungsseite an</a>
     </p>
     <p>
-        Please also  <a style="text-decoration: underline;" target="_blank" href="https://www.attendize.com/license.html">read the licence</a> before installing Attendize.
+        Bitte Lesen Sie die  <a style="text-decoration: underline;" target="_blank" href="http://www.attendize.com/license.html">Lizenz</a> bevor Sie Attendize installieren.
     </p>
 </div>

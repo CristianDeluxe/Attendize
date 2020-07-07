@@ -1,13 +1,17 @@
 <?php
+/*************************************************************************
+ Generated via "php artisan localization:missing" at 2018/04/26 11:05:24
+*************************************************************************/
 
 return array (
-  'attendize_register' => 'Danke, dass du dich bei Attendize registriert hast',
-  'invite_user' => ':name hat dich zum :app Konto hinzugefügt.',
+  //==================================== Translations ====================================//
+  'attendize_register' => 'Danke, dass Sie sich bei Attendize regestriert haben',
+  'invite_user' => ':name hat Ihnen einen :app account erstellt.',
   'message_regarding_event' => 'Die Nachricht betrifft: :event',
-  'organiser_copy' => '[Kopie des Organisatores]',
-  'refund_from_name' => 'Du hast eine Rückzahlung von :name erhalten',
-  'your_ticket_cancelled' => 'Dein Ticket wurde storniert',
-  'your_ticket_for_event' => 'Dein Ticket für die Veranstaltung :event',
+  'organiser_copy' => '[Kopie für den Veranstalter]',
+  'refund_from_name' => 'Sie haben eine Rückerstattung von :name erhalten',
+  'your_ticket_cancelled' => 'Ihr Ticket wurde storniert',
+  'your_ticket_for_event' => 'Ihr Ticket für die Veranstaltung :event',
     //================================== Obsolete strings ==================================//
   'LLH:obsolete' =>
   array (

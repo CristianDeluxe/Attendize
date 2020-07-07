@@ -1,60 +1,63 @@
 <?php
+/*************************************************************************
+ Generated via "php artisan localization:missing" at 2018/04/26 11:05:24
+*************************************************************************/
 
 return array (
+  //==================================== Translations ====================================//
   'apply' => 'Anwenden',
   'action' => 'Aktion',
   'affiliates' => 'Affiliates',
   'attendees' => 'Teilnehmer',
-  'back_to_login' => 'zurück zum Login',
+  'back_to_login' => 'Zurück zum login',
   'back_to_page' => 'Zurück zu :page',
   'cancel' => 'Abbrechen',
   'customize' => 'Anpassen',
   'dashboard' => 'Dashboard',
   'days' => 'Tage',
-  'disable' => 'deaktivieren',
-  'disabled' => 'Deaktiviert',
-  'drag_to_reorder' => 'Ziehe um nochmals zu bestellen',
-  'edit' => 'bearbeiten',
-  'enable' => 'Aktivieren',
-  'enabled' => 'Aktiviert',
-  'error_404' => 'Sieht aus als würde diese Seite hier nicht mehr existieren.',
+  'disable' => 'Ausschalten',
+  'disabled' => 'Ausgeschaltet',
+  'drag_to_reorder' => 'Ziehen um erneut zu bestellen',
+  'edit' => 'Bearbeiten',
+  'enable' => 'Einschalten',
+  'enabled' => 'Eingeschaltet',
+  'error_404' => 'Die Seite die Sie suchen existiert nicht oder wurde verschoben.',
   'event_dashboard' => 'Veranstaltungsdashboard',
-  'event_menu' => 'Veranstaltungsmenü',
   'event_page_design' => 'Design der Veranstaltungsseite',
-  'export' => 'Export',
+  'export' => 'Exportieren',
   'general' => 'Allgemein',
   'hours' => 'Stunden',
   'main_menu' => 'Hauptmenü',
   'manage' => 'Verwalten',
   'message' => 'Nachrichten',
-  'minutes' => 'minuten',
-  'months_short' => '|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dec|',
+  'minutes' => 'Minuten',
+    'months_short' => '|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dec|',
   'no' => 'Nein',
   'order_form' => 'Bestellformular',
   'orders' => 'Bestellungen',
   'promote' => 'Werben',
   'save_changes' => 'Änderungen speichern',
   'save_details' => 'Details speichern',
-  'service_fees' => 'Dienstleistungskosten',
+  'service_fees' => 'Bearbeitungsgebühren',
   'social' => 'Social',
-  'submit' => 'Abschicken',
+  'submit' => 'Absenden',
   'success' => 'Erfolg',
   'ticket_design' => 'Ticket Design',
-  'access_codes' => 'Zugriffscodes',
   'tickets' => 'Tickets',
   'TOP' => 'TOP',
-  'total' => 'total',
+  'total' => 'Gesamt',
   'whoops' => 'Whoops!',
   'yes' => 'Ja',
   'no' => 'Nein',
-  /*
-   * Lines below will turn obsolete in localization helper, it is declared in app/Helpers/macros.
-   * If you run it, it will break file input fields.
-  */
-  'upload' => 'Upload',
-  'browse' => 'Browse',
+    /*
+     * Lines below will turn obsolete in localization helper, it is declared in app/Helpers/macros.
+     * If you run it, it will break file input fields.
+    */
+    'upload' => 'Hochladen',
+    'browse' => 'Browse',
   //================================== Obsolete strings ==================================//
-  'LLH:obsolete' => [
-    'months_long' => 'January|February|March|April|May|June|July|August|September|October|November|December',
-  ],
+  'LLH:obsolete' =>
+  array (
+    'months_long' => 'Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember',
+  ),
 );

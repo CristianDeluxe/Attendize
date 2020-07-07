@@ -1,12 +1,16 @@
 <?php
+/*************************************************************************
+ Generated via "php artisan localization:missing" at 2018/04/19 17:14:11
+*************************************************************************/
 
-return array(
-    'affiliate_name' => 'Name des Partnerprogramms',
-    'affiliate_tracking' => 'Partner Tracking',
-    'affiliate_tracking_text' => 'Es ist sehr einfach zu verfolgen, wer Verkäufe für diese Veranstaltung erzeugt. Erzeuge einfache einen Empfehlungslink, in dem du die Box unten verwendest und den Link mit deinen Promotern teilst.',
-    'last_referral' => 'Letzte Empfehlung',
-    'no_affiliate_referrals_yet' => 'Noch keine Partnerempfehlungen',
-    'sales_volume_generated' => 'Generiertes Verkaufsvolumen',
-    'ticket_sales_generated' => 'Generierte Ticketverkäufe',
-    'visits_generated' => 'Generierte Besuche',
+return array (
+  //============================== New strings to translate ==============================//
+  'affiliate_name' => 'Affiliate Name',
+  'affiliate_tracking' => 'Affiliate Tracking',
+  'affiliate_tracking_text' => 'Den Überblick darüber zu behalten, wer Verkäufe für Ihr Event generiert ist extrem einfach. Generieren Sie einfach einen Reflink und teilen Sie diesen mit Ihren Promotern oder Werbepartnern.',
+  'last_referral' => 'Letzer Referral',
+  'no_affiliate_referrals_yet' => 'Noch keine Affiliate Referrals',
+  'sales_volume_generated' => 'Verkaufsvolumen generiert',
+  'ticket_sales_generated' => 'Ticketverkäufe generiert',
+  'visits_generated' => 'Besuche Generiert',
 );

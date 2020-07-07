@@ -1,17 +1,17 @@
 <?php
 
 return [
-    "processing" => "Just a second...",
-    "time_run_out" => "You have run out of time! You will have to restart the order process.",
-    "just_2_minutes" => "You only have 2 minutes left to complete this order!",
-    "whoops" => 'Whoops!, it looks like the server returned an error.
-                   Please try again, or contact the webmaster if the problem persists.',
-    "whoops2" => 'Something went wrong! Refresh the page and try again',
-    "whoops_and_error" => "Whoops!, something has gone wrong.<br><br>:code :error",
-    "at_least_one_option" => 'You must have at least one option.',
-    "credit_card_error" => 'The credit card number appears to be invalid.',
-    "expiry_error" => 'The expiration date appears to be invalid.',
-    "cvc_error" => 'The CVC number appears to be invalid.',
-    "card_validation_error" => 'Please check your card details and try again.',
-    "checkin_init_error" => 'There was an error while initializing scanner. Check if you\'re connecting through secure page (https) and that your browser supports the scanner.',
+    "processing" => "Bitte eine Sekunde...",
+    "time_run_out" => "Zeit abgelaufen! Sie müssen den Bestellprozess neu beginnen.",
+    "just_2_minutes" => "Sie haben nur noch zwei Minuten Ihren Bestellprozess zu beenden!",
+    "whoops" => 'Ups!, es sieht aus, als ob der Server einen Fehler gemeldet hat.
+                   Bitte versuchen Sie es erneut, oder kontaktieren Sie den Administrator wenn das Problem weiterhin besteht.',
+    "whoops2" => 'Etwas ist schiefgelaufen! Bitte neu laden um es erneut zu probieren',
+    "whoops_and_error" => "Ups!, etwas ist schief gelaufen.<br><br>:code :error",
+    "at_least_one_option" => 'Sie müssen mindestens eine Option auswählen.',
+    "credit_card_error" => 'Die Kreditkartennummer scheint falsch zu sein.',
+    "expiry_error" => 'Das Ablaufdatum der Kreditkarte ist falsch.',
+    "cvc_error" => 'Die CVC Nummer ist falsch.',
+    "card_validation_error" => 'Bitte überprüfen Sie die Kreditkartendaten und probieren es erneut.',
+    "checkin_init_error" => 'Bei der initialisierung des Scanners trat ein Fehler auf. Bitte überprüfen Sie ihre SSL (HTTPS) verbindung und prüfen Sie ob Ihr Browser einen Scanner unterstützt.',
 ];

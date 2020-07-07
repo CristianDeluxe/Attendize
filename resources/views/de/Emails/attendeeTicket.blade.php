@@ -1,10 +1,10 @@
-Hi {{{$attendee->first_name}}},<br><br>
+Hey {{{$attendee->first_name}}},<br><br>
 
-We've attached your tickets to this email.<br><br>
+wir haben Deine Tickets an diese E-Mail angehängt.<br><br>
 
-You can view your order info and download your tickets at {{route('showOrderDetails', ['order_reference' => $attendee->order->order_reference])}} anytime.<br><br>
+Hier kannst Deine Bestellung ansehen und Deine Tickets herunterladen: {{route('showOrderDetails', ['order_reference' => $attendee->order->order_reference])}}<br><br>
 
-Your order reference is <b>{{$attendee->order->order_reference}}</b>.<br>
+Deine Bestellnummer ist <b>{{$attendee->order->order_reference}}</b>.<br>
 
-Thank you<br>
+Danke!<br>
 
