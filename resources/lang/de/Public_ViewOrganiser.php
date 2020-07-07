@@ -10,7 +10,7 @@ return array (
   // Defined in file C:\\wamp\\www\\attendize\\resources\\views\\Public\\ViewOrganiser\\Partials\\EventListingPanel.blade.php
   'tickets' => 'Tickets',
   //==================================== Translations ====================================//
-  'no_events' => 'Aktuell finden keine Veranstaltungen statt.',
+  'no_events' => 'Keine Veranstaltungen',
   'organiser_dashboard' => 'Organiser Dashboard',
   'past_events' => 'Zurückliegende Veranstaltungen',
   'upcoming_events' => 'Bevorstehende Veranstaltungen',
