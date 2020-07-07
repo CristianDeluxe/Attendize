@@ -55,7 +55,7 @@ return [
   'order_attendees' => 'Order attendees',
   'order_awaiting_payment' => 'Bitte beachten Sie die folgenden Anmerkungen zur Bezahlung.',
   'order_details' => 'Details zur Bestellung',
-  'order_items' => 'Betsellpositionen',
+  'order_items' => 'Bestellpositionen',
   'order_summary' => 'Bestellzusammenfassung',
   'organiser_dashboard' => 'Organiser Dashboard',
   'pay_using_offline_methods' => 'Offline bezahlen',

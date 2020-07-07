@@ -1,26 +1,21 @@
 <?php
-/*************************************************************************
- Generated via "php artisan localization:missing" at 2018/04/19 18:57:21 
-*************************************************************************/
 
 return array (
-    //============================== New strings to translate ==============================//
-    'this_event_has_started' => 'This event has started.',
-    //==================================== Translations ====================================//
-    'create_tickets' => 'Create tickets',
-    'edit_event_page_design' => 'Edit Event Page Design',
-    'edit_organiser_fees' => 'Edit Organiser Fees',
-    'event_page_visits' => 'Event Page Views',
-    'event_url' => 'Event URL',
-    'event_views' => 'Event Views',
-    'generate_affiliate_link' => 'Generate Affiliate link',
-    'orders' => 'Orders',
+    'this_event_has_started' => 'Diese Veranstaltung hat begonnen.',
+    'create_tickets' => 'Tickets erstellen',
+    'edit_event_page_design' => 'Design der Veranstaltungsseite bearbeiten',
+    'edit_organiser_fees' => 'Veranstaltergebühren bearbeiten',
+    'event_page_visits' => 'Views auf der Veranstaltungsseite',
+    'event_url' => 'URL zur Veranstaltung',
+    'event_views' => 'Views der Veranstaltung',
+    'generate_affiliate_link' => 'Affiliate Link erstellen',
+    'orders' => 'Bestellungen',
     'quick_links' => 'Quick Links',
-    'registrations_by_ticket' => 'Registrations By Ticket',
-    'sales_volume' => 'Sales Volume',
-    'share_event' => 'Share Event',
-    'this_event_is_on_now' => 'This event is on now',
-    'ticket_sales_volume' => 'Ticket Sales Volume',
-    'tickets_sold' => 'Tickets Sold',
-    'website_embed_code' => 'Website Embed Code',
+    'registrations_by_ticket' => 'Registrierungen nach Tickets',
+    'sales_volume' => 'Anzahl Verkäufe',
+    'share_event' => 'Veranstaltung teilen',
+    'this_event_is_on_now' => 'Diese Veranstaltung läuft gerade',
+    'ticket_sales_volume' => 'Anzahl Ticketverkäufe',
+    'tickets_sold' => 'Tickets verkauft',
+    'website_embed_code' => 'Embed Code für Webseite',
 );
