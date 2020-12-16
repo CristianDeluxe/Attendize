@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
+use Config;
+use App\Models\Order;
+use App\Services\Order as OrderService;
+
+class OrderNotification extends Mailable
+{
+    use Queueable, SerializesModels;
+
+    /**
+     * The order instance.
+     *
+     * @var Order
+     */
+    public $order;
+
+    /**
+     * The order service instance.
+     *
+     * @var OrderService
+     */
+    public $orderService;
+
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+    public function __construct(Order $order, OrderService $orderService)
+    {
+        $this->order = $order;
+        $this->orderService = $orderService;
+    }
+
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build()
+    {
+        $subject = trans("Controllers.new_order_received", ["event" => $this->order->event->title, "order" => $this->order->order_reference]);
+        return $this->subject($subject)
+                    ->view('Emails.OrderNotification');
+    }
+}

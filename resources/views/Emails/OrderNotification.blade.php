@@ -1,23 +1,24 @@
-@extends('en.Emails.Layouts.Master')
+@extends('Emails.Layouts.Master')
 
 @section('message_content')
-Ciao,<br><br>
+@lang("basic.hello"),<br><br>
 
-Hai ricevuto un nuovo ordine per l'evento <b>{{$order->event->title}}</b>.<br><br>
+@lang("Emails_OrderNotification.received_new_order") <b>{{$order->event->title}}</b>.<br><br>
 
 @if(!$order->is_payment_received)
-    <b>Nota: il pagamento per questo ordine deve ancora essere processato.</b>
+    <b>@lang("Emails_OrderNotification.order_still_awaiting_payment")</b>
     <br><br>
 @endif
 
 
-<h3>Dettaglio Ordine</h3>
-Riferimento: <b>{{$order->order_reference}}</b><br>
-Nome: <b>{{$order->full_name}}</b><br>
-Data: <b>{{$order->created_at->format(config('attendize.default_datetime_format'))}}</b><br>
-Email: <b>{{$order->email}}</b><br>
+<h3>@lang("Public_ViewEvent.order_summary")</h3>
+@lang("Email.organiser_copy")<br>
+@lang("Public_ViewEvent.order_reference"): <b>{{$order->order_reference}}</b><br>
+@lang("Public_ViewEvent.order_name"): <b>{{$order->full_name}}</b><br>
+@lang("Public_ViewEvent.order_date"): <b>{{$order->created_at->format(config('attendize.default_datetime_format'))}}</b><br>
+@lang("Public_ViewEvent.order_email"): <b>{{$order->email}}</b><br>
 @if ($order->is_business)
-<h3>Dettagli Azienda</h3>
+<h3>@lang("Public_ViewEvent.business_details")</h3>
 @if ($order->business_name) @lang("Public_ViewEvent.business_name"): <strong>{{$order->business_name}}</strong><br>@endif
 @if ($order->business_tax_number) @lang("Public_ViewEvent.business_tax_number"): <strong>{{$order->business_tax_number}}</strong><br>@endif
 @if ($order->business_address_line_one) @lang("Public_ViewEvent.business_address_line1"): <strong>{{$order->business_address_line_one}}</strong><br>@endif
@@ -27,25 +28,25 @@ Email: <b>{{$order->email}}</b><br>
 @if ($order->business_address_code) @lang("Public_ViewEvent.business_address_code"): <strong>{{$order->business_address_code}}</strong><br>@endif
 @endif
 
-<h3>Order Items</h3>
+<h3>@lang("Public_ViewEvent.order_items")</h3>
 <div style="padding:10px; background: #F9F9F9; border: 1px solid #f1f1f1;">
 
     <table style="width:100%; margin:10px;">
         <tr>
             <th>
-                Biglietto
+                @lang("Public_ViewEvent.ticket")
             </th>
             <th>
-                Quantità
+                @lang("Public_ViewEvent.quantity_full")
             </th>
             <th>
-                Prezzo
+                @lang("Public_ViewEvent.price")
             </th>
             <th>
-                Commissione
+                @lang("Public_ViewEvent.booking_fee")
             </th>
             <th>
-                Totale
+                @lang("Public_ViewEvent.total")
             </th>
         </tr>
         @foreach($order->orderItems as $order_item)
@@ -57,15 +58,15 @@ Email: <b>{{$order->email}}</b><br>
                 {{$order_item->quantity}}
             </td>
             <td>
-                @if((int)ceil($order_item->unit_price) == 0)
-                GRATUITO
+                @isFree($order_item->unit_price)
+                @lang("Public_ViewEvent.free")
                 @else
                 {{money($order_item->unit_price, $order->event->currency)}}
                 @endif
             </td>
             <td>
-                @if ((int)ceil($order_item->unit_booking_fee) > 0)
-                    @if((int)ceil($order_item->unit_price) == 0)
+                @requiresPayment($order_item->unit_booking_fee)
+                    @isFree($order_item->unit_price)
                     -
                     @else
                     {{money($order_item->unit_booking_fee, $order->event->currency)}}
@@ -75,8 +76,8 @@ Email: <b>{{$order->email}}</b><br>
                 @endif
             </td>
             <td>
-                @if((int)ceil($order_item->unit_price) == 0)
-                GRATUITO
+                @isFree($order_item->unit_price)
+                @lang("Public_ViewEvent.free")
                 @else
                 {{money(($order_item->unit_price + $order_item->unit_booking_fee) * ($order_item->quantity), $order->event->currency)}}
                 @endif
@@ -92,7 +93,7 @@ Email: <b>{{$order->email}}</b><br>
             <td>
             </td>
             <td>
-                <b>Totale parziale</b>
+                <b>@lang("Public_ViewEvent.sub_total")</b>
             </td>
             <td colspan="2">
                 {{$orderService->getOrderTotalWithBookingFee(true)}}
@@ -122,7 +123,7 @@ Email: <b>{{$order->email}}</b><br>
             <td>
             </td>
             <td>
-                <b>Totale</b>
+                <b>@lang("Public_ViewEvent.total")</b>
             </td>
             <td colspan="2">
                 {{$orderService->getGrandTotal(true)}}
@@ -132,9 +133,9 @@ Email: <b>{{$order->email}}</b><br>
 
 
     <br><br>
-    Puoi gestire questo ordine visitando: {{route('showEventOrders', ['event_id' => $order->event->id, 'q'=>$order->order_reference])}}
+    @lang("Emails_OrderNotification.manage_order") {{route('showEventOrders', ['event_id' => $order->event->id, 'q'=>$order->order_reference])}}
     <br><br>
 </div>
 <br><br>
-Grazie
+@lang("basic.thank_you")
 @stop
