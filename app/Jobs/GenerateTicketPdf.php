@@ -3,15 +3,17 @@
 namespace App\Jobs;
 
 use App\Models\Order;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 use PDF;
 
-class GenerateTicket extends Job implements ShouldQueue
+class GenerateTicketPdf implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $reference;
     protected $order_reference;
@@ -22,7 +24,7 @@ class GenerateTicket extends Job implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($reference)
+    public function __construct()
     {
         Log::info("Generating ticket: #" . $reference);
         $this->reference = $reference;
@@ -39,7 +41,6 @@ class GenerateTicket extends Job implements ShouldQueue
      */
     public function handle()
     {
-
         $file_name = $this->reference;
         $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name;
         $file_with_ext = $file_path . ".pdf";
@@ -84,7 +85,6 @@ class GenerateTicket extends Job implements ShouldQueue
             Log::error("Error stack trace" . $e->getTraceAsString());
             $this->fail($e);
         }
-
     }
 
     private function isAttendeeTicket()

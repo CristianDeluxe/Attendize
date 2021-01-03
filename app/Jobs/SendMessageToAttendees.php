@@ -4,13 +4,15 @@ namespace App\Jobs;
 
 use App\Mailers\AttendeeMailer;
 use App\Models\Message;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SendMessageToAttendees extends Job implements ShouldQueue
+class SendMessageToAttendees implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $attendeeMessage;
 

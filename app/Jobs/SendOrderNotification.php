@@ -4,14 +4,17 @@ namespace App\Jobs;
 
 use App\Mailers\OrderMailer;
 use App\Models\Order;
+use App\Services\Order as OrderService;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Log;
 
-class SendOrderNotification extends Job implements ShouldQueue
+class SendOrderNotification implements ShouldQueue
 {
-    use InteractsWithQueue, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $order;
 

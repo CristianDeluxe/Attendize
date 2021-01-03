@@ -3,7 +3,7 @@
 use App\Cancellation\OrderCancellation;
 use App\Exports\AttendeesExport;
 use App\Imports\AttendeesImport;
-use App\Jobs\GenerateTicket;
+use App\Jobs\GenerateTicketPdf;
 use App\Jobs\SendAttendeeInvite;
 use App\Jobs\SendAttendeeTicket;
 use App\Jobs\SendMessageToAttendees;
@@ -467,7 +467,7 @@ class EventAttendeesController extends MyBaseController
         Log::info($attendee);
 
 
-        $this->dispatch(new GenerateTicket($attendee->order->order_reference . "-" . $attendee->reference_index));
+        $this->dispatch(new GenerateTicketPdf($attendee->order->order_reference . "-" . $attendee->reference_index));
 
         $pdf_file_name = $attendee->order->order_reference . '-' . $attendee->reference_index;
         $pdf_file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $pdf_file_name;

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Attendize\PaymentUtils;
-use App\Events\OrderCompletedEvent;
 use App\Mail\OrderNotification;
 use App\Models\Account;
 use App\Models\AccountPaymentGateway;
