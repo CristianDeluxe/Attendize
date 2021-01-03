@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Attendize\PaymentUtils;
-use App\Mail\OrderNotification;
+use App\Jobs\SendOrderNotification;
 use App\Models\Account;
 use App\Models\AccountPaymentGateway;
 use App\Models\Affiliate;
@@ -717,9 +717,8 @@ class EventCheckoutController extends Controller
         ReservedTickets::where('session_id', '=', session()->getId())->delete();
 
         // Queue up some tasks - Emails to be sent, PDFs etc.
-        Log::info('Queueing Order Notification Email');
-        Mail::to($order->email)->locale(Config::get('app.locale'))->queue(new OrderNotification($order, $orderService));
-
+        Log::info('Queueing Order Notification Job');
+        SendOrderNotification::dispatch($order, $orderService);
 
         if ($return_json) {
             return response()->json([
