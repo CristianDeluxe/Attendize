@@ -461,18 +461,15 @@ class EventAttendeesController extends MyBaseController
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
 
-        Config::set('queue.default', 'sync');
-        Log::info("*********");
-        Log::info($attendee_id);
-        Log::info($attendee);
+        Log::debug("*********");
+        Log::debug($attendee_id);
+        Log::debug($attendee);
 
-
-        $this->dispatch(new GenerateTicketPdf($attendee->order->order_reference . "-" . $attendee->reference_index));
 
         $pdf_file_name = $attendee->order->order_reference . '-' . $attendee->reference_index;
-        $pdf_file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $pdf_file_name;
-        $pdf_file = $pdf_file_path . '.pdf';
+        $pdf_file = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $pdf_file_name . '.pdf';
 
+        $this->dispatchNow(new GenerateTicketPdf($pdf_file_name));
 
         return response()->download($pdf_file);
     }
