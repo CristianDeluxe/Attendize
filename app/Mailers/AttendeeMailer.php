@@ -11,28 +11,6 @@ use Mail;
 
 class AttendeeMailer extends Mailer
 {
-
-    public function sendAttendeeTicket($attendee)
-    {
-
-        Log::info("Sending ticket to: " . $attendee->email);
-
-        $data = [
-            'attendee' => $attendee,
-        ];
-
-        Mail::send('Mailers.TicketMailer.SendAttendeeTicket', $data, function ($message) use ($attendee) {
-            $message->to($attendee->email);
-            $message->subject(trans("Email.your_ticket_for_event", ["event" => $attendee->order->event->title]));
-
-            $file_name = $attendee->reference;
-            $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name . '.pdf';
-
-            $message->attach($file_path);
-        });
-
-    }
-
     /**
      * Sends the attendees a message
      *

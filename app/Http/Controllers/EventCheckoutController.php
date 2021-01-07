@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Attendize\PaymentUtils;
-use App\Jobs\SendOrderNotification;
+use App\Jobs\SendOrderNotificationJob;
+use App\Jobs\SendOrderConfirmationJob;
+use App\Jobs\SendOrderAttendeeTicketJob;
 use App\Models\Account;
 use App\Models\AccountPaymentGateway;
 use App\Models\Affiliate;
@@ -717,8 +719,18 @@ class EventCheckoutController extends Controller
         ReservedTickets::where('session_id', '=', session()->getId())->delete();
 
         // Queue up some tasks - Emails to be sent, PDFs etc.
-        Log::info('Queueing Order Notification Job');
-        SendOrderNotification::dispatch($order, $orderService);
+        // Send order notification to organizer
+        Log::debug('Queueing Order Notification Job');
+        SendOrderNotificationJob::dispatch($order, $orderService);
+        // Send order confirmation to ticket buyer
+        Log::debug('Queueing Order Tickets Job');
+        SendOrderConfirmationJob::dispatch($order, $orderService);
+        // Send tickets to attendees
+        Log::debug('Queueing Attendee Ticket Jobs');
+        foreach ($order->attendees as $attendee) {
+            SendOrderAttendeeTicketJob::dispatch($attendee);
+            Log::debug('Queueing Attendee Ticket Job Done');
+        }
 
         if ($return_json) {
             return response()->json([

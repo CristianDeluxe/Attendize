@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Attendee;
 use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,28 +12,14 @@ use Illuminate\Queue\SerializesModels;
 use Log;
 use PDF;
 
-class GenerateTicketPdf implements ShouldQueue
+class GenerateTicketsJobBase implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $reference;
-    protected $order_reference;
-    protected $attendee_reference_index;
-
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        Log::info("Generating ticket: #" . $reference);
-        $this->reference = $reference;
-        $this->order_reference = explode("-", $reference)[0];
-        if (strpos($reference, "-")) {
-            $this->attendee_reference_index = explode("-", $reference)[1];
-        }
-    }
+    public $attendee;
+    public $event;
+    public $order;
+    public $file_name;
 
     /**
      * Execute the job.
@@ -41,36 +28,26 @@ class GenerateTicketPdf implements ShouldQueue
      */
     public function handle()
     {
-        $file_name = $this->reference;
-        $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name;
-        $file_with_ext = $file_path . ".pdf";
+        $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $this->file_name;
+        $file_with_ext = $file_path . '.pdf';
 
         if (file_exists($file_with_ext)) {
             Log::info("Use ticket from cache: " . $file_with_ext);
             return;
         }
 
-        $order = Order::where('order_reference', $this->order_reference)->first();
-        Log::info($order);
-        $event = $order->event;
-
-        $query = $order->attendees();
-        if ($this->isAttendeeTicket()) {
-            $query = $query->where('reference_index', '=', $this->attendee_reference_index);
-        }
-        $attendees = $query->get();
-
-        $image_path = $event->organiser->full_logo_path;
+        $organiser = $this->event->organiser;
+        $image_path = $organiser->full_logo_path;
         $images = [];
-        $imgs = $order->event->images;
+        $imgs = $this->event->images;
         foreach ($imgs as $img) {
             $images[] = base64_encode(file_get_contents(public_path($img->image_path)));
         }
 
         $data = [
-            'order'     => $order,
-            'event'     => $event,
-            'attendees' => $attendees,
+            'order'     => $this->order,
+            'event'     => $this->event,
+            'attendees' => $this->attendees,
             'css'       => file_get_contents(public_path('assets/stylesheet/ticket.css')),
             'image'     => base64_encode(file_get_contents(public_path($image_path))),
             'images'    => $images,
@@ -86,9 +63,44 @@ class GenerateTicketPdf implements ShouldQueue
             $this->fail($e);
         }
     }
+}
 
-    private function isAttendeeTicket()
+/**
+ * Generate a single ticket for 1 attendee
+ */
+class GenerateTicketJob extends GenerateTicketsJobBase
+{
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Attendee $attendee)
     {
-        return ($this->attendee_reference_index != null);
+        $this->attendees = [$attendee];
+        $this->event = $attendee->event;
+        $this->file_name = $attendee->getReferenceAttribute();
+        $this->order = $attendee->order;
+    }
+}
+
+/**
+ * Generate all the tickets in 1 order
+ */
+class GenerateTicketsJob extends GenerateTicketsJobBase
+{
+    public $order;
+
+    /**
+     * Create a new job instance.
+     *
+     * @return void
+     */
+    public function __construct(Order $order)
+    {
+        $this->attendees = $order->attendees;
+        $this->event = $order->event;
+        $this->file_name = $order->order_reference;
+        $this->order = $order;
     }
 }

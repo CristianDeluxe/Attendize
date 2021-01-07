@@ -3,9 +3,9 @@
 use App\Cancellation\OrderCancellation;
 use App\Exports\AttendeesExport;
 use App\Imports\AttendeesImport;
-use App\Jobs\GenerateTicketPdf;
+use App\Jobs\GenerateTicketsJob;
 use App\Jobs\SendAttendeeInvite;
-use App\Jobs\SendAttendeeTicket;
+use App\Jobs\SendOrderAttendeeTicketJob;
 use App\Jobs\SendMessageToAttendees;
 use App\Models\Attendee;
 use App\Models\Event;
@@ -460,16 +460,18 @@ class EventAttendeesController extends MyBaseController
     public function showExportTicket($event_id, $attendee_id)
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
+        $attendee_reference = $attendee->getReferenceAttribute();
 
-        Log::debug("*********");
-        Log::debug($attendee_id);
-        Log::debug($attendee);
+        Log::debug("Exporting ticket PDF", [
+            'attendee_id' => $attendee_id,
+            'order_reference' => $attendee->order->order_reference,
+            'attendee_reference' => $attendee_reference,
+            'event_id' => $event_id
+        ]);
 
+        $pdf_file = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $attendee_reference . '.pdf';
 
-        $pdf_file_name = $attendee->order->order_reference . '-' . $attendee->reference_index;
-        $pdf_file = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $pdf_file_name . '.pdf';
-
-        $this->dispatchNow(new GenerateTicketPdf($pdf_file_name));
+        $this->dispatchNow(new GenerateTicketJob($attendee));
 
         return response()->download($pdf_file);
     }
@@ -674,7 +676,7 @@ class EventAttendeesController extends MyBaseController
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
 
-        $this->dispatch(new SendAttendeeTicket($attendee));
+        $this->dispatch(new SendOrderAttendeeTicketJob($attendee));
 
         return response()->json([
             'status'  => 'success',

@@ -2,15 +2,14 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-use Config;
 use App\Models\Order;
 use App\Services\Order as OrderService;
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
 
-class OrderNotification extends Mailable
+
+class SendOrderConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -46,8 +45,15 @@ class OrderNotification extends Mailable
      */
     public function build()
     {
-        $subject = trans("Controllers.new_order_received", ["event" => $this->order->event->title, "order" => $this->order->order_reference]);
+        $file_name = $this->order->order_reference;
+        $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name . '.pdf';
+
+        $subject = trans(
+            "Controllers.tickets_for_event",
+            ["event" => $this->order->event->title]
+        );
         return $this->subject($subject)
-                    ->view('Emails.OrderNotification');
+                    ->attach($file_path)
+                    ->view('Emails.OrderConfirmation');
     }
 }

@@ -2,28 +2,28 @@
 
 namespace App\Jobs;
 
-use App\Mailers\OrderMailer;
-use App\Models\Order;
+use App\Mailers\AttendeeMailer;
+use App\Models\Attendee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class SendOrderTickets implements ShouldQueue
+class SendAttendeeInvite implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $order;
+    public $attendee;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Order $order)
+    public function __construct(Attendee $attendee)
     {
-        $this->order = $order;
+        $this->attendee = $attendee;
     }
 
     /**
@@ -31,9 +31,9 @@ class SendOrderTickets implements ShouldQueue
      *
      * @return void
      */
-    public function handle(OrderMailer $orderMailer)
+    public function handle(AttendeeMailer $attendeeMailer)
     {
-        $this->dispatchNow(new GenerateTicketPdf($this->order->order_reference));
-        $orderMailer->sendOrderTickets($this->order);
+        $this->dispatchNow(new GenerateTicket($this->attendee));
+        $attendeeMailer->sendAttendeeInvite($this->attendee);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Mail\OrderNotification;
+use App\Mail\SendOrderConfirmationMail;
 use App\Models\Order;
 use App\Services\Order as OrderService;
 use Illuminate\Bus\Queueable;
@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Config;
 use Mail;
 
-class SendOrderNotification implements ShouldQueue
+class SendOrderConfirmationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -38,7 +38,8 @@ class SendOrderNotification implements ShouldQueue
      */
     public function handle()
     {
-        $mail = new OrderNotification($this->order, $this->orderService);
+        GenerateTicketsJob::dispatchNow($this->order);
+        $mail = new SendOrderConfirmationMail($this->order, $this->orderService);
         Mail::to($this->order->email)
             ->locale(Config::get('app.locale'))
             ->send($mail);
