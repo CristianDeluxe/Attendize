@@ -6,7 +6,7 @@ use App\Imports\AttendeesImport;
 use App\Jobs\GenerateTicketsJob;
 use App\Jobs\SendAttendeeInviteJob;
 use App\Jobs\SendOrderAttendeeTicketJob;
-use App\Jobs\SendMessageToAttendees;
+use App\Jobs\SendMessageToAttendeesJob;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
@@ -444,7 +444,7 @@ class EventAttendeesController extends MyBaseController
         /*
          * Queue the emails
          */
-        $this->dispatch(new SendMessageToAttendees($message));
+        SendMessageToAttendeesJob::dispatch($message);
 
         return response()->json([
             'status'  => 'success',
