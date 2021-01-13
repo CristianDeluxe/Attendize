@@ -2,15 +2,18 @@
 
 namespace App\Jobs;
 
-use App\Mailers\AttendeeMailer;
+use App\Mail\SendAttendeeInviteMail;
 use App\Models\Attendee;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Config;
+use Mail;
 
-class SendAttendeeInvite implements ShouldQueue
+
+class SendAttendeeInviteJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -31,9 +34,12 @@ class SendAttendeeInvite implements ShouldQueue
      *
      * @return void
      */
-    public function handle(AttendeeMailer $attendeeMailer)
+    public function handle()
     {
-        $this->dispatchNow(new GenerateTicket($this->attendee));
-        $attendeeMailer->sendAttendeeInvite($this->attendee);
+        GenerateTicketJob::dispatchNow($this->attendee);
+        $mail = new SendAttendeeInviteMail($this->attendee);
+        Mail::to($this->attendee->email)
+            ->locale(Config::get('app.locale'))
+            ->send($mail);
     }
 }

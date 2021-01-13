@@ -51,27 +51,4 @@ class AttendeeMailer extends Mailer
         $message_object->sent_at = Carbon::now();
         $message_object->save();
     }
-
-    public function SendAttendeeInvite($attendee)
-    {
-
-        Log::info("Sending invite to: " . $attendee->email);
-
-        $data = [
-            'attendee' => $attendee,
-        ];
-
-        Mail::send('Mailers.TicketMailer.SendAttendeeInvite', $data, function ($message) use ($attendee) {
-            $message->to($attendee->email);
-            $message->subject(trans("Email.your_ticket_for_event", ["event" => $attendee->order->event->title]));
-
-            $file_name = $attendee->getReferenceAttribute();
-            $file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $file_name . '.pdf';
-
-            $message->attach($file_path);
-        });
-
-    }
-
-
 }

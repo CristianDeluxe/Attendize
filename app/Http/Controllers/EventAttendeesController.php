@@ -4,7 +4,7 @@ use App\Cancellation\OrderCancellation;
 use App\Exports\AttendeesExport;
 use App\Imports\AttendeesImport;
 use App\Jobs\GenerateTicketsJob;
-use App\Jobs\SendAttendeeInvite;
+use App\Jobs\SendAttendeeInviteJob;
 use App\Jobs\SendOrderAttendeeTicketJob;
 use App\Jobs\SendMessageToAttendees;
 use App\Models\Attendee;
@@ -207,7 +207,7 @@ class EventAttendeesController extends MyBaseController
 
 
             if ($email_attendee == '1') {
-                $this->dispatch(new SendAttendeeInvite($attendee));
+                SendAttendeeInviteJob::dispatch($attendee);
             }
 
             session()->flash('message', trans("Controllers.attendee_successfully_invited"));
