@@ -1,19 +1,20 @@
-@extends('en.Emails.Layouts.Master')
+@extends('Emails.Layouts.Master')
 
 @section('message_content')
-Hello,<br><br>
+@lang("basic.hello"),<br><br>
 
-Your order for the event <strong>{{$order->event->title}}</strong> was successful.<br><br>
+{{ @trans("Order_Emails.successful_order", ["name"=>$event->title]) }}<br><br>
 
-Your tickets are attached to this email. You can also view you order details and download your tickets
-at: <a href="{{route('showOrderDetails', ['order_reference' => $order->order_reference])}}">{{route('showOrderDetails', ['order_reference' => $order->order_reference])}}</a>
+{{ @trans("Order_Emails.tickets_attached") }} <a href="{{route('showOrderDetails', ['order_reference' => $order->order_reference])}}">{{route('showOrderDetails', ['order_reference' => $order->order_reference])}}</a>.
 
 @if(!$order->is_payment_received)
 <br><br>
-<strong>Please note: This order still requires payment. Instructions on how to make payment can be found on your
-    order page: {{route('showOrderDetails', ['order_reference' => $order->order_reference])}}</strong>
+<strong>{{ lang("Order_Emails.order_still_awaiting_payment") }}</strong>
+<br><br>
+{{ $event->offline_payment_instructions }}
 <br><br>
 @endif
+
 <h3>Order Details</h3>
 Order Reference: <strong>{{$order->order_reference}}</strong><br>
 Order Name: <strong>{{$order->full_name}}</strong><br>

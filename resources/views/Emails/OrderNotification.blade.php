@@ -3,10 +3,10 @@
 @section('message_content')
 @lang("basic.hello"),<br><br>
 
-@lang("Emails_OrderNotification.received_new_order") <b>{{$order->event->title}}</b>.<br><br>
+@lang("Order_Emails.received_new_order") <b>{{$order->event->title}}</b>.<br><br>
 
 @if(!$order->is_payment_received)
-    <b>@lang("Emails_OrderNotification.order_still_awaiting_payment")</b>
+    <b>@lang("Order_Emails.order_still_awaiting_payment")</b>
     <br><br>
 @endif
 
@@ -133,7 +133,7 @@
 
 
     <br><br>
-    @lang("Emails_OrderNotification.manage_order") <a href="{{route('showEventOrders', ['event_id' => $order->event->id, 'q'=>$order->order_reference])}}">{{route('showEventOrders', ['event_id' => $order->event->id, 'q'=>$order->order_reference])}}</a>
+    @lang("Order_Emails.manage_order") <a href="{{route('showEventOrders', ['event_id' => $order->event->id, 'q'=>$order->order_reference])}}">{{route('showEventOrders', ['event_id' => $order->event->id, 'q'=>$order->order_reference])}}</a>
     <br><br>
 </div>
 <br><br>
