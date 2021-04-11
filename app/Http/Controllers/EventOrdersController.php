@@ -3,7 +3,7 @@
 use App\Cancellation\OrderCancellation;
 use App\Cancellation\OrderRefundException;
 use App\Exports\OrdersExport;
-use App\Jobs\SendOrderTickets;
+use App\Jobs\SendOrderConfirmationJob;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\Order;
@@ -143,8 +143,9 @@ class EventOrdersController extends MyBaseController
     public function resendOrder($order_id)
     {
         $order = Order::scope()->find($order_id);
+        $orderService = new OrderService($order->amount, $order->booking_fee, $order->event);
 
-        $this->dispatch(new SendOrderTickets($order));
+        $this->dispatch(new SendOrderConfirmationJob($order, $orderService));
 
         return response()->json([
             'status'      => 'success',

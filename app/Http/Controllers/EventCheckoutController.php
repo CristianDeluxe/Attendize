@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Attendize\PaymentUtils;
-use App\Events\OrderCompletedEvent;
+use App\Jobs\SendOrderNotificationJob;
+use App\Jobs\SendOrderConfirmationJob;
+use App\Jobs\SendOrderAttendeeTicketJob;
 use App\Models\Account;
 use App\Models\AccountPaymentGateway;
 use App\Models\Affiliate;
@@ -19,10 +21,12 @@ use App\Models\Ticket;
 use App\Services\Order as OrderService;
 use Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use Carbon\Carbon;
+use Config;
 use Cookie;
 use DB;
 use Illuminate\Http\Request;
 use Log;
+use Mail;
 use Omnipay;
 use PDF;
 use PhpSpec\Exception\Exception;
@@ -715,9 +719,18 @@ class EventCheckoutController extends Controller
         ReservedTickets::where('session_id', '=', session()->getId())->delete();
 
         // Queue up some tasks - Emails to be sent, PDFs etc.
-        Log::info('Firing the event');
-        event(new OrderCompletedEvent($order));
-
+        // Send order notification to organizer
+        Log::debug('Queueing Order Notification Job');
+        SendOrderNotificationJob::dispatch($order, $orderService);
+        // Send order confirmation to ticket buyer
+        Log::debug('Queueing Order Tickets Job');
+        SendOrderConfirmationJob::dispatch($order, $orderService);
+        // Send tickets to attendees
+        Log::debug('Queueing Attendee Ticket Jobs');
+        foreach ($order->attendees as $attendee) {
+            SendOrderAttendeeTicketJob::dispatch($attendee);
+            Log::debug('Queueing Attendee Ticket Job Done');
+        }
 
         if ($return_json) {
             return response()->json([
