@@ -20,7 +20,7 @@ jobs:
       uses: php-actions/composer@v4
       with:
         command: install
-        args: --no-ansi --no-scripts --prefer-dist
+        args: --no-ansi --prefer-dist
         php_version: 7.4
         composer_version: 1
         interaction: no
@@ -28,10 +28,6 @@ jobs:
         dev: yes
         progress: no
         quiet: no
-    - name: Debug dependency versions
-      run: php -v && composer -V
-    - name: Generate key
-      run: php artisan key:generate
     - name: Create Database
       run: |
         mkdir -p database
