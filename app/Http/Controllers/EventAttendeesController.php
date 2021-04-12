@@ -3,10 +3,10 @@
 use App\Cancellation\OrderCancellation;
 use App\Exports\AttendeesExport;
 use App\Imports\AttendeesImport;
-use App\Jobs\GenerateTicket;
-use App\Jobs\SendAttendeeInvite;
-use App\Jobs\SendAttendeeTicket;
-use App\Jobs\SendMessageToAttendees;
+use App\Jobs\GenerateTicketsJob;
+use App\Jobs\SendAttendeeInviteJob;
+use App\Jobs\SendOrderAttendeeTicketJob;
+use App\Jobs\SendMessageToAttendeesJob;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
@@ -135,8 +135,8 @@ class EventAttendeesController extends MyBaseController
         $ticket_id = $request->get('ticket_id');
         $event = Event::findOrFail($event_id);
         $ticket_price = 0;
-        $attendee_first_name = strip_tags($request->get('first_name'));
-        $attendee_last_name = strip_tags($request->get('last_name'));
+        $attendee_first_name = $request->get('first_name');
+        $attendee_last_name = $request->get('last_name');
         $attendee_email = $request->get('email');
         $email_attendee = $request->get('email_ticket');
 
@@ -207,7 +207,7 @@ class EventAttendeesController extends MyBaseController
 
 
             if ($email_attendee == '1') {
-                $this->dispatch(new SendAttendeeInvite($attendee));
+                SendAttendeeInviteJob::dispatch($attendee);
             }
 
             session()->flash('message', trans("Controllers.attendee_successfully_invited"));
@@ -444,7 +444,7 @@ class EventAttendeesController extends MyBaseController
         /*
          * Queue the emails
          */
-        $this->dispatch(new SendMessageToAttendees($message));
+        SendMessageToAttendeesJob::dispatch($message);
 
         return response()->json([
             'status'  => 'success',
@@ -460,19 +460,18 @@ class EventAttendeesController extends MyBaseController
     public function showExportTicket($event_id, $attendee_id)
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
+        $attendee_reference = $attendee->getReferenceAttribute();
 
-        Config::set('queue.default', 'sync');
-        Log::info("*********");
-        Log::info($attendee_id);
-        Log::info($attendee);
+        Log::debug("Exporting ticket PDF", [
+            'attendee_id' => $attendee_id,
+            'order_reference' => $attendee->order->order_reference,
+            'attendee_reference' => $attendee_reference,
+            'event_id' => $event_id
+        ]);
 
+        $pdf_file = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $attendee_reference . '.pdf';
 
-        $this->dispatch(new GenerateTicket($attendee->order->order_reference . "-" . $attendee->reference_index));
-
-        $pdf_file_name = $attendee->order->order_reference . '-' . $attendee->reference_index;
-        $pdf_file_path = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $pdf_file_name;
-        $pdf_file = $pdf_file_path . '.pdf';
-
+        $this->dispatchNow(new GenerateTicketJob($attendee));
 
         return response()->download($pdf_file);
     }
@@ -677,7 +676,7 @@ class EventAttendeesController extends MyBaseController
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
 
-        $this->dispatch(new SendAttendeeTicket($attendee));
+        $this->dispatch(new SendOrderAttendeeTicketJob($attendee));
 
         return response()->json([
             'status'  => 'success',
