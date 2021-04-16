@@ -3,7 +3,7 @@
 @section('message_content')
 @lang("basic.hello"),<br><br>
 
-{{ @trans("Order_Emails.successful_order", ["name"=>$event->title]) }}<br><br>
+{!! @trans("Order_Emails.successful_order", ["name"=>$order->event->title]) !!}<br><br>
 
 {{ @trans("Order_Emails.tickets_attached") }} <a href="{{route('showOrderDetails', ['order_reference' => $order->order_reference])}}">{{route('showOrderDetails', ['order_reference' => $order->order_reference])}}</a>.
 
