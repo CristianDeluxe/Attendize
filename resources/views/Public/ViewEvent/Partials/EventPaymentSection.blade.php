@@ -69,7 +69,7 @@
                 @if($order_requires_payment)
                 @include('Public.ViewEvent.Partials.OfflinePayments')
                 @endif
-                @if(View::exists($order_requires_payment && $payment_gateway['checkout_blade_template']))
+                @if($order_requires_payment && View::exists($payment_gateway['checkout_blade_template']))
                 @include($payment_gateway['checkout_blade_template'])
                 @endif
                 @if(!$order_requires_payment)
