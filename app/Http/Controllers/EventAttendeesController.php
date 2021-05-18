@@ -3,7 +3,7 @@
 use App\Cancellation\OrderCancellation;
 use App\Exports\AttendeesExport;
 use App\Imports\AttendeesImport;
-use App\Jobs\GenerateTicketsJob;
+use App\Jobs\GenerateTicketJob;
 use App\Jobs\SendAttendeeInviteJob;
 use App\Jobs\SendOrderAttendeeTicketJob;
 use App\Jobs\SendMessageToAttendeesJob;
