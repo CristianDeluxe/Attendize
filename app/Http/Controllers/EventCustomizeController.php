@@ -124,13 +124,13 @@ class EventCustomizeController extends MyBaseController
             ]);
         }
 
-        $event->social_share_text = $request->get('social_share_text');
-        $event->social_show_facebook = $request->get('social_show_facebook');
-        $event->social_show_linkedin = $request->get('social_show_linkedin');
-        $event->social_show_twitter = $request->get('social_show_twitter');
-        $event->social_show_email = $request->get('social_show_email');
-        $event->social_show_googleplus = $request->get('social_show_googleplus');
-        $event->social_show_whatsapp = $request->get('social_show_whatsapp');
+        $event->social_share_text = $request->get('social_share_text', false);
+        $event->social_show_facebook = $request->get('social_show_facebook', false);
+        $event->social_show_linkedin = $request->get('social_show_linkedin', false);
+        $event->social_show_twitter = $request->get('social_show_twitter', false);
+        $event->social_show_email = $request->get('social_show_email', false);
+        $event->social_show_googleplus = $request->get('social_show_googleplus', false);
+        $event->social_show_whatsapp = $request->get('social_show_whatsapp', false);
         $event->save();
 
         return response()->json([
