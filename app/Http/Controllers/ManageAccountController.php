@@ -23,6 +23,7 @@ use Services\PaymentGateway\Dummy;
 use Services\PaymentGateway\Stripe;
 use Services\PaymentGateway\StripeSCA;
 use Utils;
+use Illuminate\Support\Facades\Lang;
 
 class ManageAccountController extends MyBaseController
 {
@@ -200,7 +201,7 @@ class ManageAccountController extends MyBaseController
             'inviter'       => Auth::user(),
         ];
 
-        Mail::send('Emails.inviteUser', $data, static function (Message $message) use ($data) {
+        Mail::send(Lang::locale().'.Emails.inviteUser', $data, static function (Message $message) use ($data) {
             $message->to($data['user']->email)
                 ->subject(trans('Email.invite_user', [
                     'name' => $data['inviter']->first_name . ' ' . $data['inviter']->last_name,
