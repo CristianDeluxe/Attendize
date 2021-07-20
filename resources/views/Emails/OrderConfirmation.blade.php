@@ -9,9 +9,9 @@
 
 @if(!$order->is_payment_received)
 <br><br>
-<strong>{{ lang("Order_Emails.order_still_awaiting_payment") }}</strong>
+<strong>{{ @trans("Order_Emails.order_still_awaiting_payment") }}</strong>
 <br><br>
-{{ $event->offline_payment_instructions }}
+{{ $order->event->offline_payment_instructions }}
 <br><br>
 @endif
 
