@@ -1,0 +1,38 @@
+body{
+    direction: rtl;
+}
+
+
+ .sidebar{
+        &.sidebar-left{
+            &.sidebar-menu{
+                right: 0;
+            }
+        }
+        
+        &.sidebar-menu{
+            & + #main {
+                padding-right: 220px;
+                padding-left: 0;
+            }
+        }
+    }
+
+
+#header{
+    &.navbar{
+        & > .navbar-header {
+            float: right;
+        }
+        
+        & .navbar-toolbar {
+            margin-right: 220px;
+        }
+    }
+}
+
+.event { 
+    .event-meta{
+        margin-right: 60px ;
+    }
+}
