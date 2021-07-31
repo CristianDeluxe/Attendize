@@ -25,6 +25,7 @@ return [
     'Contact'                           => 'Contact',
     'copy_buyer'                        => 'Copy buyer details to all ticket holders',
     'complete_payment'                  => 'Complete Payment',
+    'complete_order'                    => 'Complete Order',
     'continue'                          => 'Continue',
     'currently_not_on_sale'             => 'Currently Not On Sale',
     'cvc_number'                        => 'CVC number',

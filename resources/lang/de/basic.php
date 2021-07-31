@@ -1,10 +1,11 @@
 <?php
 /*************************************************************************
- Generated via "php artisan localization:missing" at 2018/04/26 11:05:24 
+ Generated via "php artisan localization:missing" at 2018/04/26 11:05:24
 *************************************************************************/
 
 return array (
   //==================================== Translations ====================================//
+  'apply' => 'Anwenden',
   'action' => 'Aktion',
   'affiliates' => 'Affiliates',
   'attendees' => 'Teilnehmer',
@@ -21,23 +22,23 @@ return array (
   'enable' => 'Einschalten',
   'enabled' => 'Eingeschaltet',
   'error_404' => 'Die Seite die Sie suchen existiert nicht oder wurde verschoben.',
-  'event_dashboard' => 'Event Dashboard',
-  'event_page_design' => 'Event Seiten Design',
+  'event_dashboard' => 'Veranstaltungsdashboard',
+  'event_page_design' => 'Design der Veranstaltungsseite',
   'export' => 'Exportieren',
-  'general' => 'Generell',
+  'general' => 'Allgemein',
+  'hours' => 'Stunden',
   'hello' => 'Hello',
-  'hours' => 'Stunen',
   'main_menu' => 'Hauptmenü',
   'manage' => 'Verwalten',
-  'message' => 'Nachricht',
+  'message' => 'Nachrichten',
   'minutes' => 'Minuten',
-  'months_short' => '|Jan|Feb|Mrz|Apr|Mai|Jun|Jul|Aug|Sep|Oct|Nov|Dez|',
+  'months_short' => '|Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dec|',
   'no' => 'Nein',
   'order_form' => 'Bestellformular',
   'orders' => 'Bestellungen',
-  'promote' => 'befördern',
-  'save_changes' => 'Bearbeitung Speichern',
-  'save_details' => 'Details Speichern',
+  'promote' => 'Werben',
+  'save_changes' => 'Änderungen speichern',
+  'save_details' => 'Details speichern',
   'service_fees' => 'Bearbeitungsgebühren',
   'social' => 'Social',
   'submit' => 'Absenden',
@@ -55,9 +56,9 @@ return array (
      * If you run it, it will break file input fields.
     */
     'upload' => 'Hochladen',
-    'browse' => 'Suchen',
+    'browse' => 'Browse',
   //================================== Obsolete strings ==================================//
-  'LLH:obsolete' => 
+  'LLH:obsolete' =>
   array (
     'months_long' => 'Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember',
   ),
