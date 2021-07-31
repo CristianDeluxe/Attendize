@@ -1,6 +1,6 @@
 {
     "name": "attendize",
-    "version": "2.2.4",
+    "version": "2.3.0",
     "description": "Attendize Ticketing Platform",
     "main": "public/index.php",
     "dependencies": {
