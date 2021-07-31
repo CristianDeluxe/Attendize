@@ -303,8 +303,7 @@ class EventOrdersController extends MyBaseController
             'order'           => $order,
             'message_content' => $request->get('message'),
             'subject'         => $request->get('subject'),
-            'event'           => $order->event,
-            'email_logo'      => $order->event->organiser->full_logo_path,
+            'event'           => $order->event
         ];
 
         Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($order, $data) {
