@@ -82,6 +82,17 @@ return [
 
     'locale' => 'en',
 
+     /*
+    |--------------------------------------------------------------------------
+    | Application Locale Direction Configuration
+    |--------------------------------------------------------------------------
+    |
+    | The application locale direction checks if dir is ltr or rtl.
+    |
+    */
+
+    'locale_dir' => 'ltr',
+
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
