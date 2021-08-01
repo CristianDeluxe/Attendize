@@ -19,7 +19,7 @@
     <div class="well">
         {!! md_to_html($event->offline_payment_instructions) !!}
     </div>
-    <input class="btn btn-lg btn-success card-submit" style="width:100%;" type="submit" value="Complete Order">
+    <input class="btn btn-lg btn-success card-submit" style="width:100%;" type="submit" value="@lang("Public_ViewEvent.complete_order")">
 </div>
 {!! Form::close() !!}
 <style>

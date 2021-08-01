@@ -25,6 +25,7 @@ use Log;
 use Mail;
 use PDF;
 use Validator;
+use Illuminate\Support\Facades\Lang;
 
 class EventAttendeesController extends MyBaseController
 {
@@ -366,12 +367,11 @@ class EventAttendeesController extends MyBaseController
             'attendee'        => $attendee,
             'message_content' => $request->get('message'),
             'subject'         => $request->get('subject'),
-            'event'           => $attendee->event,
-            'email_logo'      => $attendee->event->organiser->full_logo_path,
+            'event'           => $attendee->event
         ];
 
         //@todo move this to the SendAttendeeMessage Job
-        Mail::send('Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
+        Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
             $message->to($attendee->email, $attendee->full_name)
                 ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                 ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -380,7 +380,7 @@ class EventAttendeesController extends MyBaseController
 
         /* Could bcc in the above? */
         if ($request->get('send_copy') == '1') {
-            Mail::send('Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
+            Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
                 $message->to($attendee->event->organiser->email, $attendee->event->organiser->name)
                     ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                     ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -612,7 +612,7 @@ class EventAttendeesController extends MyBaseController
 
         if ($request->get('notify_attendee') == '1') {
             try {
-                Mail::send('Emails.notifyCancelledAttendee', $data, function ($message) use ($attendee) {
+                Mail::send(Lang::locale().'.Emails.notifyCancelledAttendee', $data, function ($message) use ($attendee) {
                     $message->to($attendee->email, $attendee->full_name)
                         ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                         ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -626,7 +626,7 @@ class EventAttendeesController extends MyBaseController
 
         try {
             // Let the user know that they have received a refund.
-            Mail::send('Emails.notifyRefundedAttendee', $data, function ($message) use ($attendee) {
+            Mail::send(Lang::locale().'.Emails.notifyRefundedAttendee', $data, function ($message) use ($attendee) {
                 $message->to($attendee->email, $attendee->full_name)
                     ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                     ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)

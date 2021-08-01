@@ -23,7 +23,7 @@ return [
     'event_page_design' => 'Design Pagina Evento',
     'export' => 'Esporta',
     'general' => 'Generale',
-    'hello' => 'Ciao'
+    'hello' => 'Ciao',
     'hours' => 'ore',
     'main_menu' => 'Menù principale',
     'manage' => 'Gestisci',

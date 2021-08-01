@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Attendee;
 use App\Models\Event;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,19 +16,19 @@ class SendMessageToAttendeesMail extends Mailable
     public $subject;
     public $content;
     public $event;
-    public $email_logo;
+    public $attendee;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($subject, $content, Event $event)
+    public function __construct($subject, $content, Event $event, Attendee $attendee)
     {
         $this->subject = $subject;
         $this->content = $content;
         $this->event = $event;
-        $this->email_logo = $event->organiser->full_logo_path;
+        $this->attendee = $attendee;
     }
 
     /**
