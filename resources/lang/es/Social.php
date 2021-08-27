@@ -3,7 +3,6 @@
 return array(
     'email'                  => 'Correo electrónico',
     'facebook'               => 'Facebook',
-    'g+'                     => 'Google+',
     'linkedin'               => 'LinkedIn',
     'pinterest'              => 'Pinterest',
     'share_buttons_to_show'  => 'Botones Compartir para mostrar',
