@@ -486,11 +486,11 @@ Route::group(
                 [EventOrdersController::class, 'showExportOrders']
             )->name('showExportOrders');
 
-            Route::get('{event_id}/orders/message',
+            Route::get('{event_id}/orders/message/{order_id}',
                 [EventOrdersController::class, 'showMessageOrder']
             )->name('showMessageOrder');
 
-            Route::post('{event_id}/orders/message',
+            Route::post('{event_id}/orders/message/{order_id}',
                 [EventOrdersController::class, 'postMessageOrder']
             )->name('postMessageOrder');
 
