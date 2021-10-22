@@ -2,12 +2,14 @@
     @if(!$event->is_live)
         <style>
             .sidebar {
-                top: 43px;
+                top: 63px;
             }
         </style>
         <div class="alert alert-warning top_of_page_alert">
             {{ @trans("ManageEvent.event_not_live") }}
-            <a href="{{ route('MakeEventLive', ['event_id' => $event->id]) }}">{{ @trans("ManageEvent.publish_it") }}</a>
+            {!! Form::open(['url' => route('MakeEventLive', ['event_id' => $event->id]), 'id' => 'make-event-live-form', 'style' => 'display:inline-block;']) !!}
+                {!! Form::submit(trans('ManageEvent.publish_it'), ['class' => 'btn btn-success']) !!}
+            {!! Form::close() !!}
         </div>
     @endif
 @stop
