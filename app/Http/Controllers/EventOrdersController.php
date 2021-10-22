@@ -262,7 +262,7 @@ class EventOrdersController extends MyBaseController
      * @param $order_id
      * @return mixed
      */
-    public function showMessageOrder(Request $request, $order_id)
+    public function showMessageOrder(Request $request, $event_id, $order_id)
     {
         $order = Order::scope()->findOrFail($order_id);
 
@@ -281,7 +281,7 @@ class EventOrdersController extends MyBaseController
      * @param $order_id
      * @return mixed
      */
-    public function postMessageOrder(Request $request, $order_id)
+    public function postMessageOrder(Request $request, $event_id, $order_id)
     {
         $rules = [
             'subject' => 'required|max:250',

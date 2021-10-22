@@ -10,7 +10,6 @@ return array (
   //==================================== Translations ====================================//
   'email' => 'E-mail',
   'facebook' => 'Facebook',
-  'g+' => 'Google+',
   'linkedin' => 'LinkedIn',
   'share_buttons_to_show' => 'Deel knoppen voor weergave',
   'social_settings' => 'Socialmedia instellingen',
