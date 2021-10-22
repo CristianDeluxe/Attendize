@@ -323,8 +323,8 @@ Route::group(
                 [EventDashboardController::class, 'redirectToDashboard']
             );
 
-            Route::get('{event_id}/go_live',
-                [EventController::class, 'makeEventLive']
+            Route::post('{event_id}/go_live',
+                [EventController::class, 'postMakeEventLive']
             )->name('MakeEventLive');
 
             /*

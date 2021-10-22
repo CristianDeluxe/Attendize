@@ -350,7 +350,7 @@ class EventController extends MyBaseController
      * @param  Integer|false $event_id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function makeEventLive($event_id = false) {
+    public function postMakeEventLive($event_id = false) {
         $event = Event::scope()->findOrFail($event_id);
         $event->is_live = 1;
         $event->save();

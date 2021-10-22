@@ -2,11 +2,10 @@
 <section id="goLiveBar">
     <div class="container">
         @if(!$event->is_live)
-
-        {{ @trans("ManageEvent.event_not_live") }}
-        <a href="{{ route('MakeEventLive' , ['event_id' => $event->id]) }}"
-           style="background-color: green; border-color: green;"
-        class="btn btn-success btn-xs">{{ @trans("ManageEvent.publish_it") }}</a>
+            {{ @trans("ManageEvent.event_not_live") }}
+            {!! Form::open(['url' => route('MakeEventLive', ['event_id' => $event->id]), 'id' => 'make-event-live-form', 'style' => 'display:inline-block;']) !!}
+                {!! Form::submit(trans('ManageEvent.publish_it'), ['class' => 'btn btn-success']) !!}
+            {!! Form::close() !!}
         @endif
     </div>
 </section>
