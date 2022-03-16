@@ -43,8 +43,24 @@ Demo Back-end Demo: http://attendize.website/signup<br />
  - Browser based QR code scanner for door management
  - Elegant dashboard for easy management.
 
+## Minimum Requirements
+
+Attendize should run on most pre-configured LAMP or LEMP environments as long as certain requirements are adhered to. Attendize is based on the [Laravel Framework](https://laravel.com/)
+
+**PHP Requirements**
+1. PHP >= 7.1.3
+2. OpenSSL PHP Extension 
+3. PDO PHP Extension 
+4. Mbstring PHP Extension 
+5. Tokenizer PHP Extension 
+6. Fileinfo PHP Extension 
+7. GD PHP Extension
+
+**MySQL Requirements**
+1. MySQL version 5.7 or higher required
+
 ## Contributing
-Feel free to fork and contribute. If you are unsure about adding a feature create a Github issue to ask for Feedback. Read the [contribution guidelines](CONTRIBUTING.md)
+Feel free to fork and contribute. If you are unsure about adding a feature, create a Github issue to ask for Feedback. Read the [contribution guidelines](CONTRIBUTING.md)
 
 ## Submitting an issue
 If you encounter a bug in Attendize, please first search the list of current open [Issues on the GitHub repository](https://github.com/Attendize/Attendize/issues). You may add additional feedback on an existing bug report. If the issue you're having has not yet been reported, please open a new issue. There is a template available for new issues. Please fill out all information requested in the template so we can help you more easily.

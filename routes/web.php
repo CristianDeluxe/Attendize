@@ -72,7 +72,7 @@ Route::group(
          */
         Route::get('/login',
             [UserLoginController::class, 'showLogin']
-        )->name('login');
+        )->name('login')->middleware('throttle:10,1');
 
         Route::post('/login',
             [UserLoginController::class, 'postLogin']
@@ -87,7 +87,7 @@ Route::group(
 
         Route::post('login/forgot-password',
             [RemindersController::class, 'postRemind']
-        )->name('postForgotPassword');
+        )->name('postForgotPassword')->middleware('throttle:3,1');
 
         /*
          * Reset Password
@@ -98,7 +98,7 @@ Route::group(
 
         Route::post('login/reset-password',
             [RemindersController::class, 'postReset']
-        )->name('postResetPassword');
+        )->name('postResetPassword')->middleware('throttle:3,1');
 
         /*
          * Registration / Account creation
@@ -108,14 +108,14 @@ Route::group(
         )->name('showSignup');
 
         Route::post('/signup',
-            [UserSignupController::class, 'postSignup']);
+            [UserSignupController::class, 'postSignup'])->middleware('throttle:3,1');
 
         /*
          * Confirm Email
          */
         Route::get('signup/confirm_email/{confirmation_code}',
             [UserSignupController::class, 'confirmEmail']
-        )->name('confirmEmail');
+        )->name('confirmEmail')->middleware('throttle:3,1');
     });
 
     /*
@@ -323,8 +323,8 @@ Route::group(
                 [EventDashboardController::class, 'redirectToDashboard']
             );
 
-            Route::get('{event_id}/go_live',
-                [EventController::class, 'makeEventLive']
+            Route::post('{event_id}/go_live',
+                [EventController::class, 'postMakeEventLive']
             )->name('MakeEventLive');
 
             /*
@@ -486,11 +486,11 @@ Route::group(
                 [EventOrdersController::class, 'showExportOrders']
             )->name('showExportOrders');
 
-            Route::get('{order_id}/orders/message',
+            Route::get('{event_id}/orders/message/{order_id}',
                 [EventOrdersController::class, 'showMessageOrder']
             )->name('showMessageOrder');
 
-            Route::post('{event_id}/orders/message',
+            Route::post('{event_id}/orders/message/{order_id}',
                 [EventOrdersController::class, 'postMessageOrder']
             )->name('postMessageOrder');
 

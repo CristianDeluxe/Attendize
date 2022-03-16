@@ -1,3 +1,4 @@
+
 @foreach($tickets as $ticket)
 
     <img alt="Ticket"

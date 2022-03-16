@@ -184,7 +184,7 @@ return array(
          *
          * @var int
          */
-        "dpi" => 96,
+        "dpi" => 300,
 
         /**
          * Enable inline PHP
@@ -208,7 +208,7 @@ return array(
          *
          * @var bool
          */
-        "enable_javascript" => false,
+        "enable_javascript" => true,
 
         /**
          * Enable remote file access
@@ -227,7 +227,7 @@ return array(
          *
          * @var bool
          */
-        "enable_remote" => false,
+        "enable_remote" => true,
 
         /**
          * A ratio applied to the fonts height to be more like browsers' line height

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Redirect;
 use App\Attendize\Utils;
 use App\Models\Account;
 use App\Models\User;
@@ -9,18 +10,27 @@ use Hash;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Mail;
+use Services\Captcha\Factory;
+use Illuminate\Support\Facades\Lang;
 
 class UserSignupController extends Controller
 {
     protected $auth;
+    protected $captchaService;
 
     public function __construct(Guard $auth)
     {
         if (Account::count() > 0 && !Utils::isAttendize()) {
-            return redirect()->route('login');
+            return redirect()->route('login')->send();
         }
 
         $this->auth = $auth;
+
+        $captchaConfig = config('attendize.captcha');
+        if ($captchaConfig["captcha_is_on"]) {
+            $this->captchaService = Factory::create($captchaConfig);
+        }
+
         $this->middleware('guest');
     }
 
@@ -39,13 +49,22 @@ class UserSignupController extends Controller
      */
     public function postSignup(Request $request)
     {
-        $is_attendize = Utils::isAttendize();
+        $is_attendize = Utils::isAttendizeCloud();
         $this->validate($request, [
             'email'        => 'required|email|unique:users',
             'password'     => 'required|min:8|confirmed',
             'first_name'   => 'required',
-            'terms_agreed' => $is_attendize ? 'required' : '',
+            'last_name'   => 'required',
+            'terms_agreed' => $is_attendize ? 'required' : ''
         ]);
+
+        if (is_object($this->captchaService)) {
+            if (!$this->captchaService->isHuman($request)) {
+                return Redirect::back()
+                    ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
+                    ->withInput();
+            }
+        }
 
         $account_data = $request->only(['email', 'first_name', 'last_name']);
         $account_data['currency_id'] = config('attendize.default_currency');
@@ -62,7 +81,7 @@ class UserSignupController extends Controller
 
         if ($is_attendize) {
             // TODO: Do this async?
-            Mail::send('Emails.ConfirmEmail',
+            Mail::send(Lang::locale().'.Emails.ConfirmEmail',
                 ['first_name' => $user->first_name, 'confirmation_code' => $user->confirmation_code],
                 function ($message) use ($request) {
                     $message->to($request->get('email'), $request->get('first_name'))

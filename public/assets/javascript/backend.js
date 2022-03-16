@@ -9515,6 +9515,8 @@ $.cf = {
                         window.location.href = data.redirectUrl;
                     }
 
+                    $(document).trigger('exampleTicketUpdated');
+
                     break;
 
                 case 'error':

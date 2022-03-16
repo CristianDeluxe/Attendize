@@ -3,28 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Attendize\PaymentUtils;
-use App\Events\OrderCompletedEvent;
-use App\Generators\TicketGenerator;
-use App\Generators\TicketImageGenerator;
+use App\Jobs\SendOrderNotificationJob;
+use App\Jobs\SendOrderConfirmationJob;
+use App\Jobs\SendOrderAttendeeTicketJob;
+use App\Models\Account;
+use App\Models\AccountPaymentGateway;
 use App\Models\Affiliate;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PaymentGateway;
 use App\Models\QuestionAnswer;
 use App\Models\ReservedTickets;
 use App\Models\Ticket;
 use App\Services\Order as OrderService;
+use Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use Carbon\Carbon;
+use Config;
 use Cookie;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
-use Illuminate\View\View;
 use Log;
+use Mail;
+use Omnipay;
+use PDF;
 use PhpSpec\Exception\Exception;
-use Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use Validator;
 
 class EventCheckoutController extends Controller
@@ -101,8 +106,7 @@ class EventCheckoutController extends Controller
 
             $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
             $ticket = Ticket::find($ticket_id);
-            $ticket_quantity_remaining = $ticket->quantity_remaining;
-            $max_per_person = min($ticket_quantity_remaining, $ticket->max_per_person);
+            $max_per_person = min($ticket->quantity_remaining, $ticket->max_per_person);
 
             $quantity_available_validation_rules['ticket_' . $ticket_id] = [
                 'numeric',
@@ -111,7 +115,7 @@ class EventCheckoutController extends Controller
             ];
 
             $quantity_available_validation_messages = [
-                'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $ticket_quantity_remaining,
+                'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $max_per_person,
                 'ticket_' . $ticket_id . '.min' => 'You must select at least ' . $ticket->min_per_person . ' tickets.',
             ];
 
@@ -240,7 +244,7 @@ class EventCheckoutController extends Controller
      *
      * @param Request $request
      * @param $event_id
-     * @return \Illuminate\Http\RedirectResponse|View
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function showEventCheckout(Request $request, $event_id)
     {
@@ -648,9 +652,9 @@ class EventCheckoutController extends Controller
                 for ($i = 0; $i < $attendee_details['qty']; $i++) {
 
                     $attendee = new Attendee();
-                    $attendee->first_name = strip_tags($request_data["ticket_holder_first_name"][$i][$attendee_details['ticket']['id']]);
-                    $attendee->last_name = strip_tags($request_data["ticket_holder_last_name"][$i][$attendee_details['ticket']['id']]);
-                    $attendee->email = $request_data["ticket_holder_email"][$i][$attendee_details['ticket']['id']];
+                    $attendee->first_name = sanitise($request_data["ticket_holder_first_name"][$i][$attendee_details['ticket']['id']]);
+                    $attendee->last_name = sanitise($request_data["ticket_holder_last_name"][$i][$attendee_details['ticket']['id']]);
+                    $attendee->email = sanitise($request_data["ticket_holder_email"][$i][$attendee_details['ticket']['id']]);
                     $attendee->event_id = $event_id;
                     $attendee->order_id = $order->id;
                     $attendee->ticket_id = $attendee_details['ticket']['id'];
@@ -715,9 +719,18 @@ class EventCheckoutController extends Controller
         ReservedTickets::where('session_id', '=', session()->getId())->delete();
 
         // Queue up some tasks - Emails to be sent, PDFs etc.
-        Log::info('Firing the event');
-        event(new OrderCompletedEvent($order));
-
+        // Send order notification to organizer
+        Log::debug('Queueing Order Notification Job');
+        SendOrderNotificationJob::dispatch($order, $orderService);
+        // Send order confirmation to ticket buyer
+        Log::debug('Queueing Order Tickets Job');
+        SendOrderConfirmationJob::dispatch($order, $orderService);
+        // Send tickets to attendees
+        Log::debug('Queueing Attendee Ticket Jobs');
+        foreach ($order->attendees as $attendee) {
+            SendOrderAttendeeTicketJob::dispatch($attendee);
+            Log::debug('Queueing Attendee Ticket Job Done');
+        }
 
         if ($return_json) {
             return response()->json([
@@ -742,7 +755,7 @@ class EventCheckoutController extends Controller
      *
      * @param Request $request
      * @param $order_reference
-     * @return View
+     * @return \Illuminate\View\View
      */
     public function showOrderDetails(Request $request, $order_reference)
     {
@@ -771,34 +784,49 @@ class EventCheckoutController extends Controller
     }
 
     /**
-     * Shows the tickets for an order - either Image or PDF
+     * Shows the tickets for an order - either HTML or PDF
      *
      * @param Request $request
      * @param $order_reference
-     * @return View
+     * @return \Illuminate\View\View
      */
     public function showOrderTickets(Request $request, $order_reference)
     {
-        $ignoreDiskCache = false;
-
-        // Is a demo ticket?
+        // If is a demo ticket
         if ($order_reference === 'example' && $request->get('event')) {
             // Generate demo data
             $order = TicketGenerator::demoData($request->get('event'));
-            $ignoreDiskCache = true;
         } else {
             // It's a real ticket, try to find the order in database
-            $order = Order::where('order_reference', '=', $order_reference)->firstOrFail();
+        $order = Order::where('order_reference', '=', $order_reference)->first();
         }
 
-        // Generate PDF
-        $pdf_file = TicketGenerator::createPDFTicket($order, null, $ignoreDiskCache);
-
-        if ($request->get('download') === '1') { // Force download PDF
-            return response()->download($pdf_file->path);
+        // If no order, exit
+        if (!$order) {
+            abort(404);
         }
 
-        return response()->file($pdf_file->path, ['Content-Type' => 'application/pdf']);
+        // Generate the tickets
+        $ticket_generator = new TicketGenerator($order);
+        $tickets = $ticket_generator->createTickets();
+
+        // Data for view
+        $data = [
+            'tickets'   => $tickets,
+            'event'     => $order->event
+        ];
+
+        // Generate file name
+        $pdf_file = TicketGenerator::generateFileName($order->order_reference);
+
+        if ($request->get('download') == '1') { // Force download PDF
+            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->download($pdf_file['base_name']);
+        } elseif ($request->get('view') == '1') { // View PDF inline
+            return PDF::loadView('Public.ViewEvent.Partials.PDFTicket', $data)->stream($pdf_file['base_name']);
+        } elseif ($order_reference === 'example') { // Show example ticket
+            return view('Public.ViewEvent.Partials.ExampleTicket', $data);
+        }
+        return view('Public.ViewEvent.Partials.PDFTicket', $data);
     }
 
 }

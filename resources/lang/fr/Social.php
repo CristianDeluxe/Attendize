@@ -10,7 +10,6 @@ return array (
   //==================================== Translations ====================================//
   'email' => 'Courriel',
   'facebook' => 'Facebook',
-  'g+' => 'Google+',
   'linkedin' => 'LinkedIn',
   'share_buttons_to_show' => 'Boutons de partage à montrer',
   'social_settings' => 'Paramètres sociaux',

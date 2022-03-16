@@ -1,9 +1,16 @@
 <?php namespace App\Http\Controllers;
 
+namespace App\Http\Controllers;
+
 use App\Cancellation\OrderCancellation;
-use App\Generators\TicketGenerator;
 use App\Exports\AttendeesExport;
 use App\Imports\AttendeesImport;
+use App\Jobs\GenerateTicketJob;
+use App\Jobs\SendAttendeeInviteJob;
+use App\Jobs\SendOrderAttendeeTicketJob;
+use App\Jobs\SendMessageToAttendeesJob;
+use App\Generators\TicketGenerator;
+use App\Jobs\GenerateTicket;
 use App\Jobs\SendAttendeeInvite;
 use App\Jobs\SendAttendeeTicket;
 use App\Jobs\SendMessageToAttendees;
@@ -13,17 +20,20 @@ use App\Models\EventStats;
 use App\Models\Message;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Ticket;
 use App\Services\Order as OrderService;
+use App\Models\Ticket;
+use Barryvdh\DomPDF\Facade as PDF;
 use Auth;
+use Config;
 use DB;
 use Excel;
 use Exception;
 use Illuminate\Http\Request;
 use Log;
 use Mail;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use PDF;
 use Validator;
+use Illuminate\Support\Facades\Lang;
 
 class EventAttendeesController extends MyBaseController
 {
@@ -134,8 +144,8 @@ class EventAttendeesController extends MyBaseController
         $ticket_id = $request->get('ticket_id');
         $event = Event::findOrFail($event_id);
         $ticket_price = 0;
-        $attendee_first_name = strip_tags($request->get('first_name'));
-        $attendee_last_name = strip_tags($request->get('last_name'));
+        $attendee_first_name = $request->get('first_name');
+        $attendee_last_name = $request->get('last_name');
         $attendee_email = $request->get('email');
         $email_attendee = $request->get('email_ticket');
 
@@ -172,7 +182,6 @@ class EventAttendeesController extends MyBaseController
             $ticket = Ticket::scope()->find($ticket_id);
             $ticket->increment('quantity_sold');
             $ticket->increment('sales_volume', $ticket_price);
-            $ticket->event->increment('sales_volume', $ticket_price);
 
             /*
              * Insert order item
@@ -207,7 +216,7 @@ class EventAttendeesController extends MyBaseController
 
 
             if ($email_attendee == '1') {
-                $this->dispatch(new SendAttendeeInvite($attendee));
+                SendAttendeeInviteJob::dispatch($attendee);
             }
 
             session()->flash('message', trans("Controllers.attendee_successfully_invited"));
@@ -366,12 +375,11 @@ class EventAttendeesController extends MyBaseController
             'attendee'        => $attendee,
             'message_content' => $request->get('message'),
             'subject'         => $request->get('subject'),
-            'event'           => $attendee->event,
-            'email_logo'      => $attendee->event->organiser->full_logo_path,
+            'event'           => $attendee->event
         ];
 
         //@todo move this to the SendAttendeeMessage Job
-        Mail::send('Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
+        Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
             $message->to($attendee->email, $attendee->full_name)
                 ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                 ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -380,7 +388,7 @@ class EventAttendeesController extends MyBaseController
 
         /* Could bcc in the above? */
         if ($request->get('send_copy') == '1') {
-            Mail::send('Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
+            Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
                 $message->to($attendee->event->organiser->email, $attendee->event->organiser->name)
                     ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                     ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -444,7 +452,7 @@ class EventAttendeesController extends MyBaseController
         /*
          * Queue the emails
          */
-        $this->dispatch(new SendMessageToAttendees($message));
+        SendMessageToAttendeesJob::dispatch($message);
 
         return response()->json([
             'status'  => 'success',
@@ -455,16 +463,28 @@ class EventAttendeesController extends MyBaseController
     /**
      * @param $event_id
      * @param $attendee_id
-     * @return BinaryFileResponse
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function showExportTicket($event_id, $attendee_id): BinaryFileResponse
+    public function showExportTicket($event_id, $attendee_id)
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
+        $attendee_reference = $attendee->getReferenceAttribute();
+
+        Log::debug("Exporting ticket PDF", [
+            'attendee_id' => $attendee_id,
+            'order_reference' => $attendee->order->order_reference,
+            'attendee_reference' => $attendee_reference,
+            'event_id' => $event_id
+        ]);
+
+        $pdf_file = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $attendee_reference . '.pdf';
+
+        $this->dispatchNow(new GenerateTicketJob($attendee));
 
         // Generate PDF filename and path
-        $pdf_file = TicketGenerator::createPDFTicket($attendee->order, $attendee);
+        $pdf_file = TicketGenerator::generateFileName($attendee->order->order_reference . '-' . $attendee->reference_index);
 
-        return response()->download($pdf_file->path);
+        return response()->download($pdf_file['fullpath']);
     }
 
     /**
@@ -603,7 +623,7 @@ class EventAttendeesController extends MyBaseController
 
         if ($request->get('notify_attendee') == '1') {
             try {
-                Mail::send('Emails.notifyCancelledAttendee', $data, function ($message) use ($attendee) {
+                Mail::send(Lang::locale().'.Emails.notifyCancelledAttendee', $data, function ($message) use ($attendee) {
                     $message->to($attendee->email, $attendee->full_name)
                         ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                         ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -617,7 +637,7 @@ class EventAttendeesController extends MyBaseController
 
         try {
             // Let the user know that they have received a refund.
-            Mail::send('Emails.notifyRefundedAttendee', $data, function ($message) use ($attendee) {
+            Mail::send(Lang::locale().'.Emails.notifyRefundedAttendee', $data, function ($message) use ($attendee) {
                 $message->to($attendee->email, $attendee->full_name)
                     ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                     ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -667,7 +687,7 @@ class EventAttendeesController extends MyBaseController
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
 
-        $this->dispatch(new SendAttendeeTicket($attendee));
+        $this->dispatch(new SendOrderAttendeeTicketJob($attendee));
 
         return response()->json([
             'status'  => 'success',
@@ -675,26 +695,31 @@ class EventAttendeesController extends MyBaseController
         ]);
     }
 
+
     /**
      * Show an attendee ticket
      *
-     * @param  Request  $request
-     * @param  int  $event_id
-     * @param  int  $attendee_id
+     * @param Request $request
+     * @param $attendee_id
      * @return bool
      */
-    public function showAttendeeTicket(Request $request, int $event_id, int $attendee_id)
+    public function showAttendeeTicket(Request $request, $attendee_id)
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
 
-        // Generate PDF
-        $pdf_file = TicketGenerator::createPDFTicket($attendee->order, $attendee);
+        $data = [
+            'order'     => $attendee->order,
+            'event'     => $attendee->event,
+            'tickets'   => $attendee->ticket,
+            'attendees' => [$attendee],
+            'image'     => base64_encode(file_get_contents(public_path($attendee->event->organiser->full_logo_path))),
 
-        if ($request->get('download') === '1') { // Force download PDF
-            return response()->download($pdf_file->path);
+        ];
+
+        if ($request->get('download') == '1') {
+            return PDF::html('Public.ViewEvent.Partials.PDFTicket', $data, 'Tickets');
         }
-
-        return response()->file($pdf_file->path, ['Content-Type' => 'application/pdf']);
+        return view('Public.ViewEvent.Partials.PDFTicket', $data);
     }
 
 }
