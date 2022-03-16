@@ -7,14 +7,14 @@
 @section('content')
     <div class="row">
         <div class="col-md-7 col-md-offset-2">
-            {!! Form::open(array('url' => route("showSignup"), 'class' => 'panel')) !!}
+            {!! Form::open(['url' => route("showSignup"), 'class' => 'panel', 'id' => 'signup-form']) !!}
             <div class="panel-body">
                 <div class="logo">
-                   {!! HTML::image('assets/images/logo-dark.png') !!}
+                   {!! Html::image('assets/images/logo-dark.png') !!}
                 </div>
                 <h2>@lang("User.sign_up")</h2>
 
-                @if(Input::get('first_run'))
+                @if(Request::input('first_run'))
                     <div class="alert alert-info">
                         @lang("User.sign_up_first_run")
                     </div>
@@ -32,7 +32,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group {{ ($errors->has('last_name')) ? 'has-error' : '' }}">
-                            {!! Form::label('last_name', trans("User.last_name"), ['class' => 'control-label']) !!}
+                            {!! Form::label('last_name', trans("User.last_name"), ['class' => 'control-label required']) !!}
                             {!! Form::text('last_name', null, ['class' => 'form-control']) !!}
                             @if($errors->has('last_name'))
                                 <p class="help-block">{{ $errors->first('last_name') }}</p>
@@ -63,10 +63,10 @@
                     @endif
                 </div>
 
-                @if(Utils::isAttendize())
+                @if(Utils::isAttendizeCloud())
                 <div class="form-group {{ ($errors->has('terms_agreed')) ? 'has-error' : '' }}">
                     <div class="checkbox custom-checkbox">
-                        {!! Form::checkbox('terms_agreed', Input::old('terms_agreed'), false, ['id' => 'terms_agreed']) !!}
+                        {!! Form::checkbox('terms_agreed', old('terms_agreed'), false, ['id' => 'terms_agreed']) !!}
                         {!! Form::rawLabel('terms_agreed', trans("User.terms_and_conditions", ["url"=>route('termsAndConditions')])) !!}
                         @if ($errors->has('terms_agreed'))
                             <p class="help-block">{{ $errors->first('terms_agreed') }}</p>
@@ -75,12 +75,14 @@
                 </div>
                 @endif
 
-                <div class="form-group ">
-                   {!! Form::submit(trans("User.sign_up"), array('class'=>"btn btn-block btn-success")) !!}
+                @include('Public.LoginAndRegister.Partials.CaptchaSection')
+
+                <div class="form-group">
+                    <p><input class="btn btn-block btn-success" type="submit" value="@lang('User.sign_up')"></p>
                 </div>
-                    <div class="signup">
-                        <span>{!! @trans("User.already_have_account", ["url"=>route("login")]) !!}</span>
-                    </div>
+                <div class="signup">
+                    <span>{!! @trans("User.already_have_account", ["url"=>route("login")]) !!}</span>
+                </div>
             </div>
             {!! Form::close() !!}
         </div>

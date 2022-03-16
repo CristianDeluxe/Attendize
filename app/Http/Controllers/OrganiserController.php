@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Organiser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Image;
 
 class OrganiserController extends MyBaseController
@@ -53,11 +54,11 @@ class OrganiserController extends MyBaseController
         }
 
         $organiser->name = $request->get('name');
-        $organiser->about = $request->get('about');
+        $organiser->about = prepare_markdown($request->get('about'));
         $organiser->email = $request->get('email');
         $organiser->facebook = $request->get('facebook');
         $organiser->twitter = $request->get('twitter');
-        $organiser->confirmation_key = str_random(15);
+        $organiser->confirmation_key = Str::random(15);
 
         $organiser->tax_name = $request->get('tax_name');
         $organiser->tax_value = round($request->get('tax_value'),2);

@@ -7,7 +7,6 @@ return array(
     //==================================== Translations ====================================//
     'email'                  => 'Email',
     'facebook'               => 'Facebook',
-    'g+'                     => 'Google+',
     'linkedin'               => 'LinkedIn',
     'share_buttons_to_show'  => '表示する共有ボタン',
     'social_settings'        => 'ソーシャル設定',

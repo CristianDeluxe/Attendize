@@ -11,6 +11,31 @@ use Validator;
 
 class EventCustomizeController extends MyBaseController
 {
+
+    /**
+     * Returns data which is required in each view, optionally combined with additional data.
+     *
+     * @param  int  $event_id
+     * @param  array  $additional_data
+     *
+     * @return array
+     */
+    public function getEventViewData($event_id, $additional_data = [])
+    {
+        $event = Event::scope()->findOrFail($event_id);
+
+        $image_path = $event->organiser->full_logo_path;
+        if ($event->images->first() != null) {
+            $image_path = $event->images()->first()->image_path;
+        }
+
+        return array_merge([
+            'event'      => $event,
+            'questions'  => $event->questions()->get(),
+            'image_path' => $image_path,
+        ], $additional_data);
+    }
+
     /**
      * Show the event customize page
      *
@@ -99,13 +124,13 @@ class EventCustomizeController extends MyBaseController
             ]);
         }
 
-        $event->social_share_text = $request->get('social_share_text');
-        $event->social_show_facebook = $request->get('social_show_facebook');
-        $event->social_show_linkedin = $request->get('social_show_linkedin');
-        $event->social_show_twitter = $request->get('social_show_twitter');
-        $event->social_show_email = $request->get('social_show_email');
-        $event->social_show_googleplus = $request->get('social_show_googleplus');
-        $event->social_show_whatsapp = $request->get('social_show_whatsapp');
+        $event->social_share_text = $request->get('social_share_text', false);
+        $event->social_show_facebook = $request->get('social_show_facebook', false);
+        $event->social_show_linkedin = $request->get('social_show_linkedin', false);
+        $event->social_show_twitter = $request->get('social_show_twitter', false);
+        $event->social_show_email = $request->get('social_show_email', false);
+        $event->social_show_googleplus = $request->get('social_show_googleplus', false);
+        $event->social_show_whatsapp = $request->get('social_show_whatsapp', false);
         $event->save();
 
         return response()->json([
@@ -226,7 +251,7 @@ class EventCustomizeController extends MyBaseController
 
         $event->pre_order_display_message = trim($request->get('pre_order_display_message'));
         $event->post_order_display_message = trim($request->get('post_order_display_message'));
-        $event->offline_payment_instructions = trim($request->get('offline_payment_instructions'));
+        $event->offline_payment_instructions = prepare_markdown(trim($request->get('offline_payment_instructions')));
         $event->enable_offline_payments = (int)$request->get('enable_offline_payments');
         $event->save();
 

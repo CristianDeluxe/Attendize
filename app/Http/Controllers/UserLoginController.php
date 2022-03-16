@@ -2,25 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Redirect;
 use View;
+use Services\Captcha\Factory;
 
 class UserLoginController extends Controller
 {
-    protected $auth;
 
-    public function __construct(Guard $auth)
+    protected $captchaService;
+
+    public function __construct()
     {
-        $this->auth = $auth;
+        $captchaConfig = config('attendize.captcha');
+        if ($captchaConfig["captcha_is_on"]) {
+            $this->captchaService = Factory::create($captchaConfig);
+        }
+
         $this->middleware('guest');
     }
 
     /**
      * Shows login form.
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return mixed
      */
@@ -43,7 +49,7 @@ class UserLoginController extends Controller
     /**
      * Handles the login request.
      *
-     * @param Request $request
+     * @param  Request  $request
      *
      * @return mixed
      */
@@ -54,16 +60,23 @@ class UserLoginController extends Controller
 
         if (empty($email) || empty($password)) {
             return Redirect::back()
-                ->with(['message' => trans("Controllers.fill_email_and_password"), 'failed' => true])
+                ->with(['message' => trans('Controllers.fill_email_and_password'), 'failed' => true])
                 ->withInput();
         }
 
-        if ($this->auth->attempt(['email' => $email, 'password' => $password], true) === false) {
+        if (is_object($this->captchaService)) {
+            if (!$this->captchaService->isHuman($request)) {
+                return Redirect::back()
+                    ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
+                    ->withInput();
+            }
+        }
+
+        if (Auth::attempt(['email' => $email, 'password' => $password], true) === false) {
             return Redirect::back()
-                ->with(['message' => trans("Controllers.login_password_incorrect"), 'failed' => true])
+                ->with(['message' => trans('Controllers.login_password_incorrect'), 'failed' => true])
                 ->withInput();
         }
-
         return redirect()->intended(route('showSelectOrganiser'));
     }
 }

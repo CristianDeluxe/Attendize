@@ -20,9 +20,9 @@
 @stop
 
 @section('head')
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css" integrity="sha256-szHusaozbQctTn4FX+3l5E0A5zoxz7+ne4fr8NgWJlw=" crossorigin="anonymous" />
-    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" integrity="sha256-Gk+dzc4kV2rqAZMkyy3gcfW6Xd66BhGYjVWa/FjPu+s=" crossorigin="anonymous"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js" integrity="sha256-0rg2VtfJo3VUij/UY9X0HJP7NET6tgAY98aMOfwP0P8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css" integrity="sha256-szHusaozbQctTn4FX+3l5E0A5zoxz7+ne4fr8NgWJlw=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" integrity="sha256-Gk+dzc4kV2rqAZMkyy3gcfW6Xd66BhGYjVWa/FjPu+s=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js" integrity="sha256-0rg2VtfJo3VUij/UY9X0HJP7NET6tgAY98aMOfwP0P8=" crossorigin="anonymous"></script>
     <script>
         $(function () {
             $.getJSON('https://graph.facebook.com/?id=' + '{{route('showEventPage',['event_id' => $event->id, 'event_slug' => Str::slug($event->title)])}}', function (fbdata) {
@@ -42,8 +42,8 @@
     <div class="row">
         <div class="col-sm-3">
             <div class="stat-box">
-                <h3>{{ money($event->sales_volume + $event->organiser_fees_volume, $event->currency) }}</h3>
-                <span>@lang("Dashboard.sales_volume")</span>
+                <h3>{{ $event->getEventRevenueAmount()->display() }}</h3>
+                <span>@lang("Event.revenue")</span>
             </div>
         </div>
         <div class="col-sm-3">
@@ -101,7 +101,7 @@
                             <h3 class="panel-title">
                                 @lang("Dashboard.ticket_sales_volume")
                                 <span style="color: green; float: right;">
-                                    {{money($event->sales_volume + $event->organiser_fees_volume, $event->currency)}}
+                                    {{ $event->getEventRevenueAmount()->display() }}
                                     @lang("basic.total")
                                 </span>
                             </h3>
@@ -203,7 +203,7 @@
                             </a>
                         </li>
                         <li class="rrssb-linkedin">
-                            <a href="http://www.linkedin.com/shareArticle?mini=true&amp;url={{$event->event_url}}?utm_source=linkedin&amp;title={{urlencode($event->title)}}&amp;summary={{{Str::words(strip_tags($event->description), 20)}}}"
+                            <a href="http://www.linkedin.com/shareArticle?mini=true&amp;url={{$event->event_url}}?utm_source=linkedin&amp;title={{urlencode($event->title)}}&amp;summary={{{Str::words(md_to_str($event->description), 20)}}}"
                                class="popup">
                             <span class="rrssb-icon">
                                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -221,7 +221,7 @@
                             </a>
                         </li>
                         <li class="rrssb-twitter">
-                            <a href="http://twitter.com/intent/tweet?text=Check out: {{$event->event_url}}?utm_source=twitter {{ Str::words(strip_tags($event->description)), 20 }}"
+                            <a href="http://twitter.com/intent/tweet?text=Check out: {{$event->event_url}}?utm_source=twitter {{ Str::words(md_to_str($event->description), 20) }}"
                                class="popup">
                             <span class="rrssb-icon">
                                 <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -239,38 +239,6 @@
                                 <span class="rrssb-text">@lang("Social.twitter")</span>
                             </a>
                         </li>
-
-                        <li class="rrssb-googleplus">
-                            <a href="https://plus.google.com/share?url={{$event->event_url}}?utm_source=googleplus"
-                               class="popup">
-                            <span class="rrssb-icon">
-                                <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="28px"
-                                     height="28px" viewBox="0 0 28 28" enable-background="new 0 0 28 28"
-                                     xml:space="preserve">
-                                <g>
-                                    <g>
-                                        <path d="M14.703,15.854l-1.219-0.948c-0.372-0.308-0.88-0.715-0.88-1.459c0-0.748,0.508-1.223,0.95-1.663
-                                      c1.42-1.119,2.839-2.309,2.839-4.817c0-2.58-1.621-3.937-2.399-4.581h2.097l2.202-1.383h-6.67c-1.83,0-4.467,0.433-6.398,2.027
-                                      C3.768,4.287,3.059,6.018,3.059,7.576c0,2.634,2.022,5.328,5.604,5.328c0.339,0,0.71-0.033,1.083-0.068
-                                      c-0.167,0.408-0.336,0.748-0.336,1.324c0,1.04,0.551,1.685,1.011,2.297c-1.524,0.104-4.37,0.273-6.467,1.562
-                                      c-1.998,1.188-2.605,2.916-2.605,4.137c0,2.512,2.358,4.84,7.289,4.84c5.822,0,8.904-3.223,8.904-6.41
-                                      c0.008-2.327-1.359-3.489-2.829-4.731H14.703z M10.269,11.951c-2.912,0-4.231-3.765-4.231-6.037c0-0.884,0.168-1.797,0.744-2.511
-                                      c0.543-0.679,1.489-1.12,2.372-1.12c2.807,0,4.256,3.798,4.256,6.242c0,0.612-0.067,1.694-0.845,2.478
-                                      c-0.537,0.55-1.438,0.948-2.295,0.951V11.951z M10.302,25.609c-3.621,0-5.957-1.732-5.957-4.142c0-2.408,2.165-3.223,2.911-3.492
-                                      c1.421-0.479,3.25-0.545,3.555-0.545c0.338,0,0.52,0,0.766,0.034c2.574,1.838,3.706,2.757,3.706,4.479
-                                      c-0.002,2.073-1.736,3.665-4.982,3.649L10.302,25.609z"/>
-                                        <polygon points="23.254,11.89 23.254,8.521 21.569,8.521 21.569,11.89 18.202,11.89 18.202,13.604 21.569,13.604 21.569,17.004
-                                         23.254,17.004 23.254,13.604 26.653,13.604 26.653,11.89      "/>
-                                    </g>
-                                </g>
-                                </svg>
-                            </span>
-                                <span class="rrssb-text">@lang("Social.g+")</span>
-                            </a>
-                        </li>
-
-
 
                         <li class="rrssb-email">
                             <a href="mailto:?subject=Check This Out&body={{urlencode($event->event_url)}}?utm_source=email">

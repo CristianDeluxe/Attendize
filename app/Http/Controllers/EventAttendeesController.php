@@ -1,7 +1,14 @@
-<?php
+<?php namespace App\Http\Controllers;
 
 namespace App\Http\Controllers;
 
+use App\Cancellation\OrderCancellation;
+use App\Exports\AttendeesExport;
+use App\Imports\AttendeesImport;
+use App\Jobs\GenerateTicketJob;
+use App\Jobs\SendAttendeeInviteJob;
+use App\Jobs\SendOrderAttendeeTicketJob;
+use App\Jobs\SendMessageToAttendeesJob;
 use App\Generators\TicketGenerator;
 use App\Jobs\GenerateTicket;
 use App\Jobs\SendAttendeeInvite;
@@ -20,11 +27,13 @@ use Auth;
 use Config;
 use DB;
 use Excel;
+use Exception;
 use Illuminate\Http\Request;
 use Log;
 use Mail;
-use Omnipay\Omnipay;
+use PDF;
 use Validator;
+use Illuminate\Support\Facades\Lang;
 
 class EventAttendeesController extends MyBaseController
 {
@@ -135,8 +144,8 @@ class EventAttendeesController extends MyBaseController
         $ticket_id = $request->get('ticket_id');
         $event = Event::findOrFail($event_id);
         $ticket_price = 0;
-        $attendee_first_name = strip_tags($request->get('first_name'));
-        $attendee_last_name = strip_tags($request->get('last_name'));
+        $attendee_first_name = $request->get('first_name');
+        $attendee_last_name = $request->get('last_name');
         $attendee_email = $request->get('email');
         $email_attendee = $request->get('email_ticket');
 
@@ -151,7 +160,7 @@ class EventAttendeesController extends MyBaseController
             $order->first_name = $attendee_first_name;
             $order->last_name = $attendee_last_name;
             $order->email = $attendee_email;
-            $order->order_status_id = config('attendize.order_complete');
+            $order->order_status_id = config('attendize.order.complete');
             $order->amount = $ticket_price;
             $order->account_id = Auth::user()->account_id;
             $order->event_id = $event_id;
@@ -173,7 +182,6 @@ class EventAttendeesController extends MyBaseController
             $ticket = Ticket::scope()->find($ticket_id);
             $ticket->increment('quantity_sold');
             $ticket->increment('sales_volume', $ticket_price);
-            $ticket->event->increment('sales_volume', $ticket_price);
 
             /*
              * Insert order item
@@ -208,7 +216,7 @@ class EventAttendeesController extends MyBaseController
 
 
             if ($email_attendee == '1') {
-                $this->dispatch(new SendAttendeeInvite($attendee));
+                SendAttendeeInviteJob::dispatch($attendee);
             }
 
             session()->flash('message', trans("Controllers.attendee_successfully_invited"));
@@ -288,101 +296,17 @@ class EventAttendeesController extends MyBaseController
 
         }
 
-        $ticket_id = $request->get('ticket_id');
         $event = Event::findOrFail($event_id);
-        $ticket_price = 0;
-        $email_attendee = $request->get('email_ticket');
-        $num_added = 0;
+        $ticket = Ticket::scope()->find($request->get('ticket_id'));
+        $emailAttendees = $request->get('email_ticket');
         if ($request->file('attendees_list')) {
-
-            $the_file = Excel::load($request->file('attendees_list')->getRealPath(), function ($reader) {
-            })->get();
-
-            // Loop through
-            foreach ($the_file as $rows) {
-                if (!empty($rows['first_name']) && !empty($rows['last_name']) && !empty($rows['email'])) {
-                    $num_added++;
-                    $attendee_first_name = strip_tags($rows['first_name']);
-                    $attendee_last_name = strip_tags($rows['last_name']);
-                    $attendee_email = $rows['email'];
-
-                    error_log($ticket_id . ' ' . $ticket_price . ' ' . $email_attendee);
-
-
-                    /**
-                     * Create the order
-                     */
-                    $order = new Order();
-                    $order->first_name = $attendee_first_name;
-                    $order->last_name = $attendee_last_name;
-                    $order->email = $attendee_email;
-                    $order->order_status_id = config('attendize.order_complete');
-                    $order->amount = $ticket_price;
-                    $order->account_id = Auth::user()->account_id;
-                    $order->event_id = $event_id;
-
-                    // Calculating grand total including tax
-                    $orderService = new OrderService($ticket_price, 0, $event);
-                    $orderService->calculateFinalCosts();
-                    $order->taxamt = $orderService->getTaxAmount();
-
-                    if ($orderService->getGrandTotal() == 0) {
-                        $order->is_payment_received = 1;
-                    }
-
-                    $order->save();
-
-                    /**
-                     * Update qty sold
-                     */
-                    $ticket = Ticket::scope()->find($ticket_id);
-                    $ticket->increment('quantity_sold');
-                    $ticket->increment('sales_volume', $ticket_price);
-                    $ticket->event->increment('sales_volume', $ticket_price);
-
-                    /**
-                     * Insert order item
-                     */
-                    $orderItem = new OrderItem();
-                    $orderItem->title = $ticket->title;
-                    $orderItem->quantity = 1;
-                    $orderItem->order_id = $order->id;
-                    $orderItem->unit_price = $ticket_price;
-                    $orderItem->save();
-
-                    /**
-                     * Update the event stats
-                     */
-                    $event_stats = new EventStats();
-                    $event_stats->updateTicketsSoldCount($event_id, 1);
-                    $event_stats->updateTicketRevenue($ticket_id, $ticket_price);
-
-                    /**
-                     * Create the attendee
-                     */
-                    $attendee = new Attendee();
-                    $attendee->first_name = $attendee_first_name;
-                    $attendee->last_name = $attendee_last_name;
-                    $attendee->email = $attendee_email;
-                    $attendee->event_id = $event_id;
-                    $attendee->order_id = $order->id;
-                    $attendee->ticket_id = $ticket_id;
-                    $attendee->account_id = Auth::user()->account_id;
-                    $attendee->reference_index = 1;
-                    $attendee->save();
-
-                    if ($email_attendee == '1') {
-                        $this->dispatch(new SendAttendeeInvite($attendee));
-                    }
-                }
-            };
+            (new AttendeesImport($event, $ticket, (bool)$emailAttendees))->import(request()->file('attendees_list'));
         }
 
-        session()->flash('message', $num_added . ' Attendees Successfully Invited');
+        session()->flash('message', 'Attendees Successfully Invited');
 
         return response()->json([
             'status'      => 'success',
-            'id'          => $attendee->id,
             'redirectUrl' => route('showEventAttendees', [
                 'event_id' => $event_id,
             ]),
@@ -451,12 +375,11 @@ class EventAttendeesController extends MyBaseController
             'attendee'        => $attendee,
             'message_content' => $request->get('message'),
             'subject'         => $request->get('subject'),
-            'event'           => $attendee->event,
-            'email_logo'      => $attendee->event->organiser->full_logo_path,
+            'event'           => $attendee->event
         ];
 
         //@todo move this to the SendAttendeeMessage Job
-        Mail::send('Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
+        Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
             $message->to($attendee->email, $attendee->full_name)
                 ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                 ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -465,7 +388,7 @@ class EventAttendeesController extends MyBaseController
 
         /* Could bcc in the above? */
         if ($request->get('send_copy') == '1') {
-            Mail::send('Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
+            Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
                 $message->to($attendee->event->organiser->email, $attendee->event->organiser->name)
                     ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
                     ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
@@ -529,7 +452,7 @@ class EventAttendeesController extends MyBaseController
         /*
          * Queue the emails
          */
-        $this->dispatch(new SendMessageToAttendees($message));
+        SendMessageToAttendeesJob::dispatch($message);
 
         return response()->json([
             'status'  => 'success',
@@ -545,13 +468,18 @@ class EventAttendeesController extends MyBaseController
     public function showExportTicket($event_id, $attendee_id)
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
+        $attendee_reference = $attendee->getReferenceAttribute();
 
-        Config::set('queue.default', 'sync');
-        Log::info("*********");
-        Log::info($attendee_id);
-        Log::info($attendee);
+        Log::debug("Exporting ticket PDF", [
+            'attendee_id' => $attendee_id,
+            'order_reference' => $attendee->order->order_reference,
+            'attendee_reference' => $attendee_reference,
+            'event_id' => $event_id
+        ]);
 
-        $this->dispatch(new GenerateTicket($attendee->order->order_reference . "-" . $attendee->reference_index));
+        $pdf_file = public_path(config('attendize.event_pdf_tickets_path')) . '/' . $attendee_reference . '.pdf';
+
+        $this->dispatchNow(new GenerateTicketJob($attendee));
 
         // Generate PDF filename and path
         $pdf_file = TicketGenerator::generateFileName($attendee->order->order_reference . '-' . $attendee->reference_index);
@@ -567,59 +495,9 @@ class EventAttendeesController extends MyBaseController
      */
     public function showExportAttendees($event_id, $export_as = 'xls')
     {
-
-        Excel::create('attendees-as-of-' . date('d-m-Y-g.i.a'), function ($excel) use ($event_id) {
-
-            $excel->setTitle('Attendees List');
-
-            // Chain the setters
-            $excel->setCreator(config('attendize.app_name'))
-                ->setCompany(config('attendize.app_name'));
-
-            $excel->sheet('attendees_sheet_1', function ($sheet) use ($event_id) {
-                DB::connection();
-                $data = DB::table('attendees')
-                    ->where('attendees.event_id', '=', $event_id)
-                    ->where('attendees.is_cancelled', '=', 0)
-                    ->where('attendees.account_id', '=', Auth::user()->account_id)
-                    ->join('events', 'events.id', '=', 'attendees.event_id')
-                    ->join('orders', 'orders.id', '=', 'attendees.order_id')
-                    ->join('tickets', 'tickets.id', '=', 'attendees.ticket_id')
-                    ->select([
-                        'attendees.first_name',
-                        'attendees.last_name',
-                        'attendees.email',
-			'attendees.private_reference_number',
-                        'orders.order_reference',
-                        'tickets.title',
-                        'orders.created_at',
-                        DB::raw("(CASE WHEN attendees.has_arrived THEN 'YES' ELSE 'NO' END) AS has_arrived"),
-                        'attendees.arrival_time',
-                    ])->get();
-
-                $data = array_map(function($object) {
-                    return (array)$object;
-                }, $data->toArray());
-
-                $sheet->fromArray($data);
-                $sheet->row(1, [
-                    'First Name',
-                    'Last Name',
-                    'Email',
-		    'Ticket ID',
-                    'Order Reference',
-                    'Ticket Type',
-                    'Purchase Date',
-                    'Has Arrived',
-                    'Arrival Time',
-                ]);
-
-                // Set gray background on first row
-                $sheet->row(1, function ($row) {
-                    $row->setBackground('#f5f5f5');
-                });
-            });
-        })->export($export_as);
+        $event = Event::scope()->findOrFail($event_id);
+        $date = date('d-m-Y-g.i.a');
+        return (new AttendeesExport($event->id))->download("attendees-as-of-{$date}.{$export_as}");
     }
 
     /**
@@ -717,102 +595,64 @@ class EventAttendeesController extends MyBaseController
     public function postCancelAttendee(Request $request, $event_id, $attendee_id)
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
-        $error_message = false; //Prevent "variable doesn't exist" error message
-
         if ($attendee->is_cancelled) {
             return response()->json([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => trans("Controllers.attendee_already_cancelled"),
             ]);
         }
 
-        $attendee->ticket->decrement('quantity_sold');
-        $attendee->ticket->decrement('sales_volume', $attendee->ticket->price);
-        $attendee->ticket->event->decrement('sales_volume', $attendee->ticket->price);
-        $attendee->is_cancelled = 1;
-        $attendee->save();
-
-        $eventStats = EventStats::where('event_id', $attendee->event_id)->where('date', $attendee->created_at->format('Y-m-d'))->first();
-        if($eventStats){
-            $eventStats->decrement('tickets_sold',  1);
-            $eventStats->decrement('sales_volume',  $attendee->ticket->price);
-        }
-
+        // Create email data
         $data = [
-            'attendee'   => $attendee,
+            'attendee' => $attendee,
             'email_logo' => $attendee->event->organiser->full_logo_path,
         ];
 
-        if ($request->get('notify_attendee') == '1') {
-            Mail::send('Emails.notifyCancelledAttendee', $data, function ($message) use ($attendee) {
-                $message->to($attendee->email, $attendee->full_name)
-                    ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
-                    ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
-                    ->subject(trans("Email.your_ticket_cancelled"));
-            });
+        try {
+            // Cancels attendee for an order and attempts to refund
+            $orderCancellation = OrderCancellation::make($attendee->order, collect([$attendee]));
+            $orderCancellation->cancel();
+            $data['refund_amount'] = $orderCancellation->getRefundAmount();
+        } catch (Exception | OrderRefundException $e) {
+            Log::error($e);
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage(),
+            ]);
         }
 
-        if ($request->get('refund_attendee') == '1') {
-
+        if ($request->get('notify_attendee') == '1') {
             try {
-                // This does not account for an increased/decreased ticket price
-                // after the original purchase.
-                $refund_amount = $attendee->ticket->price;
-                $data['refund_amount'] = $refund_amount;
-
-                $gateway = Omnipay::create($attendee->order->payment_gateway->name);
-
-                // Only works for stripe
-                $gateway->initialize($attendee->order->account->getGateway($attendee->order->payment_gateway->id)->config);
-
-                $request = $gateway->refund([
-                    'transactionReference' => $attendee->order->transaction_id,
-                    'amount'               => $refund_amount,
-                    'refundApplicationFee' => false,
-                ]);
-
-                $response = $request->send();
-
-                if ($response->isSuccessful()) {
-
-                    // Update the attendee and their order
-                    $attendee->is_refunded = 1;
-                    $attendee->order->is_partially_refunded = 1;
-                    $attendee->order->amount_refunded += $refund_amount;
-
-                    $attendee->order->save();
-                    $attendee->save();
-
-                    // Let the user know that they have received a refund.
-                    Mail::send('Emails.notifyRefundedAttendee', $data, function ($message) use ($attendee) {
-                        $message->to($attendee->email, $attendee->full_name)
-                            ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
-                            ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
-                            ->subject(trans("Email.refund_from_name", ["name"=>$attendee->event->organiser->name]));
-                    });
-                } else {
-                    $error_message = $response->getMessage();
-                }
-
+                Mail::send(Lang::locale().'.Emails.notifyCancelledAttendee', $data, function ($message) use ($attendee) {
+                    $message->to($attendee->email, $attendee->full_name)
+                        ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
+                        ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
+                        ->subject(trans("Email.your_ticket_cancelled"));
+                });
             } catch (\Exception $e) {
-                \Log::error($e);
-                $error_message = trans("Controllers.refund_exception");
-
+                Log::error($e);
+                // We do not want to kill the flow if the email fails
             }
         }
 
-        if ($error_message) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $error_message,
-            ]);
+        try {
+            // Let the user know that they have received a refund.
+            Mail::send(Lang::locale().'.Emails.notifyRefundedAttendee', $data, function ($message) use ($attendee) {
+                $message->to($attendee->email, $attendee->full_name)
+                    ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
+                    ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
+                    ->subject(trans("Email.refund_from_name", ["name"=>$attendee->event->organiser->name]));
+            });
+        } catch (\Exception $e) {
+            Log::error($e);
+            // We do not want to kill the flow if the email fails
         }
 
         session()->flash('message', trans("Controllers.successfully_cancelled_attendee"));
 
         return response()->json([
-            'status'      => 'success',
-            'id'          => $attendee->id,
+            'status' => 'success',
+            'id' => $attendee->id,
             'redirectUrl' => '',
         ]);
     }
@@ -847,7 +687,7 @@ class EventAttendeesController extends MyBaseController
     {
         $attendee = Attendee::scope()->findOrFail($attendee_id);
 
-        $this->dispatch(new SendAttendeeTicket($attendee));
+        $this->dispatch(new SendOrderAttendeeTicketJob($attendee));
 
         return response()->json([
             'status'  => 'success',

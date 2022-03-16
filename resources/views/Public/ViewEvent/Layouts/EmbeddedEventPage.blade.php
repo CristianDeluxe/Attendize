@@ -26,7 +26,7 @@
         @if($event->images->count())
         <meta property="og:image" content="{{URL::to($event->images->first()['image_path'])}}" />
         @endif
-        <meta property="og:description" content="{{{Str::words(strip_tags($event->description)), 20}}}" />
+        <meta property="og:description" content="{{{Str::words(md_to_str($event->description), 20)}}}" />
         <meta property="og:site_name" content="Attendize.com" />
         <!--[if lt IE 9]>
           <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -34,7 +34,7 @@
         <![endif]-->
         @yield('head')
 
-       {!!HTML::style('assets/stylesheet/frontend.css')!!}
+       {!!Html::style('assets/stylesheet/frontend.css')!!}
 
         <!--Bootstrap placeholder fix-->
         <style>
@@ -71,7 +71,7 @@
         @yield('content')
 
         @include("Shared.Partials.LangScript")
-        {!!HTML::script('assets/javascript/frontend.js')!!}
+        {!!Html::script('assets/javascript/frontend.js')!!}
 
         @if(isset($secondsToExpire))
         <script>

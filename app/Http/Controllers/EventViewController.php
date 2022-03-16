@@ -11,10 +11,23 @@ use Auth;
 use Cookie;
 use Illuminate\Http\Request;
 use Mail;
+use Redirect;
 use Validator;
+use Services\Captcha\Factory;
+use Illuminate\Support\Facades\Lang;
 
 class EventViewController extends Controller
 {
+    protected $captchaService;
+
+    public function __construct()
+    {
+        $captchaConfig = config('attendize.captcha');
+        if ($captchaConfig["captcha_is_on"]) {
+            $this->captchaService = Factory::create($captchaConfig);
+        }
+    }
+
     /**
      * Show the homepage for an event
      *
@@ -90,9 +103,9 @@ class EventViewController extends Controller
     public function postContactOrganiser(Request $request, $event_id)
     {
         $rules = [
-            'name'    => 'required',
-            'email'   => ['required', 'email'],
-            'message' => ['required'],
+            'name'                  => 'required',
+            'email'                 => 'required|email',
+            'message'               => 'required',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -104,16 +117,24 @@ class EventViewController extends Controller
             ]);
         }
 
+        if (is_object($this->captchaService)) {
+            if (!$this->captchaService->isHuman($request)) {
+                return Redirect::back()
+                    ->with(['message' => trans("Controllers.incorrect_captcha"), 'failed' => true])
+                    ->withInput();
+            }
+        }
+
         $event = Event::findOrFail($event_id);
 
         $data = [
             'sender_name'     => $request->get('name'),
             'sender_email'    => $request->get('email'),
-            'message_content' => strip_tags($request->get('message')),
+            'message_content' => clean($request->get('message')),
             'event'           => $event,
         ];
 
-        Mail::send('Emails.messageReceived', $data, function ($message) use ($event, $data) {
+        Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($event, $data) {
             $message->to($event->organiser->email, $event->organiser->name)
                 ->from(config('attendize.outgoing_email_noreply'), $data['sender_name'])
                 ->replyTo($data['sender_email'], $data['sender_name'])
@@ -147,7 +168,7 @@ class EventViewController extends Controller
     {
         $event = Event::findOrFail($event_id);
 
-        $accessCode = strtoupper(strip_tags($request->get('access_code')));
+        $accessCode = strtoupper($request->get('access_code'));
         if (!$accessCode) {
             return response()->json([
                 'status' => 'error',

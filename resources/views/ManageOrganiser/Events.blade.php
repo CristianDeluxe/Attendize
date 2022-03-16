@@ -2,11 +2,11 @@
 
 @section('title')
     @parent
-    @lang("Organiser.organiser_events")
+    {{ trans('Organiser.organiser_events') }}
 @stop
 
 @section('page_title')
-    @lang("Organiser.organiser_name_events", ["name"=>$organiser->name])
+    {{ trans('Organiser.organiser_name_events', ['name'=>$organiser->name]) }}
 @stop
 
 @section('top_nav')
@@ -14,8 +14,8 @@
 @stop
 
 @section('head')
-    {!! HTML::script('https://maps.googleapis.com/maps/api/js?libraries=places&key='.config("attendize.google_maps_geocoding_key")) !!}
-    {!! HTML::script('vendor/geocomplete/jquery.geocomplete.min.js')!!}
+    {!! Html::script('https://maps.googleapis.com/maps/api/js?libraries=places&key='.config("attendize.google_maps_geocoding_key")) !!}
+    {!! Html::script('vendor/geocomplete/jquery.geocomplete.min.js')!!}
 @stop
 
 @section('menu')
