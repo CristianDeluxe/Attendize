@@ -43,7 +43,7 @@ services:
   maildev:
     image: maildev/maildev
     ports:
-      - "1080:80"
+      - "1080:1080"
   redis:
     image: redis
 
