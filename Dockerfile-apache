@@ -4,6 +4,9 @@
 # Base image with apache, php, composer and mysql built on ubuntu
 FROM leen15/apache-php-mysql as base
 
+# update composer to v2
+RUN composer self-update
+
 # install dependencies
 RUN apt-get update && apt-get install -y \
        libpq-dev \

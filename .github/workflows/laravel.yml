@@ -20,7 +20,7 @@ jobs:
         command: install
         args: --no-ansi --prefer-dist
         php_version: 7.4
-        composer_version: 1
+        composer_version: 2
         interaction: no
         suggest: no
         dev: yes
@@ -38,7 +38,7 @@ jobs:
       with:
         command: exec phpunit
         php_version: 7.4
-        composer_version: 1
+        composer_version: 2
         interaction: no
         suggest: no
         dev: yes
