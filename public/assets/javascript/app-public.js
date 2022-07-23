@@ -53,15 +53,13 @@ function getAjaxFormConfig(form) {
                 case 'error':
                     if (data.messages) {
                         processFormErrors($form, data.messages);
-                        return;
                     }
+                    toggleSubmitDisabled($submitButton);
                     break;
 
                 default:
                     break;
             }
-
-            toggleSubmitDisabled($submitButton);
 
         },
         dataType: 'json'
