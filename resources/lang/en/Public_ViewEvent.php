@@ -51,7 +51,7 @@ return [
     'is_business'                       => 'Are you a tax registered business?',
     'last_name'                         => 'Last name',
     'LOCATION'                          => 'LOCATION',
-    'no_payment_required'               => 'It is not necessary to make the payment, free of charge.',
+    'no_payment_required'               => 'It is not necessary to make a payment, free of charge.',
     'offline_payment_instructions'      => 'Offline payment instructions',
     'offline_payment_methods_available' => 'Offline Payment Methods Available',
     'order_attendees'                   => 'Order attendees',

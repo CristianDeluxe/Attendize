@@ -17,6 +17,7 @@ class AccountPaymentGateway extends MyBaseModel
      */
     protected $fillable = [
         'payment_gateway_id',
+        'account_id',
         'config'
     ];
 
