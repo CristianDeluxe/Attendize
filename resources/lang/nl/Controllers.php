@@ -10,15 +10,15 @@ return array (
   array (
     'event_title' => 'Event titel',
     'start_date' => 'Start datum',
-    'created_at' => 'Creation datum',
+    'created_at' => 'Aanmaakdatum',
     'quantity_sold' => 'Aantal verkopen',
     'sales_volume' => 'Totaal aantal verkopen',
     'sort_order' => 'Sorteervolgorde',
-    'title' => 'Ticket Titel',
+    'title' => 'Ticket titel',
   ),
   // Defined in file C:\\wamp\\www\\attendize\\resources\\views\\ManageOrganiser\\Events.blade.php
   //==================================== Translations ====================================//
-  'account_successfully_updated' => 'Account succesvol geüpdatet',
+  'account_successfully_updated' => 'Account succesvol bijgewerkt',
   'addInviteError' => 'U moet eerst tickets aanmaken voordat u bezoekers kunt uitnodigen.',
   'attendee_already_cancelled' => 'Bezoeker reeds geannuleerd',
   'attendee_already_checked_in' => 'Bezoeker gearriveerd om :time ',
@@ -34,9 +34,9 @@ return array (
   array (
     'email' =>
     array (
-      'email' => 'Vol een geldig e-mailadres in.',
+      'email' => 'Vul een geldig e-mailadres in.',
       'required' => 'E-mailadres is noodzakelijk.',
-      'unique' => 'E-mailadres is al gebruikt voor een account.',
+      'unique' => 'E-mailadres is al in gebruik door een ander account.',
     ),
     'first_name' =>
     array (
@@ -56,7 +56,7 @@ return array (
     ),
     'password' =>
     array (
-      'passcheck' => 'Het paswoord is incorrect.',
+      'passcheck' => 'Het wachtwoord is incorrect.',
     ),
   ),
   'event_create_exception' => 'Whoops! Er deed zich een probleem voor bij het aanmaken van het evenement. Probeer opnieuw.',
