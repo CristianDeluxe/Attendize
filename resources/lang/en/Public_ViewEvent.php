@@ -54,7 +54,7 @@ return [
     'no_payment_required'               => 'It is not necessary to make a payment, free of charge.',
     'offline_payment_instructions'      => 'Offline payment instructions',
     'offline_payment_methods_available' => 'Offline Payment Methods Available',
-    'order_attendees'                   => 'Order attendees',
+    'order_attendees'                   => 'Order Attendees',
     'order_awaiting_payment'            => 'This order is awaiting payment. Please read the below instructions on how to make payment.',
     'order_date'                        => 'Order Date',
     'order_details'                     => 'Order Details',
