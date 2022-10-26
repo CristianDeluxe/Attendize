@@ -17,6 +17,7 @@ class SendMessageToAttendeesMail extends Mailable
     public $content;
     public $event;
     public $attendee;
+    public $email_logo;
 
     /**
      * Create a new message instance.
@@ -29,6 +30,7 @@ class SendMessageToAttendeesMail extends Mailable
         $this->content = $content;
         $this->event = $event;
         $this->attendee = $attendee;
+        $this->email_logo = $event->organiser->full_logo_path;
     }
 
     /**

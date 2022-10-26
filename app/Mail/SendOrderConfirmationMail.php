@@ -27,6 +27,8 @@ class SendOrderConfirmationMail extends Mailable
      */
     public $orderService;
 
+    public $email_logo;
+
     /**
      * Create a new message instance.
      *
@@ -34,6 +36,7 @@ class SendOrderConfirmationMail extends Mailable
      */
     public function __construct(Order $order, OrderService $orderService)
     {
+        $this->email_logo = $order->event->organiser->full_logo_path;
         $this->order = $order;
         $this->orderService = $orderService;
     }
