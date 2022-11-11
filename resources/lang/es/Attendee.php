@@ -3,6 +3,8 @@
 return array(
     'scan_another_ticket'                  => 'Escanear otra entrada',
     'scanning'                             => 'Escaneo',
+    'has_arrived'                          => 'Ha llegado',
+    'arrival_time'                         => 'Hora de llegada',
     'attendees'                            => 'Asistentes',
     'check_in'                             => 'Registro de ingreso: :event',
     'email'                                => 'Correo electrónico',
