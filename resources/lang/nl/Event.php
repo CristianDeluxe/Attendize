@@ -24,7 +24,7 @@ return array (
   'event_orders' => 'Evenement Bestellingen',
   'event_start_date' => 'Evenement Start Datum',
   'event_title' => 'Evenement Titel',
-  'event_title_placeholder' => 'bv.: :name Presents Snollebollekes',
+  'event_title_placeholder' => 'bv.: :name conferentie',
   'event_visibility' => 'Evenement weergeven',
   'go_live' => 'Evenement is live! Je kan dit ongedaan maken op de instellingen pagina.',
   'n_attendees_for_event' => ':num bezoekers voor het evenement: :name (:date)',
@@ -43,7 +43,7 @@ return array (
   'showing_num_of_orders' => 'Bekijk bestelling :0 van de :1 bestellingen in totaal',
   'tickets_sold' => 'Tickets verkocht',
   'venue_name' => 'Naam Locatie',
-  'venue_name_placeholder' => 'bv.: De Krokante Krab',
+  'venue_name_placeholder' => 'bv.: Stadszaal',
   'vis_hide' => 'Verberg het evenement voor bezoekers.',
   'vis_public' => 'Maak het evenement zichtbaar voor bezoekers.',
 );

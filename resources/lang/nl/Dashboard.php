@@ -4,9 +4,8 @@
 *************************************************************************/
 
 return array (
-    //============================== New strings to translate ==============================//
-    'this_event_has_started' => 'This event has started.',
     //==================================== Translations ====================================//
+    'this_event_has_started' => 'Dit event is begonnen.',
     'create_tickets' => 'Creëer tickets',
     'edit_event_page_design' => 'Evenementpagina aanpassen',
     'edit_organiser_fees' => 'Bewerk organisator kosten',
