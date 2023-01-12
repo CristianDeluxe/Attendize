@@ -11,7 +11,7 @@ return [
     'create_access_code' => 'Toegangscodes aanmaken',
     'access_code_title' => 'Toegangscode',
     'access_code_title_placeholder' => 'bv.: CONFERENCE2019',
-    'valid_code_required' => 'Een geldinge toegangscode is noodzakelijk',
+    'valid_code_required' => 'Een geldige toegangscode is noodzakelijk',
     'no_tickets_matched' => 'Tickets komen niet overeen met uw toegangscode',
     'select_access_code' => 'Selecteer toegangscode',
     'access_codes_usage_count' => 'Aantal toegangscodes gebruikt',
