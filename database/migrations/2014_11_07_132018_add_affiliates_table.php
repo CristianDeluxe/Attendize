@@ -15,7 +15,7 @@ class AddAffiliatesTable extends Migration
             $table->increments('id');
             $table->string('name', 125);
             $table->integer('visits');
-            $table->integer('tickets_sold');
+            $table->integer('tickets_sold')->default(0);
             $table->decimal('sales_volume', 10, 2)->default(0);
             $table->timestamp('last_visit');
             $table->unsignedInteger('account_id')->index();

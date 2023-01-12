@@ -27,6 +27,8 @@ class SendOrderNotificationMail extends Mailable
      */
     public $orderService;
 
+    public $email_logo;
+
     /**
      * Create a new message instance.
      *
@@ -36,6 +38,7 @@ class SendOrderNotificationMail extends Mailable
     {
         $this->order = $order;
         $this->orderService = $orderService;
+        $this->email_logo = $order->event->organiser->full_logo_path;
     }
 
     /**

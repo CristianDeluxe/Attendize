@@ -18,6 +18,7 @@ class SendOrderAttendeeTicketMail extends Mailable
      * @var Attendee
      */
     public $attendee;
+    public $email_logo;
 
     /**
      * Create a new message instance.
@@ -27,6 +28,7 @@ class SendOrderAttendeeTicketMail extends Mailable
     public function __construct(Attendee $attendee)
     {
         $this->attendee = $attendee;
+        $this->email_logo = $attendee->event->organiser->full_logo_path;
     }
 
     /**

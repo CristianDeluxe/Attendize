@@ -7,6 +7,7 @@ use App\Jobs\GenerateTicketJob;
 use App\Jobs\SendAttendeeInviteJob;
 use App\Jobs\SendOrderAttendeeTicketJob;
 use App\Jobs\SendMessageToAttendeesJob;
+use App\Jobs\SendMessageToAttendeeJob;
 use App\Models\Attendee;
 use App\Models\Event;
 use App\Models\EventStats;
@@ -362,31 +363,15 @@ class EventAttendeesController extends MyBaseController
         }
 
         $attendee = Attendee::scope()->findOrFail($attendee_id);
+        $event = Event::scope()->findOrFail($attendee->event_id);
+        $subject = $request->get('subject');
+        $content = $request->get('message');
+        $send_copy = $request->get('send_copy');
 
-        $data = [
-            'attendee'        => $attendee,
-            'message_content' => $request->get('message'),
-            'subject'         => $request->get('subject'),
-            'event'           => $attendee->event
-        ];
-
-        //@todo move this to the SendAttendeeMessage Job
-        Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
-            $message->to($attendee->email, $attendee->full_name)
-                ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
-                ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
-                ->subject($data['subject']);
-        });
-
-        /* Could bcc in the above? */
-        if ($request->get('send_copy') == '1') {
-            Mail::send(Lang::locale().'.Emails.messageReceived', $data, function ($message) use ($attendee, $data) {
-                $message->to($attendee->event->organiser->email, $attendee->event->organiser->name)
-                    ->from(config('attendize.outgoing_email_noreply'), $attendee->event->organiser->name)
-                    ->replyTo($attendee->event->organiser->email, $attendee->event->organiser->name)
-                    ->subject($data['subject'] . trans("Email.organiser_copy"));
-            });
-        }
+        /*
+         * Queue the emails
+         */
+        SendMessageToAttendeeJob::dispatch($subject, $content, $event, $attendee, $send_copy);
 
         return response()->json([
             'status'  => 'success',
