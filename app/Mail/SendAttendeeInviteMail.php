@@ -14,6 +14,7 @@ class SendAttendeeInviteMail extends Mailable
     use Queueable, SerializesModels;
 
     public $attendee;
+    public $email_logo;
 
     /**
      * Create a new message instance.
@@ -23,6 +24,7 @@ class SendAttendeeInviteMail extends Mailable
     public function __construct(Attendee $attendee)
     {
         $this->attendee = $attendee;
+        $this->email_logo = $attendee->event->organiser->full_logo_path;
     }
 
     /**
