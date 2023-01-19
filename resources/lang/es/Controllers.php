@@ -3,6 +3,7 @@
 return array(
     'account_successfully_updated'              => 'Cuenta correctamente actualizada',
     'addInviteError'                            => 'Es necesario crear una entrada antes de poder invitar a un asistente.',
+    'attendees_required'                        => 'Seleccione al menos un asistente',
     'attendee_already_cancelled'                => 'Asistente ya cancelado',
     'attendee_already_checked_in'               => 'El asistente ya se ha registrado a las :time ',
     'attendee_exception'                        => 'Se ha producido un error al invitar a este asistente. Por favor, inténtalo de nuevo.',
@@ -49,8 +50,10 @@ return array(
     'image_upload_error'                        => 'Ha ocurrido un problema al subir tu imagen.',
     'invalid_ticket_error'                      => '"¡Entrada inválida! Por favor, inténtalo de nuevo."',
     'login_password_incorrect'                  => 'La combinación de nombre de usuario/contraseña era incorrecta',
+    'incorrect_captcha'                         => 'La verificación del robot ha fallado, por favor, inténtelo de nuevo.',
     'maximum_refund_amount'                     => 'La cantidad máxima que puede reembolsar es de :money',
     'message_successfully_sent'                 => '¡Mensaje enviado correctamente!',
+    'new_order_received'                        => 'Nueva orden recibida en el evento :event [:order]',
     'no_organiser_name_error'                   => 'Debe dar un nombre al organizador del evento.',
     'nothing_to_do'                             => 'Nada que hacer',
     'nothing_to_refund'                         => 'Nada que devolver.',

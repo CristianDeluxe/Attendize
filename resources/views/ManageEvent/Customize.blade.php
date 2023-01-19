@@ -307,10 +307,6 @@
                             {!! Form::label('social_show_email', trans("Social.email")) !!}
                         </div>
                         <div class="custom-checkbox mb5">
-                            {!! Form::checkbox('social_show_googleplus', 1, $event->social_show_googleplus, ['id' => 'social_show_googleplus', 'data-toggle' => 'toggle']) !!}
-                            {!! Form::label('social_show_googleplus', trans("Social.g+")) !!}
-                        </div>
-                        <div class="custom-checkbox mb5">
                             {!! Form::checkbox('social_show_linkedin', 1, $event->social_show_linkedin, ['id' => 'social_show_linkedin', 'data-toggle' => 'toggle']) !!}
                             {!! Form::label('social_show_linkedin', trans("Social.linkedin")) !!}
                         </div>

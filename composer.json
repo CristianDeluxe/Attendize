@@ -1,6 +1,6 @@
 {
     "name": "attendize/attendize",
-    "version": "2.0.0",
+    "version": "2.7.0",
     "description": "A free and open-source event management and ticket selling application.",
     "keywords": [
         "event management",
@@ -12,11 +12,12 @@
     "type": "project",
     "homepage": "https://www.attendize.com",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
+        "ext-json": "*",
         "doctrine/dbal": "^2.9",
         "dompdf/dompdf": "^0.8",
-        "ext-json": "*",
         "fideloper/proxy": "^4.2",
+        "graham-campbell/markdown": "11.1.0",
         "guzzlehttp/guzzle": "^6.4",
         "guzzlehttp/psr7": "^1.6",
         "intervention/image": "^2.5",
@@ -28,7 +29,6 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/omnipay": "^3.0",
         "maatwebsite/excel": "^3.1",
-        "maxhoffmann/parsedown-laravel": "dev-master",
         "mcamara/laravel-localization": "^1.4",
         "mews/purifier": "^3.1",
         "milon/barcode": "^6.0",
@@ -47,7 +47,7 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.6",
         "facade/ignition": "^1.4",
-        "fzaninotto/faker": "1.8.*",
+        "fzaninotto/faker": "1.9.*",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
         "phpspec/phpspec": "^6.0",
@@ -78,7 +78,9 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "@php artisan clear-compiled"
+            "@php artisan clear-compiled",
+            "@php -r \"copy('.env.example', '.env');\"",
+            "@php artisan key:generate"
         ],
         "post-update-cmd": [
             "@php artisan clear-compiled",
@@ -110,5 +112,5 @@
             ]
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }

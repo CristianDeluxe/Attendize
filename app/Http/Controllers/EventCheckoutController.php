@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\OrderCompletedEvent;
+use App\Attendize\PaymentUtils;
+use App\Jobs\SendOrderNotificationJob;
+use App\Jobs\SendOrderConfirmationJob;
+use App\Jobs\SendOrderAttendeeTicketJob;
 use App\Models\Account;
 use App\Models\AccountPaymentGateway;
 use App\Models\Affiliate;
@@ -18,10 +21,12 @@ use App\Models\Ticket;
 use App\Services\Order as OrderService;
 use Services\PaymentGateway\Factory as PaymentGatewayFactory;
 use Carbon\Carbon;
+use Config;
 use Cookie;
 use DB;
 use Illuminate\Http\Request;
 use Log;
+use Mail;
 use Omnipay;
 use PDF;
 use PhpSpec\Exception\Exception;
@@ -101,8 +106,7 @@ class EventCheckoutController extends Controller
 
             $total_ticket_quantity = $total_ticket_quantity + $current_ticket_quantity;
             $ticket = Ticket::find($ticket_id);
-            $ticket_quantity_remaining = $ticket->quantity_remaining;
-            $max_per_person = min($ticket_quantity_remaining, $ticket->max_per_person);
+            $max_per_person = min($ticket->quantity_remaining, $ticket->max_per_person);
 
             $quantity_available_validation_rules['ticket_' . $ticket_id] = [
                 'numeric',
@@ -111,7 +115,7 @@ class EventCheckoutController extends Controller
             ];
 
             $quantity_available_validation_messages = [
-                'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $ticket_quantity_remaining,
+                'ticket_' . $ticket_id . '.max' => 'The maximum number of tickets you can register is ' . $max_per_person,
                 'ticket_' . $ticket_id . '.min' => 'You must select at least ' . $ticket->min_per_person . ' tickets.',
             ];
 
@@ -208,7 +212,7 @@ class EventCheckoutController extends Controller
             'booking_fee'             => $booking_fee,
             'organiser_booking_fee'   => $organiser_booking_fee,
             'total_booking_fee'       => $booking_fee + $organiser_booking_fee,
-            'order_requires_payment'  => (ceil($order_total) == 0) ? false : true,
+            'order_requires_payment'  => PaymentUtils::requiresPayment($order_total),
             'account_id'              => $event->account->id,
             'affiliate_referral'      => Cookie::get('affiliate_' . $event_id),
             'account_payment_gateway' => $activeAccountPaymentGateway,
@@ -222,9 +226,9 @@ class EventCheckoutController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'status'      => 'success',
+                'isEmbedded' => $this->is_embedded,
                 'redirectUrl' => route('showEventCheckout', [
                         'event_id'    => $event_id,
-                        'is_embedded' => $this->is_embedded,
                     ]) . '#order_form',
             ]);
         }
@@ -359,14 +363,14 @@ class EventCheckoutController extends Controller
         $secondsToExpire = Carbon::now()->diffInSeconds($order_session['expires']);
 
         $viewData = ['event' => $event,
-            'tickets' => $order_session['tickets'],
-            'order_total' => $order_total,
-            'orderService' => $orderService,
-            'order_requires_payment'  => (ceil($order_session['order_total']) == 0) ? false : true,
-            'account_payment_gateway' => $account_payment_gateway,
-            'payment_gateway' => $payment_gateway,
-            'secondsToExpire' => $secondsToExpire,
-            'payment_failed' => $payment_failed
+                     'tickets' => $order_session['tickets'],
+                     'order_total' => $order_total,
+                     'orderService' => $orderService,
+                     'order_requires_payment'  => PaymentUtils::requiresPayment($order_total),
+                     'account_payment_gateway' => $account_payment_gateway,
+                     'payment_gateway' => $payment_gateway,
+                     'secondsToExpire' => $secondsToExpire,
+                     'payment_failed' => $payment_failed
         ];
 
         return view('Public.ViewEvent.EventPagePayment', $viewData);
@@ -383,7 +387,7 @@ class EventCheckoutController extends Controller
      */
     public function postCreateOrder(Request $request, $event_id)
     {
-        $request_data = $ticket_order = session()->get('ticket_order_' . $event_id . ".request_data");
+        $request_data = $ticket_order = session()->get('ticket_order_' . $event_id . ".request_data",[0 => []]);
         $request_data = array_merge($request_data[0], $request->except(['cardnumber', 'cvc']));
 
         session()->remove('ticket_order_' . $event_id . '.request_data');
@@ -648,9 +652,9 @@ class EventCheckoutController extends Controller
                 for ($i = 0; $i < $attendee_details['qty']; $i++) {
 
                     $attendee = new Attendee();
-                    $attendee->first_name = strip_tags($request_data["ticket_holder_first_name"][$i][$attendee_details['ticket']['id']]);
-                    $attendee->last_name = strip_tags($request_data["ticket_holder_last_name"][$i][$attendee_details['ticket']['id']]);
-                    $attendee->email = $request_data["ticket_holder_email"][$i][$attendee_details['ticket']['id']];
+                    $attendee->first_name = sanitise($request_data["ticket_holder_first_name"][$i][$attendee_details['ticket']['id']]);
+                    $attendee->last_name = sanitise($request_data["ticket_holder_last_name"][$i][$attendee_details['ticket']['id']]);
+                    $attendee->email = sanitise($request_data["ticket_holder_email"][$i][$attendee_details['ticket']['id']]);
                     $attendee->event_id = $event_id;
                     $attendee->order_id = $order->id;
                     $attendee->ticket_id = $attendee_details['ticket']['id'];
@@ -715,9 +719,18 @@ class EventCheckoutController extends Controller
         ReservedTickets::where('session_id', '=', session()->getId())->delete();
 
         // Queue up some tasks - Emails to be sent, PDFs etc.
-        Log::info('Firing the event');
-        event(new OrderCompletedEvent($order));
-
+        // Send order notification to organizer
+        Log::debug('Queueing Order Notification Job');
+        SendOrderNotificationJob::dispatch($order, $orderService);
+        // Send order confirmation to ticket buyer
+        Log::debug('Queueing Order Tickets Job');
+        SendOrderConfirmationJob::dispatch($order, $orderService);
+        // Send tickets to attendees
+        Log::debug('Queueing Attendee Ticket Jobs');
+        foreach ($order->attendees as $attendee) {
+            SendOrderAttendeeTicketJob::dispatch($attendee);
+            Log::debug('Queueing Attendee Ticket Job Done');
+        }
 
         if ($return_json) {
             return response()->json([
