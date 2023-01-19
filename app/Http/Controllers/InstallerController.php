@@ -50,6 +50,70 @@ class InstallerController extends Controller
         return view('Installer.Installer', $this->data);
     }
 
+    /**
+     * Attempts to install the system
+     *
+     * @param  Request  $request
+     * @return JsonResponse|RedirectResponse
+     */
+    public function postInstaller(Request $request)
+    {
+        //  Do not run the installation if it is already installed
+        if (self::isInstalled()) {
+
+            // Return 409 Conflict HTTP Code and a friendly message
+            abort(409, trans('Installer.setup_completed_already_message'));
+        }
+
+        // Increase PHP time limit
+        set_time_limit(300);
+
+        // Check if we just have to test the database for JSON before doing anything else
+        if ($request->get('test') === 'db') {
+            return $this->checkDatabaseJSON($request);
+        }
+
+        // Construct the data for installer
+        $this->constructInstallerData();
+
+        // If the database settings are invalid, return to the installer page.
+        if (!$this->validateConnectionDetails($request)) {
+            return view('Installer.Installer', $this->data);
+        }
+
+        // Get and store data for installation
+        $this->getInstallationData($request);
+
+        // If a user doesn't use the default database details, enters incorrect values in the form, and then proceeds
+        // the installation fails miserably. Rather check if the database connection details are valid and fail
+        // gracefully
+        if (!$this->testDatabase($this->installation_data['database'])) {
+            return view('Installer.Installer', $this->data)->withErrors(
+                new MessageBag(['Database connection failed. Please check the details you have entered and try again.']));
+        }
+
+        // Writes the new env file
+        $this->writeEnvFile();
+
+        // Force laravel to regenerate a new key (see key:generate sources)
+        Config::set('app.key', $this->installation_data['app_key']);
+        Artisan::call('key:generate', ['--force' => true]);
+
+        // Run the migration
+        Artisan::call('migrate', ['--force' => true]);
+        if (Timezone::count() === 0) {
+            Artisan::call('db:seed', ['--force' => true]);
+        }
+
+        // Create the "installed" file
+        $this->createInstalledFile();
+
+        // Reload the configuration file (very useful if you use php artisan serve)
+        Artisan::call('config:clear');
+
+        return redirect()->route('showSignup', ['first_run' => 'yup']);
+    }
+
     protected function constructInstallerData(): void
     {
         $this->addDefaultConfig();
@@ -153,70 +217,6 @@ class InstallerController extends Controller
     public static function isInstalled(): bool
     {
         return file_exists(base_path('installed'));
-    }
-
-    /**
-     * Attempts to install the system
-     *
-     * @param  Request  $request
-     * @return JsonResponse|RedirectResponse
-     */
-    public function postInstaller(Request $request)
-    {
-        //  Do not run the installation if it is already installed
-        if (self::isInstalled()) {
-
-            // Return 409 Conflict HTTP Code and a friendly message
-            abort(409, trans('Installer.setup_completed_already_message'));
-        }
-
-        // Increase PHP time limit
-        set_time_limit(300);
-
-        // Check if we just have to test the database for JSON before doing anything else
-        if ($request->get('test') === 'db') {
-            return $this->checkDatabaseJSON($request);
-        }
-
-        // Construct the data for installer
-        $this->constructInstallerData();
-
-        // If the database settings are invalid, return to the installer page.
-        if (!$this->validateConnectionDetails($request)) {
-            return view('Installer.Installer', $this->data);
-        }
-
-        // Get and store data for installation
-        $this->getInstallationData($request);
-
-        // If a user doesn't use the default database details, enters incorrect values in the form, and then proceeds
-        // the installation fails miserably. Rather check if the database connection details are valid and fail
-        // gracefully
-        if (!$this->testDatabase($this->installation_data['database'])) {
-            return view('Installer.Installer', $this->data)->withErrors(
-                new MessageBag(['Database connection failed. Please check the details you have entered and try again.']));
-        }
-
-        // Writes the new env file
-        $this->writeEnvFile();
-
-        // Force laravel to regenerate a new key (see key:generate sources)
-        Config::set('app.key', $this->installation_data['app_key']);
-        Artisan::call('key:generate', ['--force' => true]);
-
-        // Run the migration
-        Artisan::call('migrate', ['--force' => true]);
-        if (Timezone::count() === 0) {
-            Artisan::call('db:seed', ['--force' => true]);
-        }
-
-        // Create the "installed" file
-        $this->createInstalledFile();
-
-        // Reload the configuration file (very useful if you use php artisan serve)
-        Artisan::call('config:clear');
-
-        return redirect()->route('showSignup', ['first_run' => 'yup']);
     }
 
     /**
