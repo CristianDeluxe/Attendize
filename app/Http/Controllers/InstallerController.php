@@ -52,9 +52,34 @@ class InstallerController extends Controller
 
     protected function constructInstallerData(): void
     {
+        $this->addDefaultConfig();
         $this->addWritablePaths();
         $this->addPHPExtensions();
         $this->addPHPOptionalExtensions();
+    }
+
+    /**
+     * Adds default config values for the view blade to use
+     */
+    protected function addDefaultConfig(): void
+    {
+        $database_default = Config::get('database.default');
+        $this->data['default_config'] = [
+            'application_url'   => Config::get('app.url'),
+            'database_type'     => $database_default,
+            'database_host'     => Config::get('database.connections.' . $database_default . '.host'),
+            'database_name'     => Config::get('database.connections.' . $database_default . '.database'),
+            'database_username' => Config::get('database.connections.' . $database_default . '.username'),
+            'database_password' => Config::get('database.connections.' . $database_default . '.password'),
+            'mail_from_address' => Config::get('mail.from.address'),
+            'mail_from_name'    => Config::get('mail.from.name'),
+            'mail_driver'       => Config::get('mail.driver'),
+            'mail_port'         => Config::get('mail.port'),
+            'mail_encryption'   => Config::get('mail.encryption'),
+            'mail_host'         => Config::get('mail.host'),
+            'mail_username'     => Config::get('mail.username'),
+            'mail_password'     => Config::get('mail.password')
+        ];
     }
 
     /**
