@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Timezone;
 use Exception;
+use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
+use Utils;
 
 class InstallerController extends Controller
 {
@@ -26,6 +28,15 @@ class InstallerController extends Controller
      * @var array Stores the installer data
      */
     private $data;
+
+
+    protected function constructInstallerData(): void
+    {
+        $this->addDefaultConfig();
+        $this->addWritablePaths();
+        $this->addPHPExtensions();
+        $this->addPHPOptionalExtensions();
+    }
 
     /**
      * Show the application installer
@@ -114,12 +125,52 @@ class InstallerController extends Controller
         return redirect()->route('showSignup', ['first_run' => 'yup']);
     }
 
-    protected function constructInstallerData(): void
+    /**
+     * Show the application upgrader
+     *
+     * @return mixed
+     */
+    public function showUpgrader()
     {
-        $this->addDefaultConfig();
-        $this->addWritablePaths();
-        $this->addPHPExtensions();
-        $this->addPHPOptionalExtensions();
+        /**
+         * If we haven't yet installed, redirect to installer page.
+         */
+
+        if (!self::isInstalled()) {
+            $this->constructInstallerData();
+            return view('Installer.Installer', $this->data);
+        }
+
+        $data = [
+            'remote_version' => null,
+            'local_version' => null,
+            'installed_version' => null
+        ];
+
+        try {
+            $http_client = new Client();
+            $response = $http_client->get('https://raw.githubusercontent.com/Attendize/Attendize/master/VERSION');
+            $data["remote_version"] = Utils::parse_version((string)$response->getBody());
+        } catch (\Exception $exception) {
+            \Log::warn("Error retrieving the latest Attendize version. InstallerController.getVersionInfo()");
+            \Log::warn($exception);
+            return false;
+        }
+
+        $data["local_version"] = trim(file_get_contents(base_path('VERSION')));
+        $data["installed_version"] = trim(file_get_contents(base_path('installed')));
+
+        return view('Installer.Upgrader', $data);
+    }
+
+    /**
+     * Attempts to upgrade the system
+     *
+     * @param  Request  $request
+     * @return JsonResponse|RedirectResponse
+     */
+    public function postUpgrader(Request $request)
+    {
     }
 
     /**
@@ -416,7 +467,7 @@ class InstallerController extends Controller
      */
     protected function createInstalledFile(): void
     {
-        $version = file_get_contents(base_path('VERSION'));
+        $version = trim(file_get_contents(base_path('VERSION')));
         $fp = fopen(base_path().DIRECTORY_SEPARATOR.'installed', 'wb');
         fwrite($fp, $version);
         fclose($fp);
