@@ -12,13 +12,21 @@
                         {!!Html::image('assets/images/logo-dark.png')!!}
                     </div>
 
-                    <h1>Upgrade</h1>
+                    <h1>@lang("Installer.upgrade")</h1>
                     @if(version_compare($local_version, $remote_version) === -1)
-                        New version available for download.
+                        <h3>@lang("Installer.new_version")</h3>
+                        <p>@lang("Installer.current_version", ["version" => $local_version])</p>
+                        <p>@lang("Installer.download_version", ["version" => $remote_version])</p>
                     @elseif(version_compare($local_version, $remote_version) === 0 && version_compare($installed_version, $local_version) === -1)
-                        New version ready to install.
+                        <h3>@lang("Installer.new_version_ready")</h3>
+                        <p>@lang("Installer.current_version", ["version" => $installed_version])</p>
+                        <p>@lang("Installer.now_installing", ["version" => $local_version])</p>
+                        {!! Form::open(array('url' => route('postUpgrader'), 'class' => 'upgrader_form')) !!}
+                        {!! Form::submit(trans("Installer.upgrade_button"), ['class'=>" btn-block btn btn-success"]) !!}
+                        {!! Form::close() !!}
                     @else
-                        Nothing to upgrade!
+                        <h3>@lang("Installer.no_upgrade")</h3>
+                        <p>@lang("Installer.current_version", ["version" => $local_version])</p>
                     @endif
                 </div>
             </div>
