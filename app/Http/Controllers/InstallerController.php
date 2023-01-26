@@ -126,6 +126,34 @@ class InstallerController extends Controller
     }
 
     /**
+     * Get data needed before upgrading the system
+     *
+     * @return array
+     */
+    protected function constructUpgraderData()
+    {
+        $data = [
+            'remote_version' => null,
+            'local_version' => null,
+            'installed_version' => null,
+            'upgrade_done' => false
+        ];
+
+        try {
+            $http_client = new Client();
+            $response = $http_client->get('https://raw.githubusercontent.com/Attendize/Attendize/master/VERSION');
+            $data["remote_version"] = Utils::parse_version((string)$response->getBody());
+        } catch (\Exception $exception) {
+            \Log::warn("Error retrieving the latest Attendize version. InstallerController.getVersionInfo()");
+            \Log::warn($exception);
+        }
+
+        $data["local_version"] = trim(file_get_contents(base_path('VERSION')));
+        $data["installed_version"] = trim(file_get_contents(base_path('installed')));
+        return $data;
+    }
+
+    /**
      * Show the application upgrader
      *
      * @return mixed
@@ -141,24 +169,7 @@ class InstallerController extends Controller
             return view('Installer.Installer', $this->data);
         }
 
-        $data = [
-            'remote_version' => null,
-            'local_version' => null,
-            'installed_version' => null
-        ];
-
-        try {
-            $http_client = new Client();
-            $response = $http_client->get('https://raw.githubusercontent.com/Attendize/Attendize/master/VERSION');
-            $data["remote_version"] = Utils::parse_version((string)$response->getBody());
-        } catch (\Exception $exception) {
-            \Log::warn("Error retrieving the latest Attendize version. InstallerController.getVersionInfo()");
-            \Log::warn($exception);
-            return false;
-        }
-
-        $data["local_version"] = trim(file_get_contents(base_path('VERSION')));
-        $data["installed_version"] = trim(file_get_contents(base_path('installed')));
+        $data = $this->constructUpgraderData();
 
         return view('Installer.Upgrader', $data);
     }
@@ -171,6 +182,28 @@ class InstallerController extends Controller
      */
     public function postUpgrader(Request $request)
     {
+        //  Do not run the installation if it is already installed
+        if (!$this->canUpgrade()) {
+            // Return 409 Conflict HTTP Code and a friendly message
+            abort(409, trans('Installer.no_updgrade'));
+        }
+
+        // Increase PHP time limit
+        set_time_limit(300);
+
+        // Run any migrations
+        Artisan::call('migrate', ['--force' => true]);
+
+        // Update the "installed" file with latest version
+        $this->createInstalledFile();
+
+        // Reload the configuration file (very useful if you use php artisan serve)
+        Artisan::call('config:clear');
+
+        $data = $this->constructUpgraderData();
+        $data["upgrade_done"] = true;
+
+        return view('Installer.Upgrader', $data);
     }
 
     /**
@@ -268,6 +301,25 @@ class InstallerController extends Controller
     public static function isInstalled(): bool
     {
         return file_exists(base_path('installed'));
+    }
+
+    /**
+     * Check if an upgrade is possible
+     *
+     * @return bool true if upgrade possible false if not
+     */
+    public function canUpgrade(): bool
+    {
+        $data = $this->constructUpgraderData();
+        if (
+        (version_compare($data['local_version'], $data['remote_version']) === -1) ||
+        (
+            version_compare($data['local_version'], $data['remote_version']) === 0 &&
+            version_compare($data['installed_version'], $data['local_version']) === -1
+        )) {
+            return true;
+        }
+        return false;
     }
 
     /**

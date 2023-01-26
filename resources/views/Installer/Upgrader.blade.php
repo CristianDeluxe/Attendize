@@ -13,7 +13,10 @@
                     </div>
 
                     <h1>@lang("Installer.upgrade")</h1>
-                    @if(version_compare($local_version, $remote_version) === -1)
+                    @if($upgrade_done === true)
+                        <h3>@lang("Installer.upgrade_complete")</h3>
+                        <p>@lang("Installer.current_version", ["version" => $local_version])</p>
+                    @elseif(version_compare($local_version, $remote_version) === -1)
                         <h3>@lang("Installer.new_version")</h3>
                         <p>@lang("Installer.current_version", ["version" => $local_version])</p>
                         <p>@lang("Installer.download_version", ["version" => $remote_version])</p>

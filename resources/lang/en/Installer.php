@@ -56,5 +56,6 @@ return array(
     'download_version' => 'There is a newer version available :version on <a href="https://github.com/attendize/attendize">GitHub</a>. Please download the code, copy it onto your server, and return to this page.',
     'new_version_ready' => 'New version ready to install.',
     'now_installing' => 'You\'ll now be installing the new version :version',
+    'upgrade_complete' => 'Upgrade Complete!',
     'no_upgrade' => 'Nothing to upgrade!',
 );
