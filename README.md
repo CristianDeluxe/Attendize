@@ -69,6 +69,14 @@ Please note: support is not offered from the project maintainers through GitHub.
 To get developing straight away use the [Pre-configured Docker Environment](https://www.attendize.com/getting_started.html#running-attendize-in-docker-for-development)<br />
 To do a manual installation use the [Manual Installation Steps](https://www.attendize.com/getting_started.html#manual-installation)
 
+## Upgrade
+To upgrade to a new version:
+
+- we recommend putting your site into [Maintenance Mode](https://laravel.com/docs/6.x/configuration#maintenance-mode) by running `php artisan down` from the root of your installation. This isn't required but can help prevent problems if users are on your site during the upgrade.
+- download the latest version of the code from GitHub and copy the code to your server however you normally do so - via FTP, git pull, continuous integration deployment, etc.
+- navigate to https://<your-site.com>/upgrade and follow the instructions on screen
+- the upgrade page will run database migrations, update configuration settings, etc as needed for the new code version.
+
 ## Testing
 To run the application tests, you can run the following from your project root:
 

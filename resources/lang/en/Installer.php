@@ -48,4 +48,14 @@ return array(
                                          "<a href='/signup'>Signup Default User</a><br />If you have already created a default user you can <a href='/login'>Login Here </a>",
     'test_database_connection' => 'Test Database Connection',
     'title' => 'Attendize Web Installer',
+    //upgrade strings
+    'upgrade' => 'Upgrade',
+    'upgrade_button' => 'Upgrade Attendize',
+    'new_version' => 'New version available for download.',
+    'current_version' => 'Your currently installed version is :version.',
+    'download_version' => 'There is a newer version available :version on <a href="https://github.com/attendize/attendize">GitHub</a>. Please download the code, copy it onto your server, and return to this page.',
+    'new_version_ready' => 'New version ready to install.',
+    'now_installing' => 'You\'ll now be installing the new version :version',
+    'upgrade_complete' => 'Upgrade Complete!',
+    'no_upgrade' => 'Nothing to upgrade!',
 );
