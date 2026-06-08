@@ -145,7 +145,6 @@ class EventController extends MyBaseController
             $event->social_show_linkedin = $defaults->social_show_linkedin;
             $event->social_show_twitter = $defaults->social_show_twitter;
             $event->social_show_email = $defaults->social_show_email;
-            $event->social_show_googleplus = $defaults->social_show_googleplus;
             $event->social_show_whatsapp = $defaults->social_show_whatsapp;
             $event->is_1d_barcode_enabled = $defaults->is_1d_barcode_enabled;
             $event->ticket_border_color = $defaults->ticket_border_color;

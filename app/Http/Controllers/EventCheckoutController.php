@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Attendize\PaymentUtils;
+use App\Generators\TicketGenerator;
 use App\Jobs\SendOrderNotificationJob;
 use App\Jobs\SendOrderConfirmationJob;
 use App\Jobs\SendOrderAttendeeTicketJob;
